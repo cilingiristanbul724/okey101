@@ -5,7 +5,7 @@ import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import { konumAl, mesafeKm } from '../utils/konum'
 
-const yesilButon = { background: '#059669' }
+const yesilButon = { background: '#0f9d58' }
 const tehlikeButon = { background: '#dc2626' }
 
 export default function MasaDetay() {
@@ -53,12 +53,13 @@ export default function MasaDetay() {
   async function bulusmaPaylas() {
     try {
       const k = await konumAl()
-      const link = 'https://www.google.com/maps?q=' + k.enlem + ',' + k.boylam
+      // WhatsApp tarzı: tıklayan kişi doğrudan yol tarifi alır
+      const link = 'https://www.google.com/maps/dir/?api=1&destination=' + k.enlem + ',' + k.boylam
       await supabase.from('mesajlar').insert({
         masa_id: id, gonderen_id: benimId,
         icerik: '📍 Canlı konumum: ' + link,
       })
-      alert('Canlı konumun sohbete paylaşıldı.')
+      alert('Canlı konumun sohbete paylaşıldı. Tıklayan kişi direkt yol tarifi alır.')
     } catch (e) {
       alert('Konum alınamadı: ' + e.message)
     }

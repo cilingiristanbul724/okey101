@@ -1,6 +1,23 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
+// Mesaj içindeki linkleri tıklanabilir yapar. Konum/harita linkleri
+// "🧭 Yol tarifi al" olarak gösterilir (WhatsApp tarzı).
+function MesajIcerigi({ metin }) {
+  const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
+  return parcalar.map((p, i) => {
+    if (/^https?:\/\//.test(p)) {
+      const haritaLinki = p.includes('/maps/dir') || p.includes('/maps?') || p.includes('maps.google')
+      return (
+        <a key={i} href={p} target="_blank" rel="noreferrer">
+          {haritaLinki ? '🧭 Yol tarifi al' : p}
+        </a>
+      )
+    }
+    return <span key={i}>{p}</span>
+  })
+}
+
 export default function Chat({ masaId }) {
   const [mesajlar, setMesajlar] = useState([])
   const [metin, setMetin] = useState('')
@@ -54,7 +71,7 @@ export default function Chat({ masaId }) {
           return (
             <div key={m.id} className={'balon ' + (benimMi ? 'balon-ben' : 'balon-diger')}>
               {!benimMi && <div className="balon-ad">{ad}</div>}
-              <div className="balon-metin">{m.icerik}</div>
+              <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
               <div className="balon-saat">{saat(m.created_at)}</div>
             </div>
           )

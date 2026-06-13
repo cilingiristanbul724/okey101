@@ -1,34 +1,119 @@
-* { box-sizing: border-box; }
-body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f5f5f5; }
-.nav { display: flex; gap: 12px; padding: 12px; background: #fff; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
-.nav a { text-decoration: none; color: #2563eb; }
-.sayfa { padding: 16px; max-width: 480px; margin: 0 auto; }
-.kart { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 8px; background: #fff; }
-input, select { display: block; width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc; border-radius: 6px; }
-button { padding: 8px 14px; margin: 4px 4px 4px 0; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; }
-button:hover { filter: brightness(0.95); }
-button:disabled { opacity: 0.6; cursor: not-allowed; }
-label { font-size: 14px; color: #555; }
-.ipucu { font-size: 13px; color: #777; }
-.mesafe { color: #059669; font-weight: 600; font-size: 14px; }
+:root {
+  --yesil: #0f9d58;
+  --yesil-koyu: #0c7d45;
+  --mavi: #2563eb;
+  --kirmizi: #dc2626;
+  --zemin: #eef2f5;
+  --kart: #ffffff;
+  --metin: #1f2937;
+  --soluk: #6b7280;
+  --kenar: #e5e7eb;
+  --golge: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --golge-hover: 0 6px 18px rgba(0,0,0,.12);
+}
 
-.kart-bas { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
-.rozet { font-size: 12px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, system-ui, 'Segoe UI', Roboto, Arial, sans-serif;
+  background: var(--zemin);
+  color: var(--metin);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* NAV */
+.nav {
+  position: sticky; top: 0; z-index: 1000;
+  display: flex; gap: 4px; padding: 10px 12px;
+  background: linear-gradient(90deg, #0f9d58, #0c7d45);
+  box-shadow: var(--golge);
+  overflow-x: auto;
+}
+.nav a {
+  color: #eafaf0; text-decoration: none;
+  font-weight: 600; font-size: 14px;
+  padding: 8px 12px; border-radius: 999px;
+  white-space: nowrap; transition: background .2s, color .2s;
+}
+.nav a:hover { background: rgba(255,255,255,.18); color: #fff; }
+
+/* SAYFA */
+.sayfa { padding: 18px 16px 64px; max-width: 520px; margin: 0 auto; }
+.sayfa h2 { margin: 4px 0 16px; font-size: 22px; }
+.sayfa h3 { margin: 18px 0 8px; font-size: 17px; }
+
+/* KART */
+.kart {
+  border: 1px solid var(--kenar); border-radius: 14px;
+  padding: 14px 16px; margin-bottom: 12px;
+  background: var(--kart); box-shadow: var(--golge);
+  transition: box-shadow .2s, transform .2s;
+}
+.kart:hover { box-shadow: var(--golge-hover); }
+
+/* FORM */
+label { display: block; font-size: 13px; font-weight: 600; color: var(--soluk); margin-top: 10px; }
+input, select {
+  display: block; width: 100%; padding: 11px 12px; margin: 6px 0;
+  border: 1px solid var(--kenar); border-radius: 10px; font-size: 15px;
+  background: #fff; transition: border-color .2s, box-shadow .2s;
+}
+input:focus, select:focus {
+  outline: none; border-color: var(--yesil);
+  box-shadow: 0 0 0 3px rgba(15,157,88,.15);
+}
+
+/* BUTON */
+button {
+  padding: 11px 18px; margin: 8px 6px 0 0;
+  border: none; border-radius: 10px;
+  background: var(--mavi); color: #fff;
+  font-size: 15px; font-weight: 600; cursor: pointer;
+  box-shadow: var(--golge);
+  transition: transform .1s, filter .2s, box-shadow .2s;
+}
+button:hover { filter: brightness(1.05); box-shadow: var(--golge-hover); }
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .55; cursor: not-allowed; box-shadow: none; }
+
+/* METIN */
+.ipucu { font-size: 13px; color: var(--soluk); }
+.mesafe { color: var(--yesil); font-weight: 700; font-size: 14px; }
+a { color: var(--mavi); }
+
+.kart-bas { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+.kart-bas b { font-size: 16px; }
+
+.rozet { font-size: 12px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; font-weight: 600; }
 .rozet-yesil { background: #dcfce7; color: #166534; }
 .rozet-kirmizi { background: #fee2e2; color: #991b1b; }
+.geri-sayim { background: #fff7ed; color: #c2410c; font-weight: 700; font-size: 13px; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
 
-.profil-foto-alani { display: flex; justify-content: center; margin: 12px 0; }
-.profil-foto { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; }
-.profil-foto-bos { display: flex; align-items: center; justify-content: center; background: #2563eb; color: #fff; font-size: 36px; font-weight: 700; }
+/* PROFIL */
+.profil-foto-alani { display: flex; justify-content: center; margin: 8px 0 16px; }
+.profil-foto { width: 104px; height: 104px; border-radius: 50%; object-fit: cover; border: 3px solid #fff; box-shadow: var(--golge-hover); }
+.profil-foto-bos { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0f9d58, #2563eb); color: #fff; font-size: 40px; font-weight: 800; }
 
-.sohbet { margin-top: 16px; }
-.sohbet-govde { background: #ece5dd; border-radius: 8px; padding: 10px; height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
-.balon { max-width: 78%; padding: 6px 10px; border-radius: 10px; font-size: 14px; }
-.balon-ben { align-self: flex-end; background: #dcf8c6; }
-.balon-diger { align-self: flex-start; background: #fff; }
-.balon-ad { font-size: 12px; font-weight: 700; color: #2563eb; margin-bottom: 2px; }
+/* SOHBET (WhatsApp tarzi) */
+.sohbet { margin-top: 18px; }
+.sohbet-govde {
+  background: #efe7dd;
+  background-image: radial-gradient(rgba(0,0,0,.03) 1px, transparent 0);
+  background-size: 14px 14px;
+  border-radius: 14px; padding: 12px; height: 340px;
+  overflow-y: auto; display: flex; flex-direction: column; gap: 6px;
+  border: 1px solid var(--kenar);
+}
+.balon { max-width: 80%; padding: 7px 11px; border-radius: 12px; font-size: 14px; box-shadow: 0 1px 1px rgba(0,0,0,.08); line-height: 1.35; }
+.balon-ben { align-self: flex-end; background: #d9fdd3; border-bottom-right-radius: 3px; }
+.balon-diger { align-self: flex-start; background: #fff; border-bottom-left-radius: 3px; }
+.balon-ad { font-size: 12px; font-weight: 700; color: var(--yesil); margin-bottom: 2px; }
 .balon-metin { white-space: pre-wrap; word-break: break-word; }
-.balon-saat { font-size: 10px; color: #888; text-align: right; margin-top: 2px; }
-.sohbet-giris { display: flex; gap: 8px; margin-top: 8px; }
+.balon-metin a { font-weight: 700; }
+.balon-saat { font-size: 10px; color: #66707a; text-align: right; margin-top: 2px; }
+.sohbet-giris { display: flex; gap: 8px; margin-top: 10px; }
 .sohbet-giris input { margin: 0; }
-.sohbet-giris button { flex-shrink: 0; }
+.sohbet-giris button { flex-shrink: 0; margin: 0; }
+
+/* HARITA */
+.leaflet-container { border-radius: 14px; }
