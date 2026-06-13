@@ -52,6 +52,8 @@ export default function Giris() {
     navigate('/')
   }
 
+  const ikincilButon = { background: '#6b7280' }
+
   return (
     <div className="sayfa">
       <h2>{mod === 'giris' ? 'Giriş Yap' : 'Kayıt Ol'}</h2>
@@ -77,12 +79,12 @@ export default function Giris() {
       {mod === 'giris' ? (
         <>
           <button onClick={girisYap} disabled={yukleniyor}>Giriş Yap</button>
-          <button onClick={() => setMod('kayit')} style= background: '#6b7280' >Hesabın yok mu? Kayıt Ol</button>
+          <button onClick={() => setMod('kayit')} style={ikincilButon}>Hesabın yok mu? Kayıt Ol</button>
         </>
       ) : (
         <>
           <button onClick={kayitOl} disabled={yukleniyor}>Kayıt Ol</button>
-          <button onClick={() => setMod('giris')} style= background: '#6b7280' >Zaten üye misin? Giriş Yap</button>
+          <button onClick={() => setMod('giris')} style={ikincilButon}>Zaten üye misin? Giriş Yap</button>
         </>
       )}
     </div>
