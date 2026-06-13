@@ -4,10 +4,10 @@ import MasaListesi from './sayfalar/MasaListesi'
 import MasaAc from './sayfalar/MasaAc'
 import Harita from './sayfalar/Harita'
 import Profil from './sayfalar/Profil'
-import AdminPanel from './sayfalar/AdminPanel'
-import MekanKayit from './sayfalar/MekanKayit'
 import MasaDetay from './sayfalar/MasaDetay'
-import Liderlik from './sayfalar/Liderlik'
+import Arkadaslar from './sayfalar/Arkadaslar'
+import MesajKutusu from './sayfalar/MesajKutusu'
+import OzelSohbet from './sayfalar/OzelSohbet'
 
 export default function App() {
   return (
@@ -16,10 +16,9 @@ export default function App() {
         <Link to="/">Masalar</Link>
         <Link to="/masa-ac">Masa Aç</Link>
         <Link to="/harita">Harita</Link>
-        <Link to="/liderlik">Liderlik</Link>
-        <Link to="/mekan-kayit">Mekan Kayıt</Link>
+        <Link to="/arkadaslar">Arkadaşlar</Link>
+        <Link to="/mesajlar">Mesaj Kutusu</Link>
         <Link to="/profil">Profil</Link>
-        <Link to="/admin">Admin</Link>
         <Link to="/giris">Giriş</Link>
       </nav>
       <Routes>
@@ -27,10 +26,10 @@ export default function App() {
         <Route path="/masa-ac" element={<MasaAc />} />
         <Route path="/masa/:id" element={<MasaDetay />} />
         <Route path="/harita" element={<Harita />} />
-        <Route path="/liderlik" element={<Liderlik />} />
-        <Route path="/mekan-kayit" element={<MekanKayit />} />
+        <Route path="/arkadaslar" element={<Arkadaslar />} />
+        <Route path="/mesajlar" element={<MesajKutusu />} />
+        <Route path="/ozel/:digerId" element={<OzelSohbet />} />
         <Route path="/profil" element={<Profil />} />
-        <Route path="/admin" element={<AdminPanel />} />
         <Route path="/giris" element={<Giris />} />
       </Routes>
     </BrowserRouter>
