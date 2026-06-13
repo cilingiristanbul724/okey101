@@ -4,7 +4,31 @@ body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f5f5f5
 .nav a { text-decoration: none; color: #2563eb; }
 .sayfa { padding: 16px; max-width: 480px; margin: 0 auto; }
 .kart { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 8px; background: #fff; }
-input { display: block; width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc; border-radius: 6px; }
+input, select { display: block; width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc; border-radius: 6px; }
 button { padding: 8px 14px; margin: 4px 4px 4px 0; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; }
-button:hover { background: #1d4ed8; }
+button:hover { filter: brightness(0.95); }
+button:disabled { opacity: 0.6; cursor: not-allowed; }
 label { font-size: 14px; color: #555; }
+.ipucu { font-size: 13px; color: #777; }
+.mesafe { color: #059669; font-weight: 600; font-size: 14px; }
+
+.kart-bas { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.rozet { font-size: 12px; padding: 2px 8px; border-radius: 999px; white-space: nowrap; }
+.rozet-yesil { background: #dcfce7; color: #166534; }
+.rozet-kirmizi { background: #fee2e2; color: #991b1b; }
+
+.profil-foto-alani { display: flex; justify-content: center; margin: 12px 0; }
+.profil-foto { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; }
+.profil-foto-bos { display: flex; align-items: center; justify-content: center; background: #2563eb; color: #fff; font-size: 36px; font-weight: 700; }
+
+.sohbet { margin-top: 16px; }
+.sohbet-govde { background: #ece5dd; border-radius: 8px; padding: 10px; height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.balon { max-width: 78%; padding: 6px 10px; border-radius: 10px; font-size: 14px; }
+.balon-ben { align-self: flex-end; background: #dcf8c6; }
+.balon-diger { align-self: flex-start; background: #fff; }
+.balon-ad { font-size: 12px; font-weight: 700; color: #2563eb; margin-bottom: 2px; }
+.balon-metin { white-space: pre-wrap; word-break: break-word; }
+.balon-saat { font-size: 10px; color: #888; text-align: right; margin-top: 2px; }
+.sohbet-giris { display: flex; gap: 8px; margin-top: 8px; }
+.sohbet-giris input { margin: 0; }
+.sohbet-giris button { flex-shrink: 0; }
