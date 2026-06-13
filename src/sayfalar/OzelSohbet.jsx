@@ -2,11 +2,23 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 
+function MesajIcerigi({ metin }) {
+  const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
+  return parcalar.map((p, i) => {
+    if (/^https?:\/\//.test(p)) {
+      const harita = p.includes('/maps')
+      return <a key={i} href={p} target="_blank" rel="noreferrer">{harita ? '🧭 Yol tarifi al' : p}</a>
+    }
+    return <span key={i}>{p}</span>
+  })
+}
+
 export default function OzelSohbet() {
   const { digerId } = useParams()
   const [benimId, setBenimId] = useState(null)
   const [mesajlar, setMesajlar] = useState([])
   const [diger, setDiger] = useState(null)
+  const [arkadasMi, setArkadasMi] = useState(false)
   const [metin, setMetin] = useState('')
   const sonRef = useRef(null)
 
@@ -24,15 +36,20 @@ export default function OzelSohbet() {
       setBenimId(uid)
       const { data: p } = await supabase.from('profiles').select('kullanici_adi, ad_soyad').eq('id', digerId).single()
       setDiger(p)
-      if (uid) yukle(uid)
+      if (uid) {
+        const { data: ark } = await supabase.from('arkadaslar').select('durum')
+          .eq('durum', 'Kabul')
+          .or('and(isteyen_id.eq.' + uid + ',istenen_id.eq.' + digerId + '),and(isteyen_id.eq.' + digerId + ',istenen_id.eq.' + uid + ')')
+          .maybeSingle()
+        setArkadasMi(!!ark)
+        yukle(uid)
+      }
     }
     baslat()
 
     const kanal = supabase.channel('ozel-' + digerId)
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'ozel_mesajlar' },
-        () => supabase.auth.getUser().then(r => r.data.user && yukle(r.data.user.id))
-      )
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ozel_mesajlar' },
+        () => supabase.auth.getUser().then(r => r.data.user && yukle(r.data.user.id)))
       .subscribe()
     return () => { supabase.removeChannel(kanal) }
   }, [digerId])
@@ -41,34 +58,35 @@ export default function OzelSohbet() {
 
   async function gonder() {
     if (!benimId || !metin.trim()) return
-    await supabase.from('ozel_mesajlar').insert({
-      gonderen_id: benimId, alici_id: digerId, icerik: metin.trim(),
-    })
+    await supabase.from('ozel_mesajlar').insert({ gonderen_id: benimId, alici_id: digerId, icerik: metin.trim() })
     setMetin('')
   }
-  function saat(t) {
-    return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : ''
-  }
+  function saat(t) { return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '' }
 
   if (!benimId) return <p className="sayfa">Giriş yapmalısın.</p>
 
   return (
     <div className="sayfa">
       <h2>{diger ? (diger.kullanici_adi || diger.ad_soyad) : 'Özel Sohbet'}</h2>
+      {!arkadasMi && (
+        <div className="kart"><p className="ipucu">Mesajlaşabilmek için önce arkadaş olmanız gerekiyor. Arkadaşlık isteği kabul edilince mesaj gönderebilirsiniz.</p></div>
+      )}
       <div className="sohbet-govde">
         {mesajlar.map(m => (
           <div key={m.id} className={'balon ' + (m.gonderen_id === benimId ? 'balon-ben' : 'balon-diger')}>
-            <div className="balon-metin">{m.icerik}</div>
+            <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
             <div className="balon-saat">{saat(m.created_at)}</div>
           </div>
         ))}
         <div ref={sonRef} />
       </div>
-      <div className="sohbet-giris">
-        <input value={metin} onChange={e => setMetin(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Mesaj yaz..." />
-        <button onClick={gonder}>Gönder</button>
-      </div>
+      {arkadasMi ? (
+        <div className="sohbet-giris">
+          <input value={metin} onChange={e => setMetin(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Mesaj yaz..." />
+          <button onClick={gonder}>Gönder</button>
+        </div>
+      ) : null}
     </div>
   )
 }
