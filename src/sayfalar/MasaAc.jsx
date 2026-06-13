@@ -20,7 +20,7 @@ export default function MasaAc() {
       const k = await konumAl()
       setEnlem(k.enlem); setBoylam(k.boylam)
       setKonumDurum(anadoluYakasindaMi(k.enlem, k.boylam)
-        ? `📍 Konum alındı (${k.enlem.toFixed(4)}, ${k.boylam.toFixed(4)})`
+        ? '📍 Konum alındı (' + k.enlem.toFixed(4) + ', ' + k.boylam.toFixed(4) + ')'
         : '⚠️ Konumun İstanbul Anadolu Yakası dışında görünüyor. Pilot bölge şimdilik sadece Anadolu Yakası.')
     } catch (e) {
       setKonumDurum('Konum alınamadı: ' + e.message)
