@@ -1,0 +1,10 @@
+* { box-sizing: border-box; }
+body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f5f5f5; }
+.nav { display: flex; gap: 12px; padding: 12px; background: #fff; border-bottom: 1px solid #ddd; flex-wrap: wrap; }
+.nav a { text-decoration: none; color: #2563eb; }
+.sayfa { padding: 16px; max-width: 480px; margin: 0 auto; }
+.kart { border: 1px solid #ccc; border-radius: 8px; padding: 12px; margin-bottom: 8px; background: #fff; }
+input { display: block; width: 100%; padding: 8px; margin: 6px 0; border: 1px solid #ccc; border-radius: 6px; }
+button { padding: 8px 14px; margin: 4px 4px 4px 0; border: none; border-radius: 6px; background: #2563eb; color: #fff; cursor: pointer; }
+button:hover { background: #1d4ed8; }
+label { font-size: 14px; color: #555; }
