@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { konumAl, anadoluYakasindaMi } from '../utils/konum'
 
+const yesilButon = { background: '#059669' }
+
 export default function MasaAc() {
   const [arananKisi, setArananKisi] = useState(1)
   const [sure, setSure] = useState(30)
@@ -73,7 +75,7 @@ export default function MasaAc() {
       <input value={adres} onChange={e => setAdres(e.target.value)} placeholder="Mahalle, cadde, no..." />
 
       <label>Konum</label>
-      <button onClick={buradayim} style= background: '#059669' >📍 Buradayım (konumu işaretle)</button>
+      <button onClick={buradayim} style={yesilButon}>📍 Buradayım (konumu işaretle)</button>
       {konumDurum && <p>{konumDurum}</p>}
 
       <label>Not</label>

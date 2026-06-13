@@ -5,6 +5,9 @@ import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import { konumAl, mesafeKm } from '../utils/konum'
 
+const yesilButon = { background: '#059669' }
+const tehlikeButon = { background: '#dc2626' }
+
 export default function MasaDetay() {
   const { id } = useParams()
   const [masa, setMasa] = useState(null)
@@ -81,9 +84,9 @@ export default function MasaDetay() {
         {yolTarifi && <a href={yolTarifi} target="_blank" rel="noreferrer">🧭 Yol tarifi al</a>}
       </div>
 
-      <button onClick={bulusmaPaylas} style= background: '#059669' >📍 Buluşma / Canlı Konum Paylaş</button>
+      <button onClick={bulusmaPaylas} style={yesilButon}>📍 Buluşma / Canlı Konum Paylaş</button>
       {masadaMiyim && !sahibiMiyim && (
-        <button onClick={masadanCik} style= background: '#dc2626' >Masadan Çık</button>
+        <button onClick={masadanCik} style={tehlikeButon}>Masadan Çık</button>
       )}
 
       <h3>Katılımcılar</h3>
@@ -93,7 +96,7 @@ export default function MasaDetay() {
           {sahibiMiyim && o.katilim_durumu === 'Talep' && (
             <span>
               <button onClick={() => onayla(o.id)}>Onayla</button>
-              <button onClick={() => reddet(o.id)} style= background: '#dc2626' >Reddet</button>
+              <button onClick={() => reddet(o.id)} style={tehlikeButon}>Reddet</button>
             </span>
           )}
         </div>

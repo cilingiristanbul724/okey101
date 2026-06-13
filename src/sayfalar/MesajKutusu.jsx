@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 
+const kartLink = { display: 'block', textDecoration: 'none', color: 'inherit' }
+
 export default function MesajKutusu() {
   const [benimId, setBenimId] = useState(null)
   const [sohbetler, setSohbetler] = useState([])
@@ -36,7 +38,7 @@ export default function MesajKutusu() {
       <h2>Mesaj Kutusu</h2>
       {sohbetler.length === 0 && <p>Henüz özel mesajın yok. Arkadaşlar sayfasından mesaj atabilirsin.</p>}
       {sohbetler.map(s => (
-        <Link key={s.kisi.id} to={'/ozel/' + s.kisi.id} className="kart" style= display: 'block', textDecoration: 'none', color: 'inherit' >
+        <Link key={s.kisi.id} to={'/ozel/' + s.kisi.id} className="kart" style={kartLink}>
           <b>{s.kisi.kullanici_adi || 'Kullanıcı'}</b>
           <div>{s.sonMesaj.icerik}</div>
         </Link>

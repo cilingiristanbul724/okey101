@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 
+const cikisButon = { background: '#dc2626' }
+
 export default function Profil() {
   const [profil, setProfil] = useState(null)
   const [fotoUrl, setFotoUrl] = useState('')
@@ -68,7 +70,7 @@ export default function Profil() {
       {kayitDurum && <p>{kayitDurum}</p>}
 
       <hr />
-      <button onClick={cikisYap} style= background: '#dc2626' >Çıkış Yap</button>
+      <button onClick={cikisYap} style={cikisButon}>Çıkış Yap</button>
     </div>
   )
 }

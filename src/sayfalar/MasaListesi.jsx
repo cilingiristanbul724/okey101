@@ -4,6 +4,8 @@ import { supabase } from '../supabaseClient'
 import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
 import GeriSayim from '../utils/GeriSayim'
 
+const griButon = { background: '#6b7280' }
+
 export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [konum, setKonum] = useState(null)
@@ -59,7 +61,7 @@ export default function MasaListesi() {
           )}
           {m.notu && <div>Not: {m.notu}</div>}
           <button onClick={() => katil(m.id)}>Katıl</button>
-          <Link to={'/masa/' + m.id}><button style= background: '#6b7280' >Detay</button></Link>
+          <Link to={'/masa/' + m.id}><button style={griButon}>Detay</button></Link>
         </div>
       ))}
     </div>
