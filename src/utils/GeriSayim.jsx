@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
+import { zamanMs } from './zaman'
 
 function hesapla(bitis) {
   if (!bitis) return 0
-  return new Date(bitis).getTime() - Date.now()
+  return zamanMs(bitis) - Date.now()
 }
 
 export default function GeriSayim({ bitis }) {
