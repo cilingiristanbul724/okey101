@@ -37,7 +37,7 @@ body {
 .marka-ad { color: var(--metin); }
 .ust-aksiyon { display: flex; gap: 8px; }
 .ust-aksiyon a {
-  text-decoration: none; font-size: 18px;
+  text-decoration: none; color: var(--altin);
   width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;
   background: var(--panel); border: 1px solid var(--kenar); border-radius: 10px;
 }
@@ -89,7 +89,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 .btn-gibi { display: inline-block; padding: 12px 18px; border-radius: 12px; background: linear-gradient(180deg, var(--altin), var(--altin-koyu)); color: #2a2200; font-weight: 700; cursor: pointer; box-shadow: var(--golge); }
 
 .ipucu { font-size: 13px; color: var(--soluk); }
-.mesafe { color: var(--altin); font-weight: 700; font-size: 14px; }
+.mesafe { color: var(--altin); font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 4px; }
 a { color: var(--altin); }
 
 .rozet { font-size: 12px; padding: 4px 10px; border-radius: 999px; white-space: nowrap; font-weight: 700; }
@@ -136,7 +136,7 @@ a { color: var(--altin); }
   text-decoration: none; color: var(--soluk); font-size: 11px; font-weight: 600;
   padding: 4px 6px; border-radius: 10px; flex: 1; text-align: center;
 }
-.alt-menu a .ikon { font-size: 20px; line-height: 1; }
+.alt-menu a .ikon { display: flex; align-items: center; justify-content: center; line-height: 0; }
 .alt-menu a.active { color: var(--altin); }
 .alt-ekle {
   background: linear-gradient(180deg, var(--altin), var(--altin-koyu));
@@ -144,7 +144,6 @@ a { color: var(--altin); }
   margin-top: -22px; box-shadow: var(--golge); flex: 0 0 auto !important;
   justify-content: center; align-items: center;
 }
-.alt-ekle .ikon { font-size: 26px !important; }
 
 .leaflet-container { border-radius: 14px; }
 

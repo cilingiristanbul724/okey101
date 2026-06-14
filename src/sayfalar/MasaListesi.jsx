@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
 import GeriSayim from '../utils/GeriSayim'
+import Ikon from '../Ikon'
 
 const griButon = { background: '#6b7280' }
 
@@ -57,7 +58,7 @@ export default function MasaListesi() {
           <div>{m.adres}</div>
           <div>Aranan kişi: {m.aranan_kisi}</div>
           {m.uzaklik != null && (
-            <div className="mesafe">📍 {m.uzaklik.toFixed(1)} km uzaklıkta</div>
+            <div className="mesafe"><Ikon ad="pin" boyut={14} /> {m.uzaklik.toFixed(1)} km uzaklıkta</div>
           )}
           {m.notu && <div>Not: {m.notu}</div>}
           <button onClick={() => katil(m.id)}>Katıl</button>

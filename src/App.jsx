@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
+import Ikon from './Ikon'
 import Giris from './sayfalar/Giris'
 import MasaListesi from './sayfalar/MasaListesi'
 import MasaAc from './sayfalar/MasaAc'
@@ -18,8 +19,8 @@ export default function App() {
           <span className="marka-ad">rakipbul</span>
         </Link>
         <div className="ust-aksiyon">
-          <Link to="/mesajlar" title="Mesaj Kutusu">💬</Link>
-          <Link to="/giris" title="Giriş">🔑</Link>
+          <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
+          <Link to="/giris" title="Giriş"><Ikon ad="giris" boyut={20} /></Link>
         </div>
       </header>
 
@@ -39,19 +40,19 @@ export default function App() {
 
       <nav className="alt-menu">
         <NavLink to="/" end>
-          <span className="ikon">🏠</span><span>Masalar</span>
+          <span className="ikon"><Ikon ad="masalar" boyut={22} /></span><span>Masalar</span>
         </NavLink>
         <NavLink to="/harita">
-          <span className="ikon">🗺️</span><span>Harita</span>
+          <span className="ikon"><Ikon ad="harita" boyut={22} /></span><span>Harita</span>
         </NavLink>
         <NavLink to="/masa-ac" className="alt-ekle">
-          <span className="ikon">➕</span>
+          <span className="ikon"><Ikon ad="ekle" boyut={26} /></span>
         </NavLink>
         <NavLink to="/arkadaslar">
-          <span className="ikon">👥</span><span>Arkadaşlar</span>
+          <span className="ikon"><Ikon ad="arkadaslar" boyut={22} /></span><span>Arkadaşlar</span>
         </NavLink>
         <NavLink to="/profil">
-          <span className="ikon">👤</span><span>Profil</span>
+          <span className="ikon"><Ikon ad="profil" boyut={22} /></span><span>Profil</span>
         </NavLink>
       </nav>
     </BrowserRouter>
