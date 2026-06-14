@@ -4,6 +4,7 @@ import Ikon from './Ikon'
 import FotoOnizleme from './FotoOnizleme'
 import Bildirim from './Bildirim'
 import Onay from './Onay'
+import BildirimIzin from './BildirimIzin'
 import { useKalpAtisi } from './utils/kalp'
 import { useBildirimler } from './utils/useBildirimler'
 import { supabase } from './supabaseClient'
@@ -72,6 +73,7 @@ export default function App() {
     <BrowserRouter basename="/okey101">
       <Bildirim />
       <Onay />
+      <BildirimIzin />
       <FotoOnizleme />
       <KurulumKontrol />
       <header className="ust-bar">
