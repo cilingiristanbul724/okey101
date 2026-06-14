@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
@@ -20,6 +20,7 @@ function Avatar({ p }) {
 
 export default function MasaDetay() {
   const { id } = useParams()
+  const navigate = useNavigate()
   const [masa, setMasa] = useState(null)
   const [acan, setAcan] = useState(null)
   const [oyuncular, setOyuncular] = useState([])
@@ -87,9 +88,11 @@ export default function MasaDetay() {
   }
   async function masadanCik() {
     if (!benimId) return
+    const ok = await onay('Bu masadan ayrılmak istediğine emin misin?', { baslik: 'Masadan Ayrıl', onayMetin: 'Ayrıl', tehlike: true })
+    if (!ok) return
     await supabase.from('masa_oyunculari').delete().eq('masa_id', id).eq('oyuncu_id', benimId)
-    alert('Masadan çıktın.')
-    yukle()
+    alert('Masadan ayrıldın.')
+    navigate('/')
   }
   async function arkadasEkle(hedefId) {
     if (!benimId || !hedefId || hedefId === benimId) return
@@ -184,7 +187,7 @@ export default function MasaDetay() {
 
       <button onClick={bulusmaPaylas} style={yesilButon}>📍 Buluşma / Canlı Konum Paylaş</button>
       {masadaMiyim && !sahibiMiyim && (
-        <button onClick={masadanCik} style={tehlikeButon}>Masadan Çık</button>
+        <button onClick={masadanCik} style={tehlikeButon}>Masadan Ayrıl</button>
       )}
 
       <h3>Masa Sahibi</h3>
