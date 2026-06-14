@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
+import { pushTetikle } from '../utils/push'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
 import Tanitim from '../Tanitim'
@@ -62,6 +63,7 @@ export default function MasaListesi() {
     const { error } = await supabase.from('masa_oyunculari')
       .insert({ masa_id: masaId, oyuncu_id: user.id, katilim_durumu: 'Talep' })
     if (error) return alert(error.message)
+    pushTetikle('masa_oyunculari', { masa_id: masaId, oyuncu_id: user.id, katilim_durumu: 'Talep' })
     setKatildiklarim(eski => eski.includes(masaId) ? eski : [...eski, masaId])
     alert('Katılım talebin gönderildi!')
   }

@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import { kufurTemizle } from '../utils/kufur'
 import { engellenenleriGetir } from '../utils/moderasyon'
 import { onay } from '../utils/onay'
+import { pushTetikle } from '../utils/push'
 import EmojiSec from '../EmojiSec'
 
 function MesajIcerigi({ metin }) {
@@ -80,7 +81,9 @@ export default function Chat({ masaId, sahibiMiyim }) {
     const res = await supabase.auth.getUser()
     const user = res.data.user
     if (!user || !metin.trim()) return
-    await supabase.from('mesajlar').insert({ masa_id: masaId, gonderen_id: user.id, icerik: metin.trim() })
+    const icerik = metin.trim()
+    await supabase.from('mesajlar').insert({ masa_id: masaId, gonderen_id: user.id, icerik })
+    pushTetikle('mesajlar', { masa_id: masaId, gonderen_id: user.id, icerik })
     setMetin('')
   }
 
