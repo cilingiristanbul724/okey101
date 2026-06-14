@@ -24,6 +24,14 @@
 .ozel-bas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ozel-bas h2 { margin: 6px 0; }
 
+/* Foto buyutme (lightbox) */
+.avatar, .msj-avatar, .profil-foto, .buyutulebilir { cursor: zoom-in; }
+.foto-onizleme { position: fixed; inset: 0; background: rgba(0,0,0,0.88); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; animation: fotoAc 0.15s ease-out; }
+.foto-onizleme img { max-width: 92vw; max-height: 88vh; border-radius: 14px; box-shadow: 0 12px 48px rgba(0,0,0,0.7); cursor: zoom-out; object-fit: contain; }
+.foto-kapat { position: fixed; top: 16px; right: 18px; width: 42px; height: 42px; border-radius: 50%; background: rgba(255,255,255,0.15); color: #fff; font-size: 26px; line-height: 1; border: none; cursor: pointer; padding: 0; }
+.foto-kapat:hover { background: rgba(255,255,255,0.28); }
+@keyframes fotoAc { from { opacity: 0; } to { opacity: 1; } }
+
 /* Modern ince scrollbar */
 .sohbet-govde { scrollbar-width: thin; scrollbar-color: #1c7a52 transparent; scroll-behavior: smooth; }
 .sohbet-govde::-webkit-scrollbar { width: 7px; height: 7px; }
