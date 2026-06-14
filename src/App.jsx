@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import Ikon from './Ikon'
+import FotoOnizleme from './FotoOnizleme'
 import { useKalpAtisi } from './utils/kalp'
 import Giris from './sayfalar/Giris'
 import MasaListesi from './sayfalar/MasaListesi'
@@ -15,6 +16,7 @@ export default function App() {
   useKalpAtisi()
   return (
     <BrowserRouter basename="/okey101">
+      <FotoOnizleme />
       <header className="ust-bar">
         <Link to="/" className="marka">
           <span className="marka-101">101</span>
