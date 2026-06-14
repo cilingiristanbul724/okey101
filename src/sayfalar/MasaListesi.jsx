@@ -38,14 +38,27 @@ export default function MasaListesi() {
 
   useEffect(() => {
     if (!benimId) return
-    supabase.from('masa_oyunculari').select('masa_id').eq('oyuncu_id', benimId)
-      .then(({ data }) => setKatildiklarim((data || []).map(x => x.masa_id)))
+    supabase.from('masa_oyunculari').select('masa_id,katilim_durumu').eq('oyuncu_id', benimId)
+      .then(({ data }) => setKatildiklarim((data || []).filter(x => x.katilim_durumu !== 'Red').map(x => x.masa_id)))
   }, [benimId])
 
   async function katil(masaId) {
     const res = await supabase.auth.getUser()
     const user = res.data.user
     if (!user) return alert('Önce giriş yapmalısın!')
+
+    // Bir uye ayni anda yalnizca 1 masaya katilabilir
+    const { data: katilimlarim } = await supabase.from('masa_oyunculari')
+      .select('masa_id,katilim_durumu').eq('oyuncu_id', user.id)
+      .in('katilim_durumu', ['Talep', 'Onayli'])
+    const digerIdler = [...new Set((katilimlarim || []).map(x => x.masa_id).filter(mid => mid !== masaId))]
+    if (digerIdler.length) {
+      const { data: digerMasalar } = await supabase.from('masalar')
+        .select('id,bitis_zamani').in('id', digerIdler).eq('durum', 'Acik')
+      const aktifKatilimVar = (digerMasalar || []).some(m => !m.bitis_zamani || new Date(m.bitis_zamani).getTime() > Date.now())
+      if (aktifKatilimVar) return alert('Aynı anda yalnızca bir masaya katılabilirsin. Önce mevcut masadan çıkman gerekiyor.')
+    }
+
     const { error } = await supabase.from('masa_oyunculari')
       .insert({ masa_id: masaId, oyuncu_id: user.id, katilim_durumu: 'Talep' })
     if (error) return alert(error.message)

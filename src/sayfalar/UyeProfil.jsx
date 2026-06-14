@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import Durum from '../Durum'
 import Ikon from '../Ikon'
 import { engelliMi, engelle, engelKaldir, sikayetEt } from '../utils/moderasyon'
+import { onay, girdiAl } from '../utils/onay'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
@@ -54,13 +55,14 @@ export default function UyeProfil() {
     if (!benimId) return navigate('/giris')
     if (engel) { await engelKaldir(benimId, id); setEngel(false) }
     else {
-      if (!window.confirm('Bu kullanıcıyı engellemek istiyor musun? Mesajları sana görünmez olur.')) return
+      const ok = await onay('Bu kullanıcıyı engellemek istiyor musun? Mesajları sana görünmez olur.', { baslik: 'Kullanıcıyı Engelle', onayMetin: 'Engelle', tehlike: true })
+      if (!ok) return
       await engelle(benimId, id); setEngel(true)
     }
   }
   async function sikayet() {
     if (!benimId) return navigate('/giris')
-    const sebep = window.prompt('Şikayet sebebini kısaca yaz:')
+    const sebep = await girdiAl('Şikayet sebebini kısaca yaz:', { baslik: 'Şikayet Et', onayMetin: 'Gönder', placeholder: 'Sebep...' })
     if (!sebep) return
     const { error } = await sikayetEt(benimId, id, sebep)
     alert(error ? 'Gönderilemedi: ' + error.message : 'Şikayetin alındı. Teşekkürler.')
