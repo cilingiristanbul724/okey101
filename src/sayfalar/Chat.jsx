@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabaseClient'
 
-// Mesaj içindeki linkleri tıklanabilir yapar. Konum/harita linkleri
-// "🧭 Yol tarifi al" olarak gösterilir (WhatsApp tarzı).
 function MesajIcerigi({ metin }) {
   const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
   return parcalar.map((p, i) => {
@@ -18,8 +16,15 @@ function MesajIcerigi({ metin }) {
   })
 }
 
-export default function Chat({ masaId }) {
+function Avatar({ p }) {
+  if (p && p.foto_url) return <img className="msj-avatar" src={p.foto_url} alt="" />
+  const harf = ((p && (p.kullanici_adi || p.ad_soyad)) || '?').charAt(0).toUpperCase()
+  return <div className="msj-avatar msj-avatar-bos">{harf}</div>
+}
+
+export default function Chat({ masaId, sahibiMiyim }) {
   const [mesajlar, setMesajlar] = useState([])
+  const [profiller, setProfiller] = useState({})
   const [metin, setMetin] = useState('')
   const [benimId, setBenimId] = useState(null)
   const sonRef = useRef(null)
@@ -28,18 +33,29 @@ export default function Chat({ masaId }) {
     supabase.auth.getUser().then(res => setBenimId(res.data.user ? res.data.user.id : null))
   }, [])
 
+  async function profilGetir(idler) {
+    const eksik = [...new Set(idler)].filter(Boolean)
+    if (!eksik.length) return
+    const { data } = await supabase.from('profiles').select('id, kullanici_adi, ad_soyad, foto_url').in('id', eksik)
+    if (data) setProfiller(o => { const y = { ...o }; for (const p of data) y[p.id] = p; return y })
+  }
+
   useEffect(() => {
-    supabase.from('mesajlar').select('*, profiles(kullanici_adi)')
-      .eq('masa_id', masaId).order('created_at')
-      .then(({ data }) => setMesajlar(data || []))
+    let iptal = false
+    supabase.from('mesajlar').select('*').eq('masa_id', masaId).order('created_at')
+      .then(({ data }) => {
+        if (iptal) return
+        setMesajlar(data || [])
+        profilGetir((data || []).map(m => m.gonderen_id))
+      })
 
     const kanal = supabase.channel('mesajlar-' + masaId)
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'mesajlar', filter: 'masa_id=eq.' + masaId },
-        payload => setMesajlar(eski => [...eski, payload.new])
+        payload => { setMesajlar(eski => [...eski, payload.new]); profilGetir([payload.new.gonderen_id]) }
       )
       .subscribe()
-    return () => { supabase.removeChannel(kanal) }
+    return () => { iptal = true; supabase.removeChannel(kanal) }
   }, [masaId])
 
   useEffect(() => {
@@ -50,10 +66,15 @@ export default function Chat({ masaId }) {
     const res = await supabase.auth.getUser()
     const user = res.data.user
     if (!user || !metin.trim()) return
-    await supabase.from('mesajlar').insert({
-      masa_id: masaId, gonderen_id: user.id, icerik: metin.trim(),
-    })
+    await supabase.from('mesajlar').insert({ masa_id: masaId, gonderen_id: user.id, icerik: metin.trim() })
     setMetin('')
+  }
+
+  async function temizle() {
+    if (!window.confirm('Tüm masa sohbeti silinsin mi?')) return
+    const { error } = await supabase.from('mesajlar').delete().eq('masa_id', masaId)
+    if (error) return alert('Silinemedi: ' + error.message)
+    setMesajlar([])
   }
 
   function saat(t) {
@@ -63,16 +84,25 @@ export default function Chat({ masaId }) {
 
   return (
     <div className="sohbet">
-      <h3>Masa Sohbeti</h3>
+      <div className="sohbet-bas">
+        <h3>Masa Sohbeti</h3>
+        {sahibiMiyim && mesajlar.length > 0 && (
+          <button type="button" onClick={temizle} className="btn-kirmizi sohbet-temizle">Sohbeti temizle</button>
+        )}
+      </div>
       <div className="sohbet-govde">
         {mesajlar.map(m => {
           const benimMi = m.gonderen_id === benimId
-          const ad = m.profiles?.kullanici_adi || 'Oyuncu'
+          const p = profiller[m.gonderen_id]
+          const ad = (p && (p.kullanici_adi || p.ad_soyad)) || 'Oyuncu'
           return (
-            <div key={m.id} className={'balon ' + (benimMi ? 'balon-ben' : 'balon-diger')}>
-              {!benimMi && <div className="balon-ad">{ad}</div>}
-              <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
-              <div className="balon-saat">{saat(m.created_at)}</div>
+            <div key={m.id} className={'msj-satir ' + (benimMi ? 'msj-ben' : 'msj-diger')}>
+              {!benimMi && <Avatar p={p} />}
+              <div className={'balon ' + (benimMi ? 'balon-ben' : 'balon-diger')}>
+                {!benimMi && <div className="balon-ad">{ad}</div>}
+                <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
+                <div className="balon-saat">{saat(m.created_at)}</div>
+              </div>
             </div>
           )
         })}

@@ -84,4 +84,91 @@ export default function MasaDetay() {
     const mevcut = iliskiDurum(hedefId)
     if (mevcut === 'Kabul') return alert('Zaten arkadaşsınız.')
     if (mevcut === 'Beklemede') return alert('Arkadaşlık isteği zaten var.')
-    const { error } = await supabase.from('arkadaslar').insert({
+    const { error } = await supabase.from('arkadaslar').insert({ isteyen_id: benimId, istenen_id: hedefId, durum: 'Beklemede' })
+    if (error) { alert('İstek gönderilemedi: ' + error.message); return }
+    alert('Arkadaşlık isteği gönderildi.')
+    yukle()
+  }
+  async function bulusmaPaylas() {
+    try {
+      const k = await konumAl()
+      const link = 'https://www.google.com/maps/dir/?api=1&destination=' + k.enlem + ',' + k.boylam
+      await supabase.from('mesajlar').insert({ masa_id: id, gonderen_id: benimId, icerik: '📍 Canlı konumum: ' + link })
+      alert('Canlı konumun sohbete paylaşıldı.')
+    } catch (e) {
+      alert('Konum alınamadı: ' + e.message)
+    }
+  }
+
+  if (!masa) return <p className="sayfa">Masa yükleniyor...</p>
+  const sahibiMiyim = benimId && benimId === masa.acan_id
+  const masadaMiyim = oyuncular.some(o => o.oyuncu_id === benimId)
+  const yolTarifi = masa.enlem != null
+    ? 'https://www.google.com/maps/dir/?api=1&destination=' + masa.enlem + ',' + masa.boylam
+    : null
+
+  function ad(p, fallback) { return p ? (p.kullanici_adi || p.ad_soyad || fallback) : fallback }
+
+  function ArkadasButon({ hedefId }) {
+    if (!hedefId || hedefId === benimId) return null
+    const d = iliskiDurum(hedefId)
+    if (d === 'Kabul') return <span className="rozet rozet-yesil">✓ Arkadaş</span>
+    if (d === 'Beklemede') return <span className="ipucu">İstek gönderildi</span>
+    return <button onClick={() => arkadasEkle(hedefId)} style={altinButon}>Arkadaş Ekle</button>
+  }
+
+  return (
+    <div className="sayfa">
+      <h2>{masa.baslik || masa.mekan_adi || 'Masa Detayı'}</h2>
+
+      <div className="kart">
+        <div className="kart-bas">
+          <span>Durum: {masa.durum}</span>
+          <GeriSayim bitis={masa.bitis_zamani} />
+        </div>
+        {masa.mekan_adi && <p><b>{masa.mekan_adi}</b></p>}
+        <p>📍 {masa.adres}</p>
+        {masa.notu && <p>Not: {masa.notu}</p>}
+        {uzaklik != null && <p className="mesafe">Sana {uzaklik.toFixed(1)} km uzaklıkta</p>}
+        {yolTarifi && <a href={yolTarifi} target="_blank" rel="noreferrer">🧭 Yol tarifi al</a>}
+      </div>
+
+      <button onClick={bulusmaPaylas} style={yesilButon}>📍 Buluşma / Canlı Konum Paylaş</button>
+      {masadaMiyim && !sahibiMiyim && (
+        <button onClick={masadanCik} style={tehlikeButon}>Masadan Çık</button>
+      )}
+
+      <h3>Masa Sahibi</h3>
+      <div className="kart satir">
+        <Avatar p={acan} />
+        <div className="satir-icerik">
+          <div>{ad(acan, 'Masa sahibi')}</div>
+          {acan && <Durum sonGorulme={acan.son_gorulme} />}
+        </div>
+        {acan && <ArkadasButon hedefId={acan.id} />}
+      </div>
+
+      <h3>Katılımcılar</h3>
+      {oyuncular.length === 0 && <p className="ipucu">Henüz katılımcı yok.</p>}
+      {oyuncular.map(o => (
+        <div key={o.id} className="kart satir">
+          <Avatar p={o.profil} />
+          <div className="satir-icerik">
+            <div>{ad(o.profil, 'Oyuncu')}</div>
+            {o.profil && <Durum sonGorulme={o.profil.son_gorulme} />}
+            <div className="ipucu">{o.katilim_durumu}</div>
+          </div>
+          <ArkadasButon hedefId={o.oyuncu_id} />
+          {sahibiMiyim && o.katilim_durumu === 'Talep' && (
+            <span>
+              <button onClick={() => onayla(o.id)}>Onayla</button>
+              <button onClick={() => reddet(o.id)} style={tehlikeButon}>Reddet</button>
+            </span>
+          )}
+        </div>
+      ))}
+
+      <Chat masaId={masa.id} sahibiMiyim={sahibiMiyim} />
+    </div>
+  )
+}
