@@ -18,6 +18,8 @@
 .sohbet-govde .msj-satir .balon { max-width: 100%; }
 .msj-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #1c5a42; flex-shrink: 0; }
 .msj-avatar-bos { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #16a34a, #e8b923); color: #07261b; font-weight: 800; font-size: 13px; }
+.balon-ad { font-size: 11px; font-weight: 800; color: #4ade80; margin-bottom: 2px; }
+.msj-ben .balon-ad { color: #d9f7e6; text-align: right; }
 
 .ozel-bas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ozel-bas h2 { margin: 6px 0; }

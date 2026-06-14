@@ -30,7 +30,11 @@ export default function Chat({ masaId, sahibiMiyim }) {
   const sonRef = useRef(null)
 
   useEffect(() => {
-    supabase.auth.getUser().then(res => setBenimId(res.data.user ? res.data.user.id : null))
+    supabase.auth.getUser().then(res => {
+      const uid = res.data.user ? res.data.user.id : null
+      setBenimId(uid)
+      if (uid) profilGetir([uid])
+    })
   }, [])
 
   async function profilGetir(idler) {
@@ -94,12 +98,12 @@ export default function Chat({ masaId, sahibiMiyim }) {
         {mesajlar.map(m => {
           const benimMi = m.gonderen_id === benimId
           const p = profiller[m.gonderen_id]
-          const ad = (p && (p.kullanici_adi || p.ad_soyad)) || 'Oyuncu'
+          const ad = (p && (p.kullanici_adi || p.ad_soyad)) || (benimMi ? 'Sen' : 'Oyuncu')
           return (
             <div key={m.id} className={'msj-satir ' + (benimMi ? 'msj-ben' : 'msj-diger')}>
-              {!benimMi && <Avatar p={p} />}
+              <Avatar p={p} />
               <div className={'balon ' + (benimMi ? 'balon-ben' : 'balon-diger')}>
-                {!benimMi && <div className="balon-ad">{ad}</div>}
+                <div className="balon-ad">{ad}</div>
                 <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
                 <div className="balon-saat">{saat(m.created_at)}</div>
               </div>
