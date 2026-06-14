@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
+import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
@@ -11,7 +12,7 @@ const inceleButon = { background: 'transparent', border: '1px solid #e8b923', co
 
 function masaAcikMi(m) {
   if (m.durum !== 'Acik') return false
-  if (m.bitis_zamani && new Date(m.bitis_zamani).getTime() <= Date.now()) return false
+  if (m.bitis_zamani && zamanMs(m.bitis_zamani) <= Date.now()) return false
   return true
 }
 
@@ -56,7 +57,7 @@ export default function MasaListesi() {
     if (digerIdler.length) {
       const { data: digerMasalar } = await supabase.from('masalar')
         .select('id,bitis_zamani').in('id', digerIdler).eq('durum', 'Acik')
-      const aktifKatilimVar = (digerMasalar || []).some(m => !m.bitis_zamani || new Date(m.bitis_zamani).getTime() > Date.now())
+      const aktifKatilimVar = (digerMasalar || []).some(m => !m.bitis_zamani || zamanMs(m.bitis_zamani) > Date.now())
       if (aktifKatilimVar) return alert('Aynı anda yalnızca bir masaya katılabilirsin. Önce mevcut masadan çıkman gerekiyor.')
     }
 

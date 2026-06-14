@@ -5,6 +5,7 @@ import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import Durum from '../Durum'
 import { konumAl, mesafeKm } from '../utils/konum'
+import { zamanMs } from '../utils/zaman'
 import { onay } from '../utils/onay'
 
 const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
@@ -38,7 +39,7 @@ export default function MasaDetay() {
 
     const { data: m } = await supabase.from('masalar').select('*').eq('id', id).single()
     let masaSon = m
-    if (m && uid === m.acan_id && m.durum === 'Acik' && m.bitis_zamani && new Date(m.bitis_zamani).getTime() < Date.now()) {
+    if (m && uid === m.acan_id && m.durum === 'Acik' && m.bitis_zamani && zamanMs(m.bitis_zamani) < Date.now()) {
       await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
       masaSon = { ...m, durum: 'Kapali' }
     }
