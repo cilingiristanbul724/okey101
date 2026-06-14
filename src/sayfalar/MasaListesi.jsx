@@ -7,6 +7,12 @@ import Ikon from '../Ikon'
 
 const griButon = { background: '#6b7280' }
 
+function masaAcikMi(m) {
+  if (m.durum !== 'Acik') return false
+  if (m.bitis_zamani && new Date(m.bitis_zamani).getTime() <= Date.now()) return false
+  return true
+}
+
 export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [konum, setKonum] = useState(null)
@@ -33,6 +39,7 @@ export default function MasaListesi() {
   }
 
   const liste = masalar
+    .filter(masaAcikMi)
     .filter(m => anadoluYakasindaMi(m.enlem, m.boylam))
     .map(m => ({
       ...m,
@@ -52,9 +59,10 @@ export default function MasaListesi() {
       {liste.map(m => (
         <div key={m.id} className="kart">
           <div className="kart-bas">
-            <b>{m.mekan_adi || 'Masa'}</b>
+            <b>{m.baslik || m.mekan_adi || 'Masa'}</b>
             <GeriSayim bitis={m.bitis_zamani} />
           </div>
+          {m.baslik && m.mekan_adi && <div className="ipucu">{m.mekan_adi}</div>}
           <div>{m.adres}</div>
           <div>Aranan kişi: {m.aranan_kisi}</div>
           {m.uzaklik != null && (

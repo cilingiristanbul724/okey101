@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Link, NavLink } from 'react-router-dom'
 import Ikon from './Ikon'
+import { useKalpAtisi } from './utils/kalp'
 import Giris from './sayfalar/Giris'
 import MasaListesi from './sayfalar/MasaListesi'
 import MasaAc from './sayfalar/MasaAc'
@@ -11,6 +12,7 @@ import MesajKutusu from './sayfalar/MesajKutusu'
 import OzelSohbet from './sayfalar/OzelSohbet'
 
 export default function App() {
+  useKalpAtisi()
   return (
     <BrowserRouter basename="/okey101">
       <header className="ust-bar">

@@ -1,0 +1,23 @@
+.secim-grup { display: flex; gap: 8px; margin: 7px 0; }
+.secim-btn { flex: 1; margin: 0; background: #0c3325; border: 1px solid #1c5a42; color: #eaf3ee; }
+.secim-aktif { background: linear-gradient(180deg, #e8b923, #c99a12); color: #2a2200; border-color: #e8b923; }
+
+.durum { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 700; }
+.durum-lamba { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.durum-on { color: #4ade80; }
+.durum-on .durum-lamba { background: #22c55e; box-shadow: 0 0 6px #22c55e; }
+.durum-off { color: #fca5a5; }
+.durum-off .durum-lamba { background: #ef4444; box-shadow: 0 0 5px #ef4444; }
+
+.sohbet-bas { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.sohbet-temizle { margin: 0; padding: 7px 12px; font-size: 13px; }
+
+.sohbet-govde .msj-satir { display: flex; align-items: flex-end; gap: 8px; max-width: 88%; }
+.sohbet-govde .msj-satir.msj-ben { align-self: flex-end; flex-direction: row-reverse; }
+.sohbet-govde .msj-satir.msj-diger { align-self: flex-start; }
+.sohbet-govde .msj-satir .balon { max-width: 100%; }
+.msj-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; border: 1px solid #1c5a42; flex-shrink: 0; }
+.msj-avatar-bos { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #16a34a, #e8b923); color: #07261b; font-weight: 800; font-size: 13px; }
+
+.ozel-bas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ozel-bas h2 { margin: 6px 0; }
