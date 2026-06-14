@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { kufurTemizle } from '../utils/kufur'
 import { engellenenleriGetir } from '../utils/moderasyon'
+import { onay } from '../utils/onay'
 import EmojiSec from '../EmojiSec'
 
 function MesajIcerigi({ metin }) {
@@ -84,7 +85,8 @@ export default function Chat({ masaId, sahibiMiyim }) {
   }
 
   async function temizle() {
-    if (!window.confirm('Tüm masa sohbeti silinsin mi?')) return
+    const ok = await onay('Tüm masa sohbeti silinsin mi? Bu işlem geri alınamaz.', { baslik: 'Sohbeti Temizle', onayMetin: 'Sil', tehlike: true })
+    if (!ok) return
     const { error } = await supabase.from('mesajlar').delete().eq('masa_id', masaId)
     if (error) return alert('Silinemedi: ' + error.message)
     setMesajlar([])

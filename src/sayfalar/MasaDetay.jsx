@@ -5,6 +5,7 @@ import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import Durum from '../Durum'
 import { konumAl, mesafeKm } from '../utils/konum'
+import { onay } from '../utils/onay'
 
 const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
@@ -111,7 +112,8 @@ export default function MasaDetay() {
     }
   }
   async function masayiKapat() {
-    if (!window.confirm('Masayı kapatmak istediğine emin misin?')) return
+    const ok = await onay('Masayı kapatmak istediğine emin misin?', { baslik: 'Masayı Kapat', onayMetin: 'Kapat', tehlike: true })
+    if (!ok) return
     await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
     yukle()
   }
