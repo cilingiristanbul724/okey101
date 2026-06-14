@@ -5,7 +5,7 @@ import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
 
-const griButon = { background: '#6b7280' }
+const inceleButon = { background: 'transparent', border: '1px solid #e8b923', color: '#e8b923', boxShadow: 'none' }
 
 function masaAcikMi(m) {
   if (m.durum !== 'Acik') return false
@@ -79,7 +79,7 @@ export default function MasaListesi() {
       {konumDurum && <p className="ipucu">{konumDurum}</p>}
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
       {liste.map(m => (
-        <div key={m.id} className="kart">
+        <div key={m.id} className="kart kart-masa">
           <div className="kart-bas">
             <b>{m.baslik || m.mekan_adi || 'Masa'}</b>
             <GeriSayim bitis={m.bitis_zamani} />
@@ -90,15 +90,17 @@ export default function MasaListesi() {
           {m.uzaklik != null && (
             <div className="mesafe"><Ikon ad="pin" boyut={14} /> {m.uzaklik.toFixed(1)} km uzaklıkta</div>
           )}
-          {m.notu && <div>Not: {m.notu}</div>}
-          {m.benim ? (
-            <span className="rozet rozet-yesil">Senin masan</span>
-          ) : m.katildim ? (
-            <span className="rozet rozet-yesil">Katıldın</span>
-          ) : (
-            <button onClick={() => katil(m.id)}>Katıl</button>
-          )}
-          <Link to={'/masa/' + m.id}><button style={griButon}>Detay</button></Link>
+          {m.notu && <div className="kart-not">Not: {m.notu}</div>}
+          <div className="kart-aksiyon">
+            {m.benim ? (
+              <span className="rozet rozet-yesil">Senin masan</span>
+            ) : m.katildim ? (
+              <span className="rozet rozet-yesil">Katıldın</span>
+            ) : (
+              <button onClick={() => katil(m.id)}>Katıl</button>
+            )}
+            <Link to={'/masa/' + m.id}><button style={inceleButon}>İncele</button></Link>
+          </div>
         </div>
       ))}
     </div>

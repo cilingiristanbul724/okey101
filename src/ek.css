@@ -55,3 +55,72 @@
 *::-webkit-scrollbar-thumb { background: #1c5a42; border-radius: 999px; }
 *::-webkit-scrollbar-thumb:hover { background: #25c07d; }
 *::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
+
+/* === Trend yazi tipi === */
+body { font-family: 'Plus Jakarta Sans', -apple-system, system-ui, 'Segoe UI', Roboto, Arial, sans-serif; }
+.sayfa h2, .sayfa h3, .marka, .marka-101, button, input, select { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.sayfa h2 { letter-spacing: -.4px; font-weight: 800; }
+.sayfa h3 { font-weight: 700; }
+
+/* === Logo okey taslari (oynayan animasyon) === */
+.okey-taslar { display: inline-flex; gap: 3px; }
+.okey-tas {
+  width: 21px; height: 27px; border-radius: 5px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 900; line-height: 1;
+  background: linear-gradient(180deg, #fffdf6, #e9e1cd);
+  border: 1px solid #d6cab0;
+  box-shadow: 0 2px 5px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.9), inset 0 -2px 3px rgba(150,130,90,.25);
+  transform-origin: bottom center;
+  animation: tasOyna 2.6s ease-in-out infinite;
+}
+.tas-kirmizi { color: #d62828; }
+.tas-siyah { color: #18181b; }
+.tas-mavi { color: #1d4ed8; }
+.tas-sari { color: #c98a00; }
+.okey-taslar.sol .okey-tas:nth-child(2) { animation-delay: .5s; }
+.okey-taslar.sag .okey-tas:nth-child(1) { animation-delay: .8s; }
+.okey-taslar.sag .okey-tas:nth-child(2) { animation-delay: 1.2s; }
+@keyframes tasOyna {
+  0%, 100% { transform: translateY(0) rotate(-5deg); }
+  30% { transform: translateY(-4px) rotate(4deg); }
+  60% { transform: translateY(0) rotate(-2deg); }
+  80% { transform: translateY(-2px) rotate(3deg); }
+}
+@media (max-width: 430px) {
+  .tas-ek { display: none; }
+  .marka { font-size: 20px; gap: 6px; }
+}
+
+/* === Emoji secici === */
+.emoji-sar { position: relative; display: flex; align-items: center; }
+.emoji-ac {
+  margin: 0; padding: 0; width: 44px; height: 44px; flex-shrink: 0;
+  background: #0c3325; border: 1px solid #1c5a42; border-radius: 12px;
+  font-size: 20px; box-shadow: none; line-height: 1;
+}
+.emoji-ac:hover { filter: none; background: #114433; }
+.emoji-panel {
+  position: absolute; bottom: 54px; right: 0; z-index: 1500;
+  width: 266px; max-height: 214px; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+  padding: 8px; border-radius: 14px;
+  background: #0d3527; border: 1px solid #1c5a42;
+  box-shadow: 0 10px 30px rgba(0,0,0,.5);
+}
+.emoji-oge {
+  margin: 0; padding: 0; width: 100%; aspect-ratio: 1;
+  background: transparent; border: none; box-shadow: none;
+  font-size: 20px; cursor: pointer; border-radius: 8px; line-height: 1;
+}
+.emoji-oge:hover { background: #1c5a42; filter: none; }
+
+/* === Masa kartlari: ortalanmis, dengeli dagilim === */
+.kart-masa { text-align: center; }
+.kart-masa .kart-bas { justify-content: center; gap: 12px; margin-bottom: 8px; }
+.kart-masa .kart-bas b { font-size: 17px; }
+.kart-masa .mesafe { justify-content: center; }
+.kart-masa > div { margin: 2px 0; }
+.kart-not { color: #9fb8ab; font-size: 13px; }
+.kart-aksiyon { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 12px; }
+.kart-aksiyon button { margin: 0; }
