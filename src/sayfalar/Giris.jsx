@@ -155,6 +155,11 @@ export default function Giris() {
 
   return (
     <div className="sayfa">
+      <div className="giris-tanitim">
+        <p>🀄 <b>101 RakipBul</b> — yakınındaki oyuncularla <b>yüz yüze</b> okey ve 101 oynamak için buluş. Çevrimiçi oyun değil, gerçek masa!</p>
+        <Link to="/hakkinda">Nasıl çalışır?</Link>
+      </div>
+
       <h2>{mod === 'giris' ? 'Giriş Yap' : 'Kayıt Ol'}</h2>
 
       {mod === 'kayit' && (

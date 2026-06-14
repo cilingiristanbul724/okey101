@@ -36,6 +36,11 @@ export default function MasaAc() {
     <div className="sayfa">
       <h2>Masa Aç <span className="altin">(eksik oyuncu aranıyor)</span></h2>
 
+      <div className="masa-uyari">
+        <b>📍 Bu bir fiziksel buluşma ilanıdır.</b>
+        <p>Açtığın masa, belirttiğin mekanda <b>yüz yüze</b> okey/101 oynamak içindir — sitede online oyun oynanmaz. Yakınındaki oyuncular ilanı görüp katılma talebi gönderecek.</p>
+      </div>
+
       <label>Masa başlığı</label>
       <input value={baslik} onChange={e => setBaslik(e.target.value)} placeholder="Örn. ACİL 2 KİŞİ ARANIYOR YER PENDİK" />
 
