@@ -117,8 +117,10 @@ export default function MasaDetay() {
   async function masayiKapat() {
     const ok = await onay('Masayı kapatmak istediğine emin misin?', { baslik: 'Masayı Kapat', onayMetin: 'Kapat', tehlike: true })
     if (!ok) return
-    await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
-    yukle()
+    const { error } = await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
+    if (error) return alert('Kapatılamadı: ' + error.message)
+    alert('Masa kapatıldı.')
+    navigate('/')
   }
   async function duzenleKaydet() {
     const sure = Number(yeniSure) || 30
