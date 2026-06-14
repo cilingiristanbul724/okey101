@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
+import Tanitim from '../Tanitim'
 
 const inceleButon = { background: 'transparent', border: '1px solid #e8b923', color: '#e8b923', boxShadow: 'none' }
 
@@ -75,6 +76,7 @@ export default function MasaListesi() {
 
   return (
     <div className="sayfa">
+      <Tanitim />
       <h2>Açık Masalar — İstanbul Anadolu Yakası</h2>
       {konumDurum && <p className="ipucu">{konumDurum}</p>}
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
