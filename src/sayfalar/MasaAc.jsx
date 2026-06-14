@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { konumAl, anadoluYakasindaMi } from '../utils/konum'
-
-const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
+import KonumSecici from '../KonumSecici'
 
 export default function MasaAc() {
   const [arananKisi, setArananKisi] = useState(1)
@@ -13,21 +11,7 @@ export default function MasaAc() {
   const [enlem, setEnlem] = useState(null)
   const [boylam, setBoylam] = useState(null)
   const [notu, setNotu] = useState('')
-  const [konumDurum, setKonumDurum] = useState('')
   const navigate = useNavigate()
-
-  async function buradayim() {
-    setKonumDurum('Konum alınıyor...')
-    try {
-      const k = await konumAl()
-      setEnlem(k.enlem); setBoylam(k.boylam)
-      setKonumDurum(anadoluYakasindaMi(k.enlem, k.boylam)
-        ? '📍 Konumun işaretlendi ✅'
-        : '⚠️ Konumun İstanbul Anadolu Yakası dışında görünüyor. Pilot bölge şimdilik sadece Anadolu Yakası.')
-    } catch (e) {
-      setKonumDurum('Konum alınamadı: ' + e.message)
-    }
-  }
 
   async function masaAc() {
     const res = await supabase.auth.getUser()
@@ -62,8 +46,7 @@ export default function MasaAc() {
       <label>Açık adres</label>
       <input value={adres} onChange={e => setAdres(e.target.value)} placeholder="Mahalle, cadde, no..." />
       <label>Konum</label>
-      <button onClick={buradayim} style={yesilButon}>📍 Buradayım (konumu işaretle)</button>
-      {konumDurum && <p className="ipucu">{konumDurum}</p>}
+      <KonumSecici enlem={enlem} boylam={boylam} onDegis={(la, lo) => { setEnlem(la); setBoylam(lo) }} />
       <label>Not</label>
       <input value={notu} onChange={e => setNotu(e.target.value)} />
       <button onClick={masaAc}>İlanı Yayınla</button>
