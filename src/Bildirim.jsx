@@ -41,21 +41,28 @@ export default function Bildirim() {
     width: 'min(440px, calc(100vw - 24px))', pointerEvents: 'none',
   }
 
+  function kartStil(tip) {
+    return {
+      pointerEvents: 'auto', display: 'flex', alignItems: 'flex-start', gap: '10px',
+      padding: '13px 14px', borderRadius: '14px', cursor: 'pointer',
+      background: 'linear-gradient(160deg,#0e3a2a,#0a2c20)', border: '1px solid #1c5a42',
+      borderLeft: '4px solid ' + RENK[tip], boxShadow: '0 10px 30px rgba(0,0,0,.45)',
+      color: '#eaf3ee', fontSize: '14px', lineHeight: 1.45, fontWeight: 600,
+      animation: 'bildirGir .28s ease-out',
+    }
+  }
+  const ikonStil = { fontSize: '17px', lineHeight: 1.2, flexShrink: 0 }
+  const metinStil = { flex: 1, wordBreak: 'break-word' }
+  const kapatStil = { color: '#7fa394', fontSize: '18px', lineHeight: 1, flexShrink: 0 }
+
   return (
     <div style={sarici}>
       <style>{'@keyframes bildirGir{from{opacity:0;transform:translateY(-14px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}'}</style>
       {liste.map(t => (
-        <div key={t.id} onClick={() => kapat(t.id)} style=
-          pointerEvents: 'auto', display: 'flex', alignItems: 'flex-start', gap: '10px',
-          padding: '13px 14px', borderRadius: '14px', cursor: 'pointer',
-          background: 'linear-gradient(160deg,#0e3a2a,#0a2c20)', border: '1px solid #1c5a42',
-          borderLeft: '4px solid ' + RENK[t.tip], boxShadow: '0 10px 30px rgba(0,0,0,.45)',
-          color: '#eaf3ee', fontSize: '14px', lineHeight: 1.45, fontWeight: 600,
-          animation: 'bildirGir .28s ease-out',
-        >
-          <span style= fontSize: '17px', lineHeight: 1.2, flexShrink: 0 >{IKON[t.tip]}</span>
-          <span style= flex: 1, wordBreak: 'break-word' >{t.mesaj}</span>
-          <span style= color: '#7fa394', fontSize: '18px', lineHeight: 1, flexShrink: 0 >×</span>
+        <div key={t.id} onClick={() => kapat(t.id)} style={kartStil(t.tip)}>
+          <span style={ikonStil}>{IKON[t.tip]}</span>
+          <span style={metinStil}>{t.mesaj}</span>
+          <span style={kapatStil}>×</span>
         </div>
       ))}
     </div>
