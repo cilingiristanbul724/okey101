@@ -153,3 +153,28 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
   .adim b { flex: 1; }
   .adim-ac { flex-basis: 100%; }
 }
+
+/* === Alt bilgi (footer) === */
+.alt-bilgi { text-align: center; padding: 24px 16px 90px; color: #8aa99c; font-size: 12.5px; line-height: 1.7; border-top: 1px solid rgba(28,90,66,.5); margin-top: 24px; }
+.alt-bilgi .alt-slogan { display: block; margin-bottom: 8px; }
+.alt-bilgi .alt-marka { color: #eaf3ee; font-weight: 800; }
+.alt-bilgi a { color: #cfe3d8; text-decoration: none; margin: 0 8px; font-weight: 600; }
+.alt-bilgi a:hover { color: #e8b923; text-decoration: underline; }
+
+/* === Giris sayfasi tanitim === */
+.giris-tanitim { background: rgba(255,255,255,.04); border: 1px solid #1c5a42; border-radius: 14px; padding: 14px; margin-bottom: 16px; text-align: center; }
+.giris-tanitim p { margin: 0 0 6px; color: #cfe3d8; font-size: 13.5px; line-height: 1.5; }
+.giris-tanitim b { color: #ffd84d; }
+.giris-tanitim a { color: #4ade80; font-weight: 700; text-decoration: none; font-size: 13px; }
+.giris-tanitim a:hover { text-decoration: underline; }
+
+/* === Masa ac uyari === */
+.masa-uyari { background: rgba(232,185,35,.1); border: 1px solid rgba(232,185,35,.45); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.masa-uyari b { color: #ffe08a; font-size: 14px; }
+.masa-uyari p { margin: 4px 0 0; color: #cfe3d8; font-size: 12.5px; line-height: 1.45; }
+
+/* === Hakkinda sayfasi === */
+.hakkinda-blok { margin: 6px 0 18px; }
+.hakkinda-blok h3 { margin-bottom: 6px; }
+.hakkinda-blok p { color: #cfe3d8; line-height: 1.6; font-size: 14px; margin: 0; }
+.hakkinda-blok ul { color: #cfe3d8; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 4px 0 0; }
