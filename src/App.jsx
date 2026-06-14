@@ -16,6 +16,7 @@ import MesajKutusu from './sayfalar/MesajKutusu'
 import OzelSohbet from './sayfalar/OzelSohbet'
 import UyeProfil from './sayfalar/UyeProfil'
 import Sozlesme from './sayfalar/Sozlesme'
+import Hakkinda from './sayfalar/Hakkinda'
 
 // Giris yapmis ama profilini (kullanici adi) tamamlamamis kullaniciyi profile yonlendirir
 function KurulumKontrol() {
@@ -99,9 +100,16 @@ export default function App() {
           <Route path="/ozel/:digerId" element={<OzelSohbet />} />
           <Route path="/uye/:id" element={<UyeProfil />} />
           <Route path="/sozlesme" element={<Sozlesme />} />
+          <Route path="/hakkinda" element={<Hakkinda />} />
           <Route path="/profil" element={<Profil />} />
           <Route path="/giris" element={<Giris />} />
         </Routes>
+
+        <footer className="alt-bilgi">
+          <span className="alt-slogan"><b className="alt-marka">101 RakipBul</b> — gerçek hayatta okey &amp; 101 buluşma platformu</span>
+          <Link to="/hakkinda">Nasıl çalışır?</Link>
+          <Link to="/sozlesme">Kullanım Şartları &amp; KVKK</Link>
+        </footer>
       </main>
 
       <AltMenu />
