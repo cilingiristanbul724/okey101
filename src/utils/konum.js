@@ -30,20 +30,42 @@ export function mesafeKm(lat1, lon1, lat2, lon2) {
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
 }
 
-// Tarayıcı/cihazdan anlık konum al (GPS iznini tetikler)
+function hataMesaji(err) {
+  if (err && err.code === 1) return 'Konum izni reddedildi. Telefon/tarayıcı ayarlarından bu siteye konum izni ver.'
+  if (err && err.code === 2) return 'Konum bilgisi alınamadı (sinyal/GPS yok).'
+  if (err && err.code === 3) return 'Konum isteği zaman aşımına uğradı. Tekrar dene.'
+  return 'Konum alınamadı.'
+}
+
+// Tarayıcı/cihazdan anlık konum al (GPS iznini tetikler).
+// Yuksek hassasiyet basarisiz olursa dusuk hassasiyetle tekrar dener.
 export function konumAl() {
   return new Promise((resolve, reject) => {
     if (!navigator.geolocation) return reject(new Error('Cihazın/tarayıcın konum desteklemiyor.'))
-    navigator.geolocation.getCurrentPosition(
-      pos => resolve({ enlem: pos.coords.latitude, boylam: pos.coords.longitude, dogruluk: pos.coords.accuracy }),
-      err => {
-        let m = 'Konum alınamadı.'
-        if (err.code === 1) m = 'Konum izni reddedildi. Telefon/tarayıcı ayarlarından bu siteye konum izni ver.'
-        else if (err.code === 2) m = 'Konum bilgisi alınamadı (sinyal/GPS yok).'
-        else if (err.code === 3) m = 'Konum isteği zaman aşımına uğradı. Tekrar dene.'
-        reject(new Error(m))
-      },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-    )
+
+    const basari = pos => resolve({
+      enlem: pos.coords.latitude,
+      boylam: pos.coords.longitude,
+      dogruluk: pos.coords.accuracy,
+    })
+
+    function dene(yuksek, sonDeneme) {
+      navigator.geolocation.getCurrentPosition(
+        basari,
+        err => {
+          // Izin reddi disindaki hatalarda dusuk hassasiyetle bir kez daha dene
+          if (!sonDeneme && err && err.code !== 1) {
+            dene(false, true)
+          } else {
+            reject(new Error(hataMesaji(err)))
+          }
+        },
+        yuksek
+          ? { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+          : { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 }
+      )
+    }
+
+    dene(true, false)
   })
 }
