@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { kufurTemizle } from '../utils/kufur'
 import { engellenenleriGetir } from '../utils/moderasyon'
+import EmojiSec from '../EmojiSec'
 
 function MesajIcerigi({ metin }) {
   const temiz = kufurTemizle(metin)
@@ -110,6 +111,7 @@ export default function Lobi() {
         </div>
         {benimId ? (
           <div className="sohbet-giris">
+            <EmojiSec onSec={e => setMetin(m => m + e)} />
             <input value={metin} onChange={e => setMetin(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Herkese yaz..." />
             <button onClick={gonder}>Gönder</button>
