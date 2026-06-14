@@ -101,17 +101,18 @@ body { font-family: 'Plus Jakarta Sans', -apple-system, system-ui, 'Segoe UI', R
 }
 .emoji-ac:hover { filter: none; background: #114433; }
 .emoji-panel {
-  position: absolute; bottom: 54px; right: 0; z-index: 1500;
-  width: 266px; max-height: 214px; overflow-y: auto;
-  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+  position: absolute; bottom: 54px; left: 0; z-index: 1500;
+  width: min(290px, calc(100vw - 28px)); max-height: 214px; overflow-y: auto;
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px;
   padding: 8px; border-radius: 14px;
   background: #0d3527; border: 1px solid #1c5a42;
   box-shadow: 0 10px 30px rgba(0,0,0,.5);
 }
 .emoji-oge {
-  margin: 0; padding: 0; width: 100%; aspect-ratio: 1;
+  margin: 0; padding: 0; width: 100%; aspect-ratio: 1; min-width: 0;
   background: transparent; border: none; box-shadow: none;
-  font-size: 20px; cursor: pointer; border-radius: 8px; line-height: 1;
+  font-size: 19px; cursor: pointer; border-radius: 8px; line-height: 1;
+  display: flex; align-items: center; justify-content: center;
 }
 .emoji-oge:hover { background: #1c5a42; filter: none; }
 
