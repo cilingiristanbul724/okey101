@@ -20,6 +20,13 @@ export default function MasaAc() {
     if (!user) return alert('Önce giriş yapmalısın!')
     if (!mekanAdi.trim() || !adres.trim()) return alert('Mekan adı ve açık adres zorunlu.')
     if (enlem == null || boylam == null) return alert('Lütfen "Buradayım" ile konumunu işaretle.')
+
+    // Bir uye ayni anda yalnizca 1 acik masa acabilir
+    const { data: acikMasalarim } = await supabase.from('masalar')
+      .select('id, bitis_zamani').eq('acan_id', user.id).eq('durum', 'Acik')
+    const aktifMasamVar = (acikMasalarim || []).some(m => !m.bitis_zamani || new Date(m.bitis_zamani).getTime() > Date.now())
+    if (aktifMasamVar) return alert('Zaten açık bir masan var. Yeni masa açmadan önce mevcut masanı kapatmalısın.')
+
     const bitis = new Date(Date.now() + sure * 60000).toISOString()
     const { error } = await supabase.from('masalar').insert({
       acan_id: user.id, baslik: baslik.trim() || null,
