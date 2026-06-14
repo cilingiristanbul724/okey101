@@ -36,7 +36,6 @@ body {
 .marka-101 {
   display: inline-flex; align-items: center; justify-content: center;
   min-width: 42px; height: 38px; padding: 0 11px;
-  background: linear-gradient(150deg, #fbe display, #f6d65b 18%, #e8b923 55%, #c99a12);
   background: linear-gradient(150deg, #fef0a8, #f6d65b 20%, #e8b923 58%, #c99a12);
   color: #2a2200; font-size: 21px; font-weight: 900; letter-spacing: 1.5px;
   border-radius: 12px; border: 1px solid #f3da6e;
