@@ -39,6 +39,13 @@ export default function OzelSohbet() {
     if (p) setDiger(p)
   }
 
+  async function arkadasKontrol(uid) {
+    const { data } = await supabase.from('arkadaslar').select('id')
+      .eq('durum', 'Kabul')
+      .or('and(isteyen_id.eq.' + uid + ',istenen_id.eq.' + digerId + '),and(isteyen_id.eq.' + digerId + ',istenen_id.eq.' + uid + ')')
+    setArkadasMi(!!(data && data.length > 0))
+  }
+
   useEffect(() => {
     async function baslat() {
       const res = await supabase.auth.getUser()
@@ -46,11 +53,7 @@ export default function OzelSohbet() {
       setBenimId(uid)
       await digerGetir()
       if (uid) {
-        const { data: ark } = await supabase.from('arkadaslar').select('durum')
-          .eq('durum', 'Kabul')
-          .or('and(isteyen_id.eq.' + uid + ',istenen_id.eq.' + digerId + '),and(isteyen_id.eq.' + digerId + ',istenen_id.eq.' + uid + ')')
-          .maybeSingle()
-        setArkadasMi(!!ark)
+        await arkadasKontrol(uid)
         yukle(uid)
       }
     }
