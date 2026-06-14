@@ -2,10 +2,14 @@ import { supabase } from '../supabaseClient'
 
 // ============================================================
 // 1) Terminalde çalıştır:  npx web-push generate-vapid-keys
+//    (veya https://vapidkeys.com)
 // 2) çıkan "Public Key" değerini aşağıya yapıştır.
 //    "Private Key" ise Supabase Edge Function secret'ına (VAPID_PRIVATE) gider.
 // ============================================================
-export const VAPID_PUBLIC = 'BI3paEcn28-PGqH2t0_T_YDMx6_iwi75x29lNg9yg8a2bBvl2hobUmYPz40Xhz_Q8SDdRid4vA0dL-o3Y_z-rEw'
+export const VAPID_PUBLIC = 'BURAYA_VAPID_PUBLIC_KEY_YAPISTIR'
+
+// Supabase'de deploy edilen Edge Function'ın adı (slug).
+export const PUSH_FN = 'clever-action'
 
 export function pushDestekleniyorMu() {
   return typeof navigator !== 'undefined' &&
@@ -58,7 +62,7 @@ export async function pushAboneOl(kullaniciId) {
   return true
 }
 
-// İzin zaten verilmişse, aboneliği sessizce tazele (cihaz/endpoint değişmiş olabilir)
+// İzin zaten verilmişse, aboneliği sessizce tazele
 export async function pushSessizYenile(kullaniciId) {
   try {
     if (!pushDestekleniyorMu() || !vapidHazirMi() || !kullaniciId) return
@@ -66,5 +70,15 @@ export async function pushSessizYenile(kullaniciId) {
     await pushAboneOl(kullaniciId)
   } catch (e) {
     // sessiz geç
+  }
+}
+
+// Insert sonrası push gönderimini tetikler (Database Webhook yerine, doğrudan çağırır).
+// Ana işlemi bloklamaz; hata olsa bile sessizce geçer.
+export async function pushTetikle(tablo, kayit) {
+  try {
+    await supabase.functions.invoke(PUSH_FN, { body: { table: tablo, record: kayit } })
+  } catch (e) {
+    // sessiz
   }
 }

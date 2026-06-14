@@ -1,21 +1,22 @@
 // ============================================================
 // 101 RakipBul - Web Push gonderici (Supabase Edge Function)
 //
-// KURULUM:
-//   1) npx web-push generate-vapid-keys  (Public + Private key uretir)
-//   2) Public key -> src/utils/push.js icindeki VAPID_PUBLIC
-//   3) Secret'lari ayarla:
-//        supabase secrets set VAPID_PUBLIC="..." VAPID_PRIVATE="..." VAPID_SUBJECT="mailto:bombilla3434@gmail.com"
-//   4) Deploy:
-//        supabase functions deploy push-gonder --no-verify-jwt
-//   5) Supabase > Database > Webhooks ile iki webhook olustur (INSERT):
-//        - tablo: masa_oyunculari  -> POST  <function-url>
-//        - tablo: mesajlar         -> POST  <function-url>
-//      (SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY otomatik gelir.)
+// Bu fonksiyon hem Database Webhook'tan hem de uygulamadan
+// supabase.functions.invoke ile cagrilabilir. Body: { table, record }
+//
+// SECRETS (Edge Functions > Secrets):
+//   VAPID_PUBLIC, VAPID_PRIVATE, VAPID_SUBJECT (mailto:...)
+//   SUPABASE_URL ve SUPABASE_SERVICE_ROLE_KEY otomatik gelir.
 // ============================================================
 
 import webpush from 'npm:web-push@3.6.7'
 import { createClient } from 'npm:@supabase/supabase-js@2'
+
+const cors = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SERVICE_ROLE = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
@@ -48,11 +49,12 @@ async function gonder(kullaniciIdler: string[], yuk: Record<string, unknown>) {
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: cors })
   try {
     const olay = await req.json()
     const tablo: string = olay.table
     const kayit = olay.record
-    if (!kayit) return new Response('kayit yok', { status: 200 })
+    if (!kayit) return new Response('kayit yok', { status: 200, headers: cors })
 
     if (tablo === 'masa_oyunculari') {
       const { data: masa } = await db.from('masalar').select('acan_id').eq('id', kayit.masa_id).single()
@@ -83,8 +85,8 @@ Deno.serve(async (req) => {
       })
     }
 
-    return new Response('ok', { status: 200 })
+    return new Response('ok', { status: 200, headers: cors })
   } catch (e) {
-    return new Response('hata: ' + (e as Error).message, { status: 200 })
+    return new Response('hata: ' + (e as Error).message, { status: 200, headers: cors })
   }
 })
