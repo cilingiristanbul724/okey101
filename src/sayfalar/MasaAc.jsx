@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { zamanMs } from '../utils/zaman'
 import KonumSecici from '../KonumSecici'
 
 export default function MasaAc() {
@@ -24,7 +25,7 @@ export default function MasaAc() {
     // Bir uye ayni anda yalnizca 1 acik masa acabilir
     const { data: acikMasalarim } = await supabase.from('masalar')
       .select('id, bitis_zamani').eq('acan_id', user.id).eq('durum', 'Acik')
-    const aktifMasamVar = (acikMasalarim || []).some(m => !m.bitis_zamani || new Date(m.bitis_zamani).getTime() > Date.now())
+    const aktifMasamVar = (acikMasalarim || []).some(m => !m.bitis_zamani || zamanMs(m.bitis_zamani) > Date.now())
     if (aktifMasamVar) return alert('Zaten açık bir masan var. Yeni masa açmadan önce mevcut masanı kapatmalısın.')
 
     const bitis = new Date(Date.now() + sure * 60000).toISOString()
