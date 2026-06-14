@@ -1,7 +1,11 @@
-create extension if not exists pgcrypto with schema extensions;
+alter table public.profiles add column if not exists kullanici_adi text;
+alter table public.profiles add column if not exists ad_soyad text;
+alter table public.profiles add column if not exists cinsiyet text;
+alter table public.profiles add column if not exists foto_url text;
+alter table public.profiles add column if not exists guvenlik_soru text;
+alter table public.profiles add column if not exists guvenlik_cevap text;
 
-alter table profiles add column if not exists guvenlik_soru text;
-alter table profiles add column if not exists guvenlik_cevap text;
+create extension if not exists pgcrypto with schema extensions;
 
 create or replace function guvenlik_kaydet(p_soru text, p_cevap text)
 returns void
@@ -10,7 +14,7 @@ security definer
 set search_path = public, extensions
 as $$
 begin
-  update profiles
+  update public.profiles
   set guvenlik_soru = p_soru,
       guvenlik_cevap = crypt(lower(trim(p_cevap)), gen_salt('bf'))
   where id = auth.uid();
@@ -23,7 +27,7 @@ language sql
 security definer
 set search_path = public
 as $$
-  select guvenlik_soru from profiles
+  select guvenlik_soru from public.profiles
   where lower(kullanici_adi) = lower(p_kullanici_adi)
   limit 1;
 $$;
@@ -39,7 +43,7 @@ declare
   v_hash text;
 begin
   select id, guvenlik_cevap into v_id, v_hash
-  from profiles
+  from public.profiles
   where lower(kullanici_adi) = lower(p_kullanici_adi)
   limit 1;
 
