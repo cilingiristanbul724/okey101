@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import Durum from '../Durum'
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -14,6 +15,7 @@ export default function Arkadaslar() {
   const [sonuclar, setSonuclar] = useState([])
   const [arkadaslar, setArkadaslar] = useState([])
   const [istekler, setIstekler] = useState([])
+  const [iliskiler, setIliskiler] = useState([])
 
   async function yukle() {
     const res = await supabase.auth.getUser()
@@ -22,7 +24,7 @@ export default function Arkadaslar() {
     if (!uid) return
 
     const { data: kabul } = await supabase.from('arkadaslar')
-      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url)')
+      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme)')
       .eq('durum', 'Kabul')
       .or('isteyen_id.eq.' + uid + ',istenen_id.eq.' + uid)
     setArkadaslar(kabul || [])
@@ -31,8 +33,19 @@ export default function Arkadaslar() {
       .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url)')
       .eq('durum', 'Beklemede').eq('istenen_id', uid)
     setIstekler(bekleyen || [])
+
+    const { data: rel } = await supabase.from('arkadaslar').select('isteyen_id,istenen_id,durum')
+      .or('isteyen_id.eq.' + uid + ',istenen_id.eq.' + uid)
+    setIliskiler(rel || [])
   }
   useEffect(() => { yukle() }, [])
+
+  function iliskiDurum(hedefId) {
+    const r = iliskiler.find(x =>
+      (x.isteyen_id === benimId && x.istenen_id === hedefId) ||
+      (x.isteyen_id === hedefId && x.istenen_id === benimId))
+    return r ? r.durum : null
+  }
 
   async function ara() {
     if (!arama.trim()) return
@@ -44,9 +57,14 @@ export default function Arkadaslar() {
   }
 
   async function istekGonder(istenenId) {
+    const d = iliskiDurum(istenenId)
+    if (d === 'Kabul') return alert('Zaten arkadaşsınız.')
+    if (d === 'Beklemede') return alert('Arkadaşlık isteği zaten var.')
     const { error } = await supabase.from('arkadaslar')
       .insert({ isteyen_id: benimId, istenen_id: istenenId, durum: 'Beklemede' })
-    alert(error ? 'Gönderilemedi (belki zaten var): ' + error.message : 'Arkadaşlık isteği gönderildi.')
+    if (error) return alert('Gönderilemedi: ' + error.message)
+    alert('Arkadaşlık isteği gönderildi.')
+    yukle()
   }
   async function kabulEt(satirId) {
     await supabase.from('arkadaslar').update({ durum: 'Kabul' }).eq('id', satirId)
@@ -63,6 +81,22 @@ export default function Arkadaslar() {
 
   if (!benimId) return <p className="sayfa">Arkadaş eklemek için giriş yapmalısın.</p>
 
+  const gorulen = new Set()
+  const benzersizArkadaslar = []
+  for (const a of arkadaslar) {
+    const k = diger(a)
+    if (!k || gorulen.has(k.id)) continue
+    gorulen.add(k.id)
+    benzersizArkadaslar.push({ rel: a, kisi: k })
+  }
+
+  function EkleButon({ p }) {
+    const d = iliskiDurum(p.id)
+    if (d === 'Kabul') return <span className="rozet rozet-yesil">✓ Arkadaş</span>
+    if (d === 'Beklemede') return <span className="ipucu">İstek gönderildi</span>
+    return <button onClick={() => istekGonder(p.id)} style= background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' >Ekle</button>
+  }
+
   return (
     <div className="sayfa">
       <h2>Arkadaşlar</h2>
@@ -76,7 +110,7 @@ export default function Arkadaslar() {
         <div key={p.id} className="kart satir">
           <Avatar p={p} />
           <div className="satir-icerik"><div>{p.kullanici_adi || p.ad_soyad}</div></div>
-          <button onClick={() => istekGonder(p.id)} className="btn-altin">Ekle</button>
+          <EkleButon p={p} />
         </div>
       ))}
 
@@ -94,17 +128,17 @@ export default function Arkadaslar() {
       ))}
 
       <h3>Arkadaşlarım</h3>
-      {arkadaslar.length === 0 && <p className="ipucu">Henüz arkadaşın yok.</p>}
-      {arkadaslar.map(a => {
-        const k = diger(a)
-        return (
-          <div key={a.id} className="kart satir">
-            <Avatar p={k} />
-            <div className="satir-icerik"><div>{(k && (k.kullanici_adi || k.ad_soyad)) || 'Arkadaş'}</div></div>
-            {k && <Link to={'/ozel/' + k.id}><button>Mesaj</button></Link>}
+      {benzersizArkadaslar.length === 0 && <p className="ipucu">Henüz arkadaşın yok.</p>}
+      {benzersizArkadaslar.map(({ rel, kisi }) => (
+        <div key={rel.id} className="kart satir">
+          <Avatar p={kisi} />
+          <div className="satir-icerik">
+            <div>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}</div>
+            <Durum sonGorulme={kisi.son_gorulme} />
           </div>
-        )
-      })}
+          <Link to={'/ozel/' + kisi.id}><button>Mesaj</button></Link>
+        </div>
+      ))}
     </div>
   )
 }

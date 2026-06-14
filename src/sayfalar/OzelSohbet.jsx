@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import Durum from '../Durum'
 
 function MesajIcerigi({ metin }) {
   const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
   return parcalar.map((p, i) => {
     if (/^https?:\/\//.test(p)) {
-      const harita = p.includes('/maps')
-      return <a key={i} href={p} target="_blank" rel="noreferrer">{harita ? '🧭 Yol tarifi al' : p}</a>
+      const haritaLinki = p.includes('/maps/dir') || p.includes('/maps?') || p.includes('maps.google')
+      return (
+        <a key={i} href={p} target="_blank" rel="noreferrer">
+          {haritaLinki ? '🧭 Yol tarifi al' : p}
+        </a>
+      )
     }
     return <span key={i}>{p}</span>
   })
@@ -29,13 +34,17 @@ export default function OzelSohbet() {
     setMesajlar(data || [])
   }
 
+  async function digerGetir() {
+    const { data: p } = await supabase.from('profiles').select('kullanici_adi, ad_soyad, foto_url, son_gorulme').eq('id', digerId).single()
+    if (p) setDiger(p)
+  }
+
   useEffect(() => {
     async function baslat() {
       const res = await supabase.auth.getUser()
       const uid = res.data.user ? res.data.user.id : null
       setBenimId(uid)
-      const { data: p } = await supabase.from('profiles').select('kullanici_adi, ad_soyad').eq('id', digerId).single()
-      setDiger(p)
+      await digerGetir()
       if (uid) {
         const { data: ark } = await supabase.from('arkadaslar').select('durum')
           .eq('durum', 'Kabul')
@@ -51,25 +60,35 @@ export default function OzelSohbet() {
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ozel_mesajlar' },
         () => supabase.auth.getUser().then(r => r.data.user && yukle(r.data.user.id)))
       .subscribe()
-    return () => { supabase.removeChannel(kanal) }
+
+    const z = setInterval(digerGetir, 30000)
+
+    return () => { supabase.removeChannel(kanal); clearInterval(z) }
   }, [digerId])
 
-  useEffect(() => { sonRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesajlar])
+  useEffect(() => {
+    sonRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [mesajlar])
 
   async function gonder() {
     if (!benimId || !metin.trim()) return
     await supabase.from('ozel_mesajlar').insert({ gonderen_id: benimId, alici_id: digerId, icerik: metin.trim() })
     setMetin('')
   }
-  function saat(t) { return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '' }
+  function saat(t) {
+    return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : ''
+  }
 
   if (!benimId) return <p className="sayfa">Giriş yapmalısın.</p>
 
   return (
     <div className="sayfa">
-      <h2>{diger ? (diger.kullanici_adi || diger.ad_soyad) : 'Özel Sohbet'}</h2>
+      <div className="ozel-bas">
+        <h2>{diger ? (diger.kullanici_adi || diger.ad_soyad) : 'Özel Sohbet'}</h2>
+        {diger && <Durum sonGorulme={diger.son_gorulme} />}
+      </div>
       {!arkadasMi && (
-        <div className="kart"><p className="ipucu">Mesajlaşabilmek için önce arkadaş olmanız gerekiyor. Arkadaşlık isteği kabul edilince mesaj gönderebilirsiniz.</p></div>
+        <div className="kart"><p className="ipucu">Mesajlaşabilmek için önce arkadaş olmanız gerekiyor.</p></div>
       )}
       <div className="sohbet-govde">
         {mesajlar.map(m => (
@@ -80,13 +99,13 @@ export default function OzelSohbet() {
         ))}
         <div ref={sonRef} />
       </div>
-      {arkadasMi ? (
+      {arkadasMi && (
         <div className="sohbet-giris">
           <input value={metin} onChange={e => setMetin(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Mesaj yaz..." />
           <button onClick={gonder}>Gönder</button>
         </div>
-      ) : null}
+      )}
     </div>
   )
 }
