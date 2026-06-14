@@ -17,6 +17,11 @@ export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [konum, setKonum] = useState(null)
   const [konumDurum, setKonumDurum] = useState('Konum alınıyor...')
+  const [benimId, setBenimId] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getUser().then(res => setBenimId(res.data.user ? res.data.user.id : null))
+  }, [])
 
   useEffect(() => {
     konumAl()
@@ -56,23 +61,30 @@ export default function MasaListesi() {
       <h2>Açık Masalar — İstanbul Anadolu Yakası</h2>
       {konumDurum && <p className="ipucu">{konumDurum}</p>}
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
-      {liste.map(m => (
-        <div key={m.id} className="kart">
-          <div className="kart-bas">
-            <b>{m.baslik || m.mekan_adi || 'Masa'}</b>
-            <GeriSayim bitis={m.bitis_zamani} />
+      {liste.map(m => {
+        const benimMasam = benimId && m.acan_id === benimId
+        return (
+          <div key={m.id} className="kart">
+            <div className="kart-bas">
+              <b>{m.baslik || m.mekan_adi || 'Masa'}</b>
+              <GeriSayim bitis={m.bitis_zamani} />
+            </div>
+            {m.baslik && m.mekan_adi && <div className="ipucu">{m.mekan_adi}</div>}
+            <div>{m.adres}</div>
+            <div>Aranan kişi: {m.aranan_kisi}</div>
+            {m.uzaklik != null && (
+              <div className="mesafe"><Ikon ad="pin" boyut={14} /> {m.uzaklik.toFixed(1)} km uzaklıkta</div>
+            )}
+            {m.notu && <div>Not: {m.notu}</div>}
+            {benimMasam ? (
+              <span className="rozet rozet-yesil">Senin masan</span>
+            ) : (
+              <button onClick={() => katil(m.id)}>Katıl</button>
+            )}
+            <Link to={'/masa/' + m.id}><button style={griButon}>Detay</button></Link>
           </div>
-          {m.baslik && m.mekan_adi && <div className="ipucu">{m.mekan_adi}</div>}
-          <div>{m.adres}</div>
-          <div>Aranan kişi: {m.aranan_kisi}</div>
-          {m.uzaklik != null && (
-            <div className="mesafe"><Ikon ad="pin" boyut={14} /> {m.uzaklik.toFixed(1)} km uzaklıkta</div>
-          )}
-          {m.notu && <div>Not: {m.notu}</div>}
-          <button onClick={() => katil(m.id)}>Katıl</button>
-          <Link to={'/masa/' + m.id}><button style={griButon}>Detay</button></Link>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
