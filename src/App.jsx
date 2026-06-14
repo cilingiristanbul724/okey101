@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Link, NavLink, useLocation, useNavigate }
 import { useEffect } from 'react'
 import Ikon from './Ikon'
 import FotoOnizleme from './FotoOnizleme'
+import Bildirim from './Bildirim'
 import { useKalpAtisi } from './utils/kalp'
 import { useBildirimler } from './utils/useBildirimler'
 import { supabase } from './supabaseClient'
@@ -68,6 +69,7 @@ export default function App() {
   useKalpAtisi()
   return (
     <BrowserRouter basename="/okey101">
+      <Bildirim />
       <FotoOnizleme />
       <KurulumKontrol />
       <header className="ust-bar">
