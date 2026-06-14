@@ -69,6 +69,34 @@ export default function Ikon({ ad, boyut = 24 }) {
           <circle cx="12" cy="10" r="3" />
         </svg>
       )
+    case 'kamera':
+      return (
+        <svg {...ortak}>
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
+          <circle cx="12" cy="13" r="4" />
+        </svg>
+      )
+    case 'erkek':
+      return (
+        <svg {...ortak}>
+          <circle cx="12" cy="8" r="4.5" />
+          <path d="M4 21v-1a8 8 0 0 1 16 0v1" />
+        </svg>
+      )
+    case 'kadin':
+      return (
+        <svg {...ortak}>
+          <circle cx="12" cy="7" r="4" />
+          <path d="M12 11c-3 0-5 3-5.5 10h11C17 14 15 11 12 11z" />
+        </svg>
+      )
+    case 'kullanici':
+      return (
+        <svg {...ortak}>
+          <circle cx="12" cy="7.5" r="4" />
+          <path d="M5 21a7 7 0 0 1 14 0" />
+        </svg>
+      )
     default:
       return null
   }
