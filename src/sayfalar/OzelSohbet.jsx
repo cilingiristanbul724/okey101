@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import Durum from '../Durum'
 import { kufurTemizle } from '../utils/kufur'
 import { aramizdaEngelVarMi } from '../utils/moderasyon'
+import EmojiSec from '../EmojiSec'
 
 function MesajIcerigi({ metin }) {
   const temiz = kufurTemizle(metin)
@@ -115,6 +116,7 @@ export default function OzelSohbet() {
       </div>
       {yazabilir && (
         <div className="sohbet-giris">
+          <EmojiSec onSec={e => setMetin(m => m + e)} />
           <input value={metin} onChange={e => setMetin(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Mesaj yaz..." />
           <button onClick={gonder}>Gönder</button>
