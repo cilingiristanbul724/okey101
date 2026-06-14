@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Durum from '../Durum'
+import { kufurTemizle } from '../utils/kufur'
+import { aramizdaEngelVarMi } from '../utils/moderasyon'
 
 function MesajIcerigi({ metin }) {
-  const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
+  const temiz = kufurTemizle(metin)
+  const parcalar = (temiz || '').split(/(https?:\/\/[^\s]+)/g)
   return parcalar.map((p, i) => {
     if (/^https?:\/\//.test(p)) {
       const haritaLinki = p.includes('/maps/dir') || p.includes('/maps?') || p.includes('maps.google')
@@ -24,6 +27,7 @@ export default function OzelSohbet() {
   const [mesajlar, setMesajlar] = useState([])
   const [diger, setDiger] = useState(null)
   const [arkadasMi, setArkadasMi] = useState(false)
+  const [engelli, setEngelli] = useState(false)
   const [metin, setMetin] = useState('')
   const sonRef = useRef(null)
 
@@ -54,6 +58,7 @@ export default function OzelSohbet() {
       await digerGetir()
       if (uid) {
         await arkadasKontrol(uid)
+        setEngelli(await aramizdaEngelVarMi(uid, digerId))
         yukle(uid)
       }
     }
@@ -74,7 +79,7 @@ export default function OzelSohbet() {
   }, [mesajlar])
 
   async function gonder() {
-    if (!benimId || !metin.trim()) return
+    if (!benimId || !metin.trim() || engelli) return
     await supabase.from('ozel_mesajlar').insert({ gonderen_id: benimId, alici_id: digerId, icerik: metin.trim() })
     setMetin('')
   }
@@ -83,14 +88,20 @@ export default function OzelSohbet() {
   }
 
   if (!benimId) return <p className="sayfa">Giriş yapmalısın.</p>
+  const yazabilir = arkadasMi && !engelli
 
   return (
     <div className="sayfa">
       <div className="ozel-bas">
-        <h2>{diger ? (diger.kullanici_adi || diger.ad_soyad) : 'Özel Sohbet'}</h2>
+        {diger
+          ? <Link to={'/uye/' + digerId} className="ozel-ad-link"><h2>{diger.kullanici_adi || diger.ad_soyad}</h2></Link>
+          : <h2>Özel Sohbet</h2>}
         {diger && <Durum sonGorulme={diger.son_gorulme} />}
       </div>
-      {!arkadasMi && (
+      {engelli && (
+        <div className="kart"><p className="ipucu">Bu kullanıcıyla aranızda engelleme var, mesajlaşamazsınız.</p></div>
+      )}
+      {!engelli && !arkadasMi && (
         <div className="kart"><p className="ipucu">Mesajlaşabilmek için önce arkadaş olmanız gerekiyor.</p></div>
       )}
       <div className="sohbet-govde">
@@ -102,7 +113,7 @@ export default function OzelSohbet() {
         ))}
         <div ref={sonRef} />
       </div>
-      {arkadasMi && (
+      {yazabilir && (
         <div className="sohbet-giris">
           <input value={metin} onChange={e => setMetin(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && gonder()} placeholder="Mesaj yaz..." />

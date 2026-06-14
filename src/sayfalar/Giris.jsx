@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 
 const SORULAR = [
@@ -10,8 +10,6 @@ const SORULAR = [
   'Annenin kızlık soyadı?',
 ]
 
-// Supabase Auth bir e-posta ister; kullanıcı sadece "kullanıcı adı" girsin diye
-// arka planda sahte bir e-posta üretiyoruz.
 function kullaniciEpostasi(kullaniciAdi) {
   return kullaniciAdi.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '') + '@okey101.local'
 }
@@ -22,17 +20,17 @@ function hatirlaKaydet(beniHatirla) {
 }
 
 export default function Giris() {
-  const [mod, setMod] = useState('giris') // giris | kayit | sifirla
+  const [mod, setMod] = useState('giris')
   const [kullaniciAdi, setKullaniciAdi] = useState('')
   const [adSoyad, setAdSoyad] = useState('')
   const [cinsiyet, setCinsiyet] = useState('Belirtmek istemiyorum')
   const [sifre, setSifre] = useState('')
   const [beniHatirla, setBeniHatirla] = useState(true)
+  const [sozlesmeOnay, setSozlesmeOnay] = useState(false)
   const [guvenlikSoru, setGuvenlikSoru] = useState(SORULAR[0])
   const [guvenlikCevap, setGuvenlikCevap] = useState('')
   const [yukleniyor, setYukleniyor] = useState(false)
 
-  // şifre sıfırlama akışı
   const [sifirlaAsama, setSifirlaAsama] = useState(1)
   const [sifirlaSoru, setSifirlaSoru] = useState('')
   const [sifirlaCevap, setSifirlaCevap] = useState('')
@@ -45,6 +43,8 @@ export default function Giris() {
       return alert('Ad soyad, kullanıcı adı ve şifre zorunlu.')
     if (!guvenlikCevap.trim())
       return alert('Güvenlik sorusu cevabı zorunlu (şifreni unutursan kurtarman için).')
+    if (!sozlesmeOnay)
+      return alert('Devam etmek için 18 yaş üstü olduğunu ve Kullanım Şartları / KVKK metnini onaylamalısın.')
     setYukleniyor(true)
     const eposta = kullaniciEpostasi(kullaniciAdi)
     const { data, error } = await supabase.auth.signUp({ email: eposta, password: sifre })
@@ -57,6 +57,7 @@ export default function Giris() {
         kullanici_adi: kullaniciAdi.trim(),
         ad_soyad: adSoyad.trim(),
         cinsiyet,
+        kvkk_onay: true,
       }, { onConflict: 'id' })
     }
     await supabase.auth.signInWithPassword({ email: eposta, password: sifre })
@@ -120,6 +121,7 @@ export default function Giris() {
   const ikincilButon = { background: '#6b7280' }
   const baglantiButon = { background: 'transparent', boxShadow: 'none', color: 'var(--altin)', textDecoration: 'underline', padding: '6px 0', fontWeight: 600, fontSize: '14px' }
   const hatirlaSatir = { display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0 4px', fontSize: '14px', color: 'var(--metin)', cursor: 'pointer', fontWeight: 600 }
+  const sozlesmeSatir = { display: 'flex', alignItems: 'flex-start', gap: '8px', margin: '12px 0 4px', fontSize: '13px', color: 'var(--metin)', cursor: 'pointer', lineHeight: 1.4 }
   const onayKutu = { width: '18px', height: '18px', minWidth: '18px', margin: 0, padding: 0, accentColor: 'var(--altin)', background: 'transparent', border: 'none' }
   const soruStil = { fontWeight: 700, color: 'var(--altin)' }
 
@@ -188,6 +190,13 @@ export default function Giris() {
         <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
         Beni hatırla
       </label>
+
+      {mod === 'kayit' && (
+        <label style={sozlesmeSatir}>
+          <input type="checkbox" style={onayKutu} checked={sozlesmeOnay} onChange={e => setSozlesmeOnay(e.target.checked)} />
+          <span>18 yaşından büyüğüm; <Link to="/sozlesme">Kullanım Şartları ve KVKK</Link> metnini okudum, kabul ediyorum.</span>
+        </label>
+      )}
 
       {mod === 'giris' ? (
         <>
