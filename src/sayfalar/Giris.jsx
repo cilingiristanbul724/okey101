@@ -9,12 +9,18 @@ function kullaniciEpostasi(kullaniciAdi) {
   return kullaniciAdi.trim().toLowerCase().replace(/[^a-z0-9_.-]/g, '') + '@okey101.local'
 }
 
+function hatirlaKaydet(beniHatirla) {
+  localStorage.setItem('okey101-hatirla', beniHatirla ? 'true' : 'false')
+  sessionStorage.setItem('okey101-oturum-aktif', '1')
+}
+
 export default function Giris() {
   const [mod, setMod] = useState('giris')
   const [kullaniciAdi, setKullaniciAdi] = useState('')
   const [adSoyad, setAdSoyad] = useState('')
   const [cinsiyet, setCinsiyet] = useState('Belirtmek istemiyorum')
   const [sifre, setSifre] = useState('')
+  const [beniHatirla, setBeniHatirla] = useState(true)
   const [yukleniyor, setYukleniyor] = useState(false)
   const navigate = useNavigate()
 
@@ -36,6 +42,7 @@ export default function Giris() {
       }, { onConflict: 'id' })
     }
     await supabase.auth.signInWithPassword({ email: eposta, password: sifre })
+    hatirlaKaydet(beniHatirla)
     setYukleniyor(false)
     alert('Kayıt başarılı! Hoş geldin.')
     navigate('/profil')
@@ -46,13 +53,16 @@ export default function Giris() {
     setYukleniyor(true)
     const eposta = kullaniciEpostasi(kullaniciAdi)
     const { error } = await supabase.auth.signInWithPassword({ email: eposta, password: sifre })
+    if (error) { setYukleniyor(false); return alert('Giriş başarısız: ' + error.message) }
+    hatirlaKaydet(beniHatirla)
     setYukleniyor(false)
-    if (error) return alert('Giriş başarısız: ' + error.message)
     alert('Giriş başarılı!')
     navigate('/')
   }
 
   const ikincilButon = { background: '#6b7280' }
+  const hatirlaSatir = { display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0 4px', fontSize: '14px', color: 'var(--metin)', cursor: 'pointer', fontWeight: 600 }
+  const onayKutu = { width: '18px', height: '18px', minWidth: '18px', margin: 0, padding: 0, accentColor: 'var(--altin)', background: 'transparent', border: 'none' }
 
   return (
     <div className="sayfa">
@@ -75,6 +85,11 @@ export default function Giris() {
       <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
       <label>Şifre</label>
       <input type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
+
+      <label style={hatirlaSatir}>
+        <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
+        Beni hatırla
+      </label>
 
       {mod === 'giris' ? (
         <>
