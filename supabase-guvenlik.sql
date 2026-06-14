@@ -1,14 +1,8 @@
--- OKEY101 — Güvenlik sorusu ile şifre sıfırlama (e-postasız)
--- Bu dosyayı Supabase > SQL Editor'da BİR KEZ çalıştır.
-
--- 1) Şifre hash'leri için pgcrypto
 create extension if not exists pgcrypto with schema extensions;
 
--- 2) profiles tablosuna güvenlik sorusu + (hash'li) cevap kolonları
 alter table profiles add column if not exists guvenlik_soru text;
 alter table profiles add column if not exists guvenlik_cevap text;
 
--- 3) Giriş yapmış kullanıcı kendi güvenlik sorusunu/cevabını kaydeder
 create or replace function guvenlik_kaydet(p_soru text, p_cevap text)
 returns void
 language plpgsql
@@ -23,7 +17,6 @@ begin
 end;
 $$;
 
--- 4) Kullanıcı adından güvenlik sorusunu getir (giriş yapmadan)
 create or replace function guvenlik_soru_getir(p_kullanici_adi text)
 returns text
 language sql
@@ -35,7 +28,6 @@ as $$
   limit 1;
 $$;
 
--- 5) Cevabı doğrula ve şifreyi sıfırla
 create or replace function sifre_sifirla(p_kullanici_adi text, p_cevap text, p_yeni_sifre text)
 returns text
 language plpgsql
@@ -64,7 +56,6 @@ begin
 end;
 $$;
 
--- 6) Yetkiler
 grant execute on function guvenlik_kaydet(text, text) to authenticated;
 grant execute on function guvenlik_soru_getir(text) to anon, authenticated;
 grant execute on function sifre_sifirla(text, text, text) to anon, authenticated;
