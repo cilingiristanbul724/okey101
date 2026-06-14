@@ -1,8 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { kufurTemizle } from '../utils/kufur'
+import { engellenenleriGetir } from '../utils/moderasyon'
 
 function MesajIcerigi({ metin }) {
-  const parcalar = (metin || '').split(/(https?:\/\/[^\s]+)/g)
+  const temiz = kufurTemizle(metin)
+  const parcalar = (temiz || '').split(/(https?:\/\/[^\s]+)/g)
   return parcalar.map((p, i) => {
     if (/^https?:\/\//.test(p)) {
       const haritaLinki = p.includes('/maps/dir') || p.includes('/maps?') || p.includes('maps.google')
@@ -27,6 +31,7 @@ export default function Lobi() {
   const [profiller, setProfiller] = useState({})
   const [metin, setMetin] = useState('')
   const [benimId, setBenimId] = useState(null)
+  const [engellenenler, setEngellenenler] = useState([])
   const sonRef = useRef(null)
 
   async function profilGetir(idler) {
@@ -37,10 +42,13 @@ export default function Lobi() {
   }
 
   useEffect(() => {
-    supabase.auth.getUser().then(res => {
+    supabase.auth.getUser().then(async res => {
       const uid = res.data.user ? res.data.user.id : null
       setBenimId(uid)
-      if (uid) profilGetir([uid])
+      if (uid) {
+        profilGetir([uid])
+        setEngellenenler(await engellenenleriGetir(uid))
+      }
     })
   }, [])
 
@@ -72,14 +80,16 @@ export default function Lobi() {
 
   function saat(t) { return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '' }
 
+  const gorunen = mesajlar.filter(m => !engellenenler.includes(m.gonderen_id))
+
   return (
     <div className="sayfa">
       <h2>Genel Sohbet</h2>
       <p className="ipucu">Tüm üyelerin birbiriyle yazıştığı halka açık kanal.</p>
       <div className="sohbet">
         <div className="sohbet-govde" style={govdeStil}>
-          {mesajlar.length === 0 && <p className="ipucu">Henüz mesaj yok. İlk yazan sen ol!</p>}
-          {mesajlar.map(m => {
+          {gorunen.length === 0 && <p className="ipucu">Henüz mesaj yok. İlk yazan sen ol!</p>}
+          {gorunen.map(m => {
             const benimMi = m.gonderen_id === benimId
             const p = profiller[m.gonderen_id]
             const ad = (p && (p.kullanici_adi || p.ad_soyad)) || (benimMi ? 'Sen' : 'Oyuncu')
@@ -87,7 +97,9 @@ export default function Lobi() {
               <div key={m.id} className={'msj-satir ' + (benimMi ? 'msj-ben' : 'msj-diger')}>
                 <Avatar p={p} />
                 <div className={'balon ' + (benimMi ? 'balon-ben' : 'balon-diger')}>
-                  <div className="balon-ad">{ad}</div>
+                  {benimMi
+                    ? <div className="balon-ad">{ad}</div>
+                    : <Link className="balon-ad balon-ad-link" to={'/uye/' + m.gonderen_id}>{ad}</Link>}
                   <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
                   <div className="balon-saat">{saat(m.created_at)}</div>
                 </div>
