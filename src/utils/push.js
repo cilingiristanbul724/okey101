@@ -6,7 +6,7 @@ import { supabase } from '../supabaseClient'
 // 2) çıkan "Public Key" değerini aşağıya yapıştır.
 //    "Private Key" ise Supabase Edge Function secret'ına (VAPID_PRIVATE) gider.
 // ============================================================
-export const VAPID_PUBLIC = 'BURAYA_VAPID_PUBLIC_KEY_YAPISTIR'
+export const VAPID_PUBLIC = 'BI3paEcn28-PGqH2t0_T_YDMx6_iwi75x29lNg9yg8a2bBvl2hobUmYPz40Xhz_Q8SDdRid4vA0dL-o3Y_z-rEw'
 
 // Supabase'de deploy edilen Edge Function'ın adı (slug).
 export const PUSH_FN = 'clever-action'
