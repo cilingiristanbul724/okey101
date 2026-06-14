@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Durum from '../Durum'
 
+const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
+const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
+
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
   const harf = ((p && (p.kullanici_adi || p.ad_soyad)) || '?').charAt(0).toUpperCase()
@@ -94,7 +97,7 @@ export default function Arkadaslar() {
     const d = iliskiDurum(p.id)
     if (d === 'Kabul') return <span className="rozet rozet-yesil">✓ Arkadaş</span>
     if (d === 'Beklemede') return <span className="ipucu">İstek gönderildi</span>
-    return <button onClick={() => istekGonder(p.id)} style= background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' >Ekle</button>
+    return <button onClick={() => istekGonder(p.id)} style={altinButon}>Ekle</button>
   }
 
   return (
@@ -123,7 +126,7 @@ export default function Arkadaslar() {
             <div className="ipucu">sana istek gönderdi</div>
           </div>
           <button onClick={() => kabulEt(a.id)}>Kabul</button>
-          <button onClick={() => reddet(a.id)} className="btn-kirmizi">Reddet</button>
+          <button onClick={() => reddet(a.id)} style={kirmiziButon}>Reddet</button>
         </div>
       ))}
 
