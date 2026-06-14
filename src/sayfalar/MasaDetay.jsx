@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
@@ -9,6 +9,7 @@ import { konumAl, mesafeKm } from '../utils/konum'
 const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
+const griButon = { background: '#6b7280' }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -24,6 +25,9 @@ export default function MasaDetay() {
   const [benimId, setBenimId] = useState(null)
   const [uzaklik, setUzaklik] = useState(null)
   const [iliskiler, setIliskiler] = useState([])
+  const [duzenleMod, setDuzenleMod] = useState(false)
+  const [yeniBaslik, setYeniBaslik] = useState('')
+  const [yeniSure, setYeniSure] = useState(30)
 
   async function yukle() {
     const res = await supabase.auth.getUser()
@@ -31,12 +35,19 @@ export default function MasaDetay() {
     setBenimId(uid)
 
     const { data: m } = await supabase.from('masalar').select('*').eq('id', id).single()
-    setMasa(m)
-    if (m) {
-      const { data: ap } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,son_gorulme').eq('id', m.acan_id).single()
+    let masaSon = m
+    if (m && uid === m.acan_id && m.durum === 'Acik' && m.bitis_zamani && new Date(m.bitis_zamani).getTime() < Date.now()) {
+      await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
+      masaSon = { ...m, durum: 'Kapali' }
+    }
+    setMasa(masaSon)
+    if (masaSon) {
+      setYeniBaslik(masaSon.baslik || masaSon.mekan_adi || '')
+      setYeniSure(masaSon.sure_dk || 30)
+      const { data: ap } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,son_gorulme').eq('id', masaSon.acan_id).single()
       setAcan(ap)
-      if (m.enlem != null) {
-        konumAl().then(k => setUzaklik(mesafeKm(k.enlem, k.boylam, m.enlem, m.boylam))).catch(() => {})
+      if (masaSon.enlem != null) {
+        konumAl().then(k => setUzaklik(mesafeKm(k.enlem, k.boylam, masaSon.enlem, masaSon.boylam))).catch(() => {})
       }
     }
 
@@ -99,10 +110,24 @@ export default function MasaDetay() {
       alert('Konum alınamadı: ' + e.message)
     }
   }
+  async function masayiKapat() {
+    if (!window.confirm('Masayı kapatmak istediğine emin misin?')) return
+    await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
+    yukle()
+  }
+  async function duzenleKaydet() {
+    const sure = Number(yeniSure) || 30
+    const bitis = new Date(Date.now() + sure * 60000).toISOString()
+    const { error } = await supabase.from('masalar').update({ baslik: yeniBaslik.trim() || null, sure_dk: sure, bitis_zamani: bitis }).eq('id', id)
+    if (error) return alert('Kaydedilemedi: ' + error.message)
+    setDuzenleMod(false)
+    yukle()
+  }
 
   if (!masa) return <p className="sayfa">Masa yükleniyor...</p>
   const sahibiMiyim = benimId && benimId === masa.acan_id
   const masadaMiyim = oyuncular.some(o => o.oyuncu_id === benimId)
+  const acikMi = masa.durum === 'Acik'
   const yolTarifi = masa.enlem != null
     ? 'https://www.google.com/maps/dir/?api=1&destination=' + masa.enlem + ',' + masa.boylam
     : null
@@ -124,7 +149,7 @@ export default function MasaDetay() {
       <div className="kart">
         <div className="kart-bas">
           <span>Durum: {masa.durum}</span>
-          <GeriSayim bitis={masa.bitis_zamani} />
+          {acikMi ? <GeriSayim bitis={masa.bitis_zamani} /> : <span className="rozet rozet-kirmizi">Kapalı</span>}
         </div>
         {masa.mekan_adi && <p><b>{masa.mekan_adi}</b></p>}
         <p>📍 {masa.adres}</p>
@@ -132,6 +157,28 @@ export default function MasaDetay() {
         {uzaklik != null && <p className="mesafe">Sana {uzaklik.toFixed(1)} km uzaklıkta</p>}
         {yolTarifi && <a href={yolTarifi} target="_blank" rel="noreferrer">🧭 Yol tarifi al</a>}
       </div>
+
+      {sahibiMiyim && acikMi && !duzenleMod && (
+        <div>
+          <button onClick={() => setDuzenleMod(true)} style={altinButon}>Masayı Düzenle</button>
+          <button onClick={masayiKapat} style={tehlikeButon}>Masayı Kapat</button>
+        </div>
+      )}
+
+      {sahibiMiyim && duzenleMod && (
+        <div className="kart">
+          <label>Başlık</label>
+          <input value={yeniBaslik} onChange={e => setYeniBaslik(e.target.value)} placeholder="Masa başlığı" />
+          <label>Süre</label>
+          <select value={yeniSure} onChange={e => setYeniSure(Number(e.target.value))}>
+            <option value={15}>15 dakika</option>
+            <option value={30}>30 dakika</option>
+            <option value={60}>60 dakika</option>
+          </select>
+          <button onClick={duzenleKaydet} style={yesilButon}>Kaydet</button>
+          <button onClick={() => setDuzenleMod(false)} style={griButon}>Vazgeç</button>
+        </div>
+      )}
 
       <button onClick={bulusmaPaylas} style={yesilButon}>📍 Buluşma / Canlı Konum Paylaş</button>
       {masadaMiyim && !sahibiMiyim && (
@@ -142,7 +189,9 @@ export default function MasaDetay() {
       <div className="kart satir">
         <Avatar p={acan} />
         <div className="satir-icerik">
-          <div>{ad(acan, 'Masa sahibi')}</div>
+          {acan
+            ? <Link to={'/uye/' + acan.id} className="uye-ad-link">{ad(acan, 'Masa sahibi')}</Link>
+            : <div>Masa sahibi</div>}
           {acan && <Durum sonGorulme={acan.son_gorulme} />}
         </div>
         {acan && <ArkadasButon hedefId={acan.id} />}
@@ -154,7 +203,7 @@ export default function MasaDetay() {
         <div key={o.id} className="kart satir">
           <Avatar p={o.profil} />
           <div className="satir-icerik">
-            <div>{ad(o.profil, 'Oyuncu')}</div>
+            <Link to={'/uye/' + o.oyuncu_id} className="uye-ad-link">{ad(o.profil, 'Oyuncu')}</Link>
             {o.profil && <Durum sonGorulme={o.profil.son_gorulme} />}
             <div className="ipucu">{o.katilim_durumu}</div>
           </div>

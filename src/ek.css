@@ -20,9 +20,18 @@
 .msj-avatar-bos { display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #16a34a, #e8b923); color: #07261b; font-weight: 800; font-size: 13px; }
 .balon-ad { font-size: 11px; font-weight: 800; color: #4ade80; margin-bottom: 2px; }
 .msj-ben .balon-ad { color: #d9f7e6; text-align: right; }
+.balon-ad-link { text-decoration: none; }
+.balon-ad-link:hover { text-decoration: underline; }
 
 .ozel-bas { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .ozel-bas h2 { margin: 6px 0; }
+.ozel-ad-link { text-decoration: none; color: inherit; }
+.uye-ad-link { font-weight: 700; color: #eaf3ee; text-decoration: none; }
+.uye-ad-link:hover { text-decoration: underline; color: #e8b923; }
+
+/* Nav bildirim rozeti */
+.alt-menu a { position: relative; }
+.nav-rozet { position: absolute; top: 0; right: 22%; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: #dc2626; color: #fff; font-size: 10px; font-weight: 800; display: flex; align-items: center; justify-content: center; line-height: 1; box-shadow: 0 0 0 2px rgba(8,30,22,.96); }
 
 /* Foto buyutme (lightbox) */
 .avatar, .msj-avatar, .profil-foto, .buyutulebilir { cursor: zoom-in; }
