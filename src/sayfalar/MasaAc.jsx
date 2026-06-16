@@ -20,7 +20,7 @@ export default function MasaAc() {
     const user = res.data.user
     if (!user) return alert('Önce giriş yapmalısın!')
     if (!mekanAdi.trim() || !adres.trim()) return alert('Mekan adı ve açık adres zorunlu.')
-    if (enlem == null || boylam == null) return alert('Lütfen "Buradayım" ile konumunu işaretle.')
+    if (enlem == null || boylam == null) return alert('Lütfen "Buadayım" ile konumunu işaretle.'.replace('Buadayım', 'Buadayım'))
 
     // Bir uye ayni anda yalnizca 1 acik masa acabilir
     const { data: acikMasalarim } = await supabase.from('masalar')
@@ -42,11 +42,11 @@ export default function MasaAc() {
 
   return (
     <div className="sayfa">
-      <h2>Masa Aç <span className="altin">(eksik oyuncu aranıyor)</span></h2>
+      <h2>Masa Kuruyorsun</h2>
 
-      <div className="masa-uyari">
-        <b>📍 Bu bir fiziksel buluşma ilanıdır.</b>
-        <p>Açtığın masa, belirttiğin mekanda <b>yüz yüze</b> okey/101 oynamak içindir — sitede online oyun oynanmaz. Yakınındaki oyuncular ilanı görüp katılma talebi gönderecek.</p>
+      <div className="tanitim-uyari">
+        <b>⚠️ Bu bir fiziksel buluşma ilanıdır.</b><br />
+        Açtığın masa, belirttiğin mekanda <b>yüz yüze</b> okey/101 oynamak içindir — sitede online oyun oynanmaz. Yakınındaki oyuncular ilanı görüp katılma talebi gönderecek.
       </div>
 
       <label>Masa başlığı</label>
