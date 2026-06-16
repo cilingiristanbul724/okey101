@@ -7,6 +7,7 @@ import Durum from '../Durum'
 import { konumAl, mesafeKm } from '../utils/konum'
 import { zamanMs } from '../utils/zaman'
 import { onay } from '../utils/onay'
+import { pushTetikle } from '../utils/push'
 
 const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
@@ -80,7 +81,9 @@ export default function MasaDetay() {
   }
 
   async function onayla(satirId) {
+    const satir = oyuncular.find(o => o.id === satirId)
     await supabase.from('masa_oyunculari').update({ katilim_durumu: 'Onayli' }).eq('id', satirId)
+    if (satir) pushTetikle('eslesme', { masa_id: id, oyuncu_id: satir.oyuncu_id })
     yukle()
   }
   async function reddet(satirId) {

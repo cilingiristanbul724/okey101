@@ -5,6 +5,7 @@ import Durum from '../Durum'
 import { kufurTemizle } from '../utils/kufur'
 import { aramizdaEngelVarMi } from '../utils/moderasyon'
 import EmojiSec from '../EmojiSec'
+import { pushTetikle } from '../utils/push'
 
 function MesajIcerigi({ metin }) {
   const temiz = kufurTemizle(metin)
@@ -81,7 +82,9 @@ export default function OzelSohbet() {
 
   async function gonder() {
     if (!benimId || !metin.trim() || engelli) return
-    await supabase.from('ozel_mesajlar').insert({ gonderen_id: benimId, alici_id: digerId, icerik: metin.trim() })
+    const icerik = metin.trim()
+    await supabase.from('ozel_mesajlar').insert({ gonderen_id: benimId, alici_id: digerId, icerik })
+    pushTetikle('ozel_mesajlar', { gonderen_id: benimId, alici_id: digerId, icerik })
     setMetin('')
   }
   function saat(t) {
