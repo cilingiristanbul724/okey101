@@ -20,7 +20,7 @@ export default function MasaAc() {
     const user = res.data.user
     if (!user) return alert('Önce giriş yapmalısın!')
     if (!mekanAdi.trim() || !adres.trim()) return alert('Mekan adı ve açık adres zorunlu.')
-    if (enlem == null || boylam == null) return alert('Lütfen "Buadayım" ile konumunu işaretle.'.replace('Buadayım', 'Buadayım'))
+    if (enlem == null || boylam == null) return alert('Lütfen "Buadayım" ile konumunu işaretle.'.replace('Buadayım', 'Buradaım').replace('Buradaım', 'Buradayım'))
 
     // Bir uye ayni anda yalnizca 1 acik masa acabilir
     const { data: acikMasalarim } = await supabase.from('masalar')
