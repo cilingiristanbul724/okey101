@@ -7,6 +7,7 @@ import Durum from '../Durum'
 import { konumAl, mesafeKm } from '../utils/konum'
 import { onay } from '../utils/onay'
 import { pushTetikle } from '../utils/push'
+import { zamanMs } from '../utils/zaman'
 
 const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
@@ -42,10 +43,17 @@ export default function MasaDetay() {
     setBenimId(uid)
 
     const { data: m } = await supabase.from('masalar').select('*').eq('id', id).single()
-    // Masa ARTIK otomatik kapanmaz. Sure dolmasi yalnizca geri sayimda gosterilir;
-    // masayi sadece sahibi 'Masayi Kapat' ile kapatabilir. Boylece masa, sahibi
-    // kapatmadikca (sure dolsa bile) beklenmedik sekilde kapanmaz.
-    const masaSon = m
+    // Sure dolunca masa otomatik kapanir. RLS yalnizca acan_id'ye update izni
+    // verdigi icin kapatmayi sahip masayi goruntuledigi anda yapar. Sahip ayrica
+    // 'Masayi Kapat' ile sure dolmadan da kapatabilir. Sure dolmadan ASLA kapanmaz.
+    let masaSon = m
+    if (m && m.durum === 'Acik' && uid === m.acan_id) {
+      const bitisMs = zamanMs(m.bitis_zamani)
+      if (bitisMs > 0 && bitisMs <= Date.now()) {
+        await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
+        masaSon = { ...m, durum: 'Kapali' }
+      }
+    }
     setMasa(masaSon)
     if (masaSon) {
       setYeniBaslik(masaSon.baslik || masaSon.mekan_adi || '')
