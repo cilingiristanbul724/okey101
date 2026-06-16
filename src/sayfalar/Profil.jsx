@@ -88,6 +88,7 @@ export default function Profil() {
   }
   useEffect(() => { yukle() }, [])
   useEffect(() => { if (loc.state && loc.state.duzenle) setDuzenleAcik(true) }, [loc.state])
+  useEffect(() => { if (hazir && !profil) navigate('/giris', { replace: true }) }, [hazir, profil])
 
   async function fotoSec(e) {
     const dosya = e.target.files && e.target.files[0]
@@ -152,12 +153,7 @@ export default function Profil() {
   }
 
   if (!hazir) return <p className="sayfa">Yükleniyor...</p>
-  if (!profil) return (
-    <div className="sayfa">
-      <p>Profili görmek için giriş yapmalısın.</p>
-      <button onClick={() => navigate('/giris')}>Giriş Yap</button>
-    </div>
-  )
+  if (!profil) return <p className="sayfa">Giriş sayfasına yönlendiriliyorsun...</p>
 
   const avatarBosStil = {
     background: cinsiyetRenk[cinsiyet] || '#6b7280',
