@@ -1,7 +1,12 @@
 /* 101 RakipBul - Web Push Service Worker */
 
 self.addEventListener('install', () => self.skipWaiting())
-self.addEventListener('activate', event => event.waitUntil(self.clients.claim()))
+self.addEventListener('activate', event => event.waitUntil(
+  caches.keys()
+    .then(anahtarlar => Promise.all(anahtarlar.map(a => caches.delete(a))))
+    .catch(() => {})
+    .then(() => self.clients.claim())
+))
 
 function yoluNormalle(u) {
   if (!u) return '/'
