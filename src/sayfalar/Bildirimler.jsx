@@ -7,16 +7,20 @@ import Ikon from '../Ikon'
 const OKUNDU_KEY = 'okey101-bildirim-okundu'
 
 const satirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', cursor: 'pointer', marginBottom: 8 }
+const davetSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', marginBottom: 8, flexWrap: 'wrap' }
 const icMetin = { flex: 1, minWidth: 0 }
 const baslikStil = { fontWeight: 700 }
 const zamanStil = { whiteSpace: 'nowrap', fontSize: 12 }
 const noktaStil = { display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#e8b923', marginLeft: 6, verticalAlign: 'middle' }
 const okunduBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', marginTop: 8 }
+const kabulBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', whiteSpace: 'nowrap', margin: 0 }
+const redBtn = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', whiteSpace: 'nowrap', margin: 0 }
 const ikonKutuStil = (renk) => ({ width: 42, height: 42, borderRadius: 12, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
 export default function Bildirimler() {
   const [benimId, setBenimId] = useState(null)
   const [liste, setListe] = useState([])
+  const [davetler, setDavetler] = useState([])
   const [hazir, setHazir] = useState(false)
   const [sonOkundu, setSonOkundu] = useState(() => Number(localStorage.getItem(OKUNDU_KEY) || 0))
   const navigate = useNavigate()
@@ -50,6 +54,34 @@ export default function Bildirimler() {
         ikon: 'mesaj',
       })
     }
+
+    // Bana gelen masa davetleri (onay bekleyen)
+    const { data: davetKayitlari } = await supabase.from('masa_oyunculari')
+      .select('id, masa_id, created_at').eq('oyuncu_id', uid).eq('katilim_durumu', 'Davet')
+    let davetListe = []
+    if ((davetKayitlari || []).length) {
+      const mIds = [...new Set(davetKayitlari.map(d => d.masa_id))]
+      const { data: dMasalar } = await supabase.from('masalar')
+        .select('id, baslik, mekan_adi, acan_id, bitis_zamani').in('id', mIds)
+      const mMap = {}; for (const m of dMasalar || []) mMap[m.id] = m
+      const acanIds = [...new Set((dMasalar || []).map(m => m.acan_id).filter(Boolean))]
+      const aMap = {}
+      if (acanIds.length) {
+        const { data: pr } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad').in('id', acanIds)
+        for (const p of pr || []) aMap[p.id] = p
+      }
+      davetListe = (davetKayitlari || []).map(d => {
+        const m = mMap[d.masa_id]
+        const acan = m ? aMap[m.acan_id] : null
+        const acanAd = acan ? (acan.kullanici_adi || acan.ad_soyad || 'Bir oyuncu') : 'Bir oyuncu'
+        return {
+          id: d.id, masa_id: d.masa_id,
+          baslik: (m && (m.baslik || m.mekan_adi)) || '101 Okey Masası',
+          acanAd, ts: zamanMs(d.created_at),
+        }
+      }).sort((a, b) => (b.ts || 0) - (a.ts || 0))
+    }
+    setDavetler(davetListe)
 
     const { data: katilimlarim } = await supabase.from('masa_oyunculari')
       .select('*').eq('oyuncu_id', uid).eq('katilim_durumu', 'Onayli')
@@ -105,6 +137,7 @@ export default function Bildirimler() {
       }
       for (const k of katilanlar || []) {
         if (!k.oyuncu_id || k.oyuncu_id === uid) continue
+        if (k.katilim_durumu !== 'Onayli') continue
         const p = pmap[k.oyuncu_id]
         const ad = p ? (p.kullanici_adi || p.ad_soyad || 'Bir oyuncu') : 'Bir oyuncu'
         bildirimler.push({
@@ -124,6 +157,17 @@ export default function Bildirimler() {
     setHazir(true)
   }
 
+  async function davetiKabul(d) {
+    const { error } = await supabase.from('masa_oyunculari').update({ katilim_durumu: 'Onayli' }).eq('id', d.id)
+    if (error) return alert('Kabul edilemedi: ' + error.message)
+    navigate('/masa/' + d.masa_id)
+  }
+  async function davetiReddet(d) {
+    const { error } = await supabase.from('masa_oyunculari').update({ katilim_durumu: 'Red' }).eq('id', d.id)
+    if (error) return alert('Reddedilemedi: ' + error.message)
+    yukle()
+  }
+
   function tumunuOkundu() {
     const simdi = Date.now()
     localStorage.setItem(OKUNDU_KEY, String(simdi))
@@ -136,7 +180,21 @@ export default function Bildirimler() {
   return (
     <div className="sayfa">
       <h2>Bildirimler</h2>
-      {liste.length === 0 && <p className="ipucu">Henüz bildirimin yok.</p>}
+
+      {davetler.length > 0 && <h3>Masa Davetleri</h3>}
+      {davetler.map(d => (
+        <div key={'davet-' + d.id} className="kart" style={davetSatirStil}>
+          <div style={ikonKutuStil('#e8b923')}><Ikon ad="masalar" boyut={20} /></div>
+          <div style={icMetin}>
+            <div style={baslikStil}>{d.acanAd} seni masaya davet etti</div>
+            <div className="ipucu">{d.baslik}</div>
+          </div>
+          <button onClick={() => davetiKabul(d)} style={kabulBtn}>Kabul</button>
+          <button onClick={() => davetiReddet(d)} style={redBtn}>Reddet</button>
+        </div>
+      ))}
+
+      {liste.length === 0 && davetler.length === 0 && <p className="ipucu">Henüz bildirimin yok.</p>}
       {liste.map(b => {
         const yeni = (b.ts || 0) > sonOkundu
         return (

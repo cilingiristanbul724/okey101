@@ -91,13 +91,18 @@ export default function Arkadaslar() {
 
   async function davetEt(hedefId) {
     if (!aktifMasam) return alert('Önce bir masa açmalısın.')
-    const ad = aktifMasam.baslik || aktifMasam.mekan_adi || '101 Okey Masası'
-    const icerik = 'Seni "' + ad + '" masama davet ettim! Masalar sayfasından masaya katılabilirsin.'
-    const kayit = { gonderen_id: benimId, alici_id: hedefId, icerik }
-    const { error } = await supabase.from('ozel_mesajlar').insert(kayit)
+    const { data: varMi } = await supabase.from('masa_oyunculari')
+      .select('id, katilim_durumu').eq('masa_id', aktifMasam.id).eq('oyuncu_id', hedefId).limit(1)
+    if (varMi && varMi.length) {
+      const dr = varMi[0].katilim_durumu
+      if (dr === 'Onayli') return alert('Bu oyuncu zaten masanda.')
+      if (dr === 'Davet' || dr === 'Talep') return alert('Bu oyuncuya zaten bekleyen bir davet/istek var.')
+    }
+    const kayit = { masa_id: aktifMasam.id, oyuncu_id: hedefId, katilim_durumu: 'Davet' }
+    const { error } = await supabase.from('masa_oyunculari').insert(kayit)
     if (error) return alert('Davet gönderilemedi: ' + error.message)
-    pushTetikle('ozel_mesajlar', kayit)
-    alert('Davet gönderildi! Arkadaşına masan için davet mesajı iletildi.')
+    pushTetikle('masa_oyunculari', kayit)
+    alert('Davet gönderildi! Arkadaşın onayladığında masana oturacak.')
   }
 
   function diger(a) {
@@ -130,7 +135,7 @@ export default function Arkadaslar() {
       {aktifMasam && (
         <div className="masa-uyari">
           <b>Açık masan var: {aktifMasam.baslik || aktifMasam.mekan_adi || '101 Okey Masası'}</b>
-          <p>Arkadaşlarını "Davet Et" ile masana çağırabilirsin.</p>
+          <p>Arkadaşlarını "Davet Et" ile masana çağırabilirsin. Davet edilen kişi onaylarsa masaya oturur.</p>
         </div>
       )}
 
