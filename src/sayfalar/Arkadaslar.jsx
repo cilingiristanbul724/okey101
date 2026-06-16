@@ -5,12 +5,10 @@ import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
 import { engellenenleriGetir } from '../utils/moderasyon'
 import Durum from '../Durum'
-import CinsiyetRozet from '../CinsiyetRozet'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const davetButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', whiteSpace: 'nowrap' }
-const adRozetSatir = { display: 'flex', alignItems: 'center', gap: 6 }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -154,7 +152,7 @@ export default function Arkadaslar() {
       {sonuclar.map(p => (
         <div key={p.id} className="kart satir">
           <Avatar p={p} />
-          <div className="satir-icerik"><div style={adRozetSatir}>{p.kullanici_adi || p.ad_soyad}<CinsiyetRozet cinsiyet={p.cinsiyet} boyut={13} /></div></div>
+          <div className="satir-icerik">{p.kullanici_adi || p.ad_soyad}</div>
           <EkleButon p={p} />
         </div>
       ))}
@@ -164,7 +162,7 @@ export default function Arkadaslar() {
         <div key={a.id} className="kart satir">
           <Avatar p={a.isteyen} />
           <div className="satir-icerik">
-            <div style={adRozetSatir}>{(a.isteyen && a.isteyen.kullanici_adi) || 'Kullanıcı'}<CinsiyetRozet cinsiyet={a.isteyen && a.isteyen.cinsiyet} boyut={13} /></div>
+            <div>{(a.isteyen && a.isteyen.kullanici_adi) || 'Kullanıcı'}</div>
             <div className="ipucu">sana istek gönderdi</div>
           </div>
           <button onClick={() => kabulEt(a.id)}>Kabul</button>
@@ -178,7 +176,7 @@ export default function Arkadaslar() {
         <div key={rel.id} className="kart satir">
           <Avatar p={kisi} />
           <div className="satir-icerik">
-            <div style={adRozetSatir}>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}<CinsiyetRozet cinsiyet={kisi.cinsiyet} boyut={13} /></div>
+            <div>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}</div>
             <Durum sonGorulme={kisi.son_gorulme} />
           </div>
           {aktifMasam && (
