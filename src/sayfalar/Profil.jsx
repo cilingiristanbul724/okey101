@@ -7,9 +7,9 @@ const cikisButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', ma
 const kaydetButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const kameraBtn = { display: 'inline-flex', alignItems: 'center', gap: '8px' }
 
-const basKart = { display: 'flex', alignItems: 'center', gap: 14, padding: 16 }
-const avatarImg = { width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }
-const onlineNokta = { position: 'absolute', right: 0, bottom: 2, width: 16, height: 16, borderRadius: '50%', background: '#22c55e', border: '3px solid #0b2e23' }
+const basKart = { display: 'flex', alignItems: 'center', gap: 16, padding: 16 }
+const avatarImg = { width: 128, height: 128, borderRadius: '50%', objectFit: 'cover' }
+const onlineNokta = { position: 'absolute', right: 4, bottom: 6, width: 22, height: 22, borderRadius: '50%', background: '#22c55e', border: '3px solid #0b2e23' }
 const menuSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', textDecoration: 'none', color: 'inherit', cursor: 'pointer', marginBottom: 8 }
 const menuEtiketStil = { flex: 1, fontWeight: 600 }
 const okStil = { opacity: 0.5 }
@@ -130,7 +130,7 @@ export default function Profil() {
         <div style={avatarSarmal}>
           {profil.foto_url
             ? <img src={profil.foto_url} alt="Profil" style={avatarImg} className="buyutulebilir" />
-            : <div style={avatarBosFull}><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={30} /></div>}
+            : <div style={avatarBosFull}><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={56} /></div>}
           <span style={onlineNokta} />
         </div>
         <div style={basBilgi}>
