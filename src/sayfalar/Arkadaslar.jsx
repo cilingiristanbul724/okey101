@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
-import { engellenenleriGetir } from '../utils/moderasyon'
 import Durum from '../Durum'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
@@ -23,7 +22,6 @@ export default function Arkadaslar() {
   const [arkadaslar, setArkadaslar] = useState([])
   const [istekler, setIstekler] = useState([])
   const [iliskiler, setIliskiler] = useState([])
-  const [engellenenler, setEngellenenler] = useState([])
   const [aktifMasam, setAktifMasam] = useState(null)
 
   async function yukle() {
@@ -32,16 +30,14 @@ export default function Arkadaslar() {
     setBenimId(uid)
     if (!uid) return
 
-    setEngellenenler(await engellenenleriGetir(uid))
-
     const { data: kabul } = await supabase.from('arkadaslar')
-      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme)')
+      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme)')
       .eq('durum', 'Kabul')
       .or('isteyen_id.eq.' + uid + ',istenen_id.eq.' + uid)
     setArkadaslar(kabul || [])
 
     const { data: bekleyen } = await supabase.from('arkadaslar')
-      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet)')
+      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url)')
       .eq('durum', 'Beklemede').eq('istenen_id', uid)
     setIstekler(bekleyen || [])
 
@@ -69,10 +65,10 @@ export default function Arkadaslar() {
     if (!arama.trim()) return
     const q = arama.trim()
     const { data } = await supabase.from('profiles')
-      .select('id, kullanici_adi, ad_soyad, foto_url, cinsiyet')
-      .or('kullanici_adi.ilike.%' + q + '%,ad_soyad.ilike.%' + q + '%')
+      .select('id, kullanici_adi, ad_soyad, foto_url')
+      .ilike('kullanici_adi', '%' + q + '%')
       .limit(15)
-    setSonuclar((data || []).filter(p => p.id !== benimId && !engellenenler.includes(p.id)))
+    setSonuclar((data || []).filter(p => p.id !== benimId))
   }
 
   async function istekGonder(istenenId) {
@@ -144,9 +140,9 @@ export default function Arkadaslar() {
         </div>
       )}
 
-      <label>Kullanıcı adı veya ad soyad ile ara</label>
+      <label>Kullanıcı adı ile ara</label>
       <input value={arama} onChange={e => setArama(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && ara()} placeholder="kullanıcı adı ya da ad soyad..." />
+        onKeyDown={e => e.key === 'Enter' && ara()} placeholder="kullanıcı adı..." />
       <button onClick={ara}>Ara</button>
 
       {sonuclar.map(p => (
