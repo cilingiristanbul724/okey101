@@ -3,7 +3,6 @@ import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
 import SifreInput from '../SifreInput'
-import { cevrimiciMi } from '../Durum'
 
 const SORULAR = [
   'İlk evcil hayvanının adı?',
@@ -25,7 +24,7 @@ const kameraBtn = { display: 'inline-flex', alignItems: 'center', gap: '8px' }
 
 const basKart = { display: 'flex', alignItems: 'center', gap: 18, padding: 18 }
 const avatarImg = { width: 128, height: 128, borderRadius: '50%', objectFit: 'cover' }
-const onlineNokta = { position: 'absolute', right: 4, bottom: 6, width: 22, height: 22, borderRadius: '50%', border: '3px solid #0b2e23' }
+const onlineNokta = { position: 'absolute', right: 4, bottom: 6, width: 22, height: 22, borderRadius: '50%', border: '3px solid #0b2e23', background: '#22c55e' }
 const menuSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', textDecoration: 'none', color: 'inherit', cursor: 'pointer', marginBottom: 8 }
 const menuEtiketStil = { flex: 1, fontWeight: 600 }
 const okStil = { opacity: 0.5 }
@@ -170,8 +169,6 @@ export default function Profil() {
     justifyContent: 'center',
   }
   const avatarBosFull = Object.assign({}, avatarImg, avatarBosStil)
-  const online = cevrimiciMi(profil.son_gorulme)
-  const onlineNoktaFull = Object.assign({}, onlineNokta, { background: online ? '#22c55e' : '#6b7280' })
 
   return (
     <div className="sayfa">
@@ -182,7 +179,7 @@ export default function Profil() {
           {profil.foto_url
             ? <img src={profil.foto_url} alt="Profil" style={avatarImg} className="buyutulebilir" />
             : <div style={avatarBosFull}><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={56} /></div>}
-          <span style={onlineNoktaFull} title={online ? 'çevrimiçi' : 'çevrimdışı'} />
+          <span style={onlineNokta} title="çevrimiçi" />
         </div>
         <div style={basBilgi}>
           <div style={basAd}>{profil.ad_soyad || 'Oyuncu'}</div>
