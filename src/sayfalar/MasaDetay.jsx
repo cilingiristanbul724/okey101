@@ -13,6 +13,9 @@ const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const griButon = { background: '#6b7280' }
+const onayAksiyon = { display: 'flex', gap: 8, flexShrink: 0 }
+const onayIkonBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+const redIkonBtn = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -234,9 +237,9 @@ export default function MasaDetay() {
           </div>
           <ArkadasButon hedefId={o.oyuncu_id} />
           {sahibiMiyim && o.katilim_durumu === 'Talep' && (
-            <span>
-              <button onClick={() => onayla(o.id)}>Onayla</button>
-              <button onClick={() => reddet(o.id)} style={tehlikeButon}>Reddet</button>
+            <span style={onayAksiyon}>
+              <button onClick={() => onayla(o.id)} style={onayIkonBtn} title="Onayla" aria-label="Onayla">✓</button>
+              <button onClick={() => reddet(o.id)} style={redIkonBtn} title="Reddet" aria-label="Reddet">✕</button>
             </span>
           )}
         </div>
