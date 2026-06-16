@@ -1,22 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { konumAl, mesafeKm } from '../utils/konum'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
 import { engellenenleriGetir } from '../utils/moderasyon'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
-import CinsiyetRozet from '../CinsiyetRozet'
 import Tanitim from '../Tanitim'
-
-// Bu mesafe (km) icindeki masalar listelenir.
-const YAKIN_KM = 50
 
 const ikonYesil = { background: 'linear-gradient(135deg, #16a34a, #15803d)' }
 const ikonAltin = { background: 'linear-gradient(135deg, #f6d65b, #e8b923)', color: '#2a2200' }
 const ikonMavi = { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }
-const basRozet = { display: 'flex', alignItems: 'center', gap: 6 }
 const acanAd = { color: '#9fb8ab' }
 
 function masaAcikMi(m) {
@@ -29,8 +23,6 @@ export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [acanlar, setAcanlar] = useState({})
   const [doluluk, setDoluluk] = useState({})
-  const [konum, setKonum] = useState(null)
-  const [konumDurum, setKonumDurum] = useState('Konum alınıyor...')
   const [benimId, setBenimId] = useState(null)
   const [katildiklarim, setKatildiklarim] = useState([])
   const [engellenenler, setEngellenenler] = useState([])
@@ -42,12 +34,6 @@ export default function MasaListesi() {
       setBenimId(uid)
       if (uid) setEngellenenler(await engellenenleriGetir(uid))
     })
-  }, [])
-
-  useEffect(() => {
-    konumAl()
-      .then(k => { setKonum(k); setKonumDurum('') })
-      .catch(() => setKonumDurum('Konum alınamadı — tüm açık masalar gösteriliyor.'))
   }, [])
 
   useEffect(() => {
@@ -103,27 +89,14 @@ export default function MasaListesi() {
     alert('Katılım talebin gönderildi!')
   }
 
-  function benimleIlgili(m) {
-    if (benimId && m.acan_id === benimId) return true
-    if (katildiklarim.includes(m.id)) return true
-    return false
-  }
-
   const liste = masalar
     .filter(masaAcikMi)
     .filter(m => !engellenenler.includes(m.acan_id))
     .map(m => ({
       ...m,
-      uzaklik: konum ? mesafeKm(konum.enlem, konum.boylam, m.enlem, m.boylam) : null,
       benim: benimId && m.acan_id === benimId,
       katildim: katildiklarim.includes(m.id),
     }))
-    .filter(m => m.benim || m.katildim || konum == null || m.uzaklik == null || m.uzaklik <= YAKIN_KM)
-    .sort((a, b) => {
-      if (a.uzaklik == null) return 1
-      if (b.uzaklik == null) return -1
-      return a.uzaklik - b.uzaklik
-    })
 
   const gosterilen = hepsi ? liste : liste.slice(0, 5)
 
@@ -151,13 +124,12 @@ export default function MasaListesi() {
       </div>
 
       <div className="bolum-bas">
-        <h3>Yakındaki Aktif Masalar</h3>
+        <h3>Aktif Masalar</h3>
         {liste.length > 5 && (
           <button className="tumunu-gor" onClick={() => setHepsi(v => !v)}>{hepsi ? 'Daha az' : 'Tümünü Gör'}</button>
         )}
       </div>
-      {konumDurum && <p className="ipucu">{konumDurum}</p>}
-      {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
+      {liste.length === 0 && <p>Şu an açık masa yok. İlk masayı sen aç!</p>}
       {gosterilen.map(m => {
         const acanP = acanlar[m.acan_id]
         const dolu = (doluluk[m.id] || 0) + 1
@@ -166,9 +138,8 @@ export default function MasaListesi() {
             <Link to={'/masa/' + m.id} className="masa-satir-ic">
               <div className="masa-satir-ikon"><Ikon ad="masalar" boyut={20} /></div>
               <div className="masa-satir-metin">
-                <div className="masa-satir-bas" style={basRozet}>
+                <div className="masa-satir-bas">
                   <span>{m.baslik || m.mekan_adi || '101 Okey Masası'}</span>
-                  {acanP && <CinsiyetRozet cinsiyet={acanP.cinsiyet} boyut={12} />}
                 </div>
                 <div className="masa-satir-alt">
                   {acanP && acanP.kullanici_adi && <span style={acanAd}>@{acanP.kullanici_adi}</span>}
@@ -178,9 +149,6 @@ export default function MasaListesi() {
               </div>
             </Link>
             <div className="masa-satir-sag">
-              {m.uzaklik != null && (
-                <span className="masa-mesafe"><Ikon ad="pin" boyut={12} /> {m.uzaklik.toFixed(1)} km</span>
-              )}
               {m.benim ? (
                 <span className="rozet rozet-yesil">Senin masan</span>
               ) : m.katildim ? (
