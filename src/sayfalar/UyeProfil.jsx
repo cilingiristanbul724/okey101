@@ -3,7 +3,6 @@ import { useParams, useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Durum from '../Durum'
 import Ikon from '../Ikon'
-import CinsiyetRozet, { cinsiyetIkonAdi } from '../CinsiyetRozet'
 import { engelliMi, engelle, engelKaldir, sikayetEt } from '../utils/moderasyon'
 import { onay, girdiAl } from '../utils/onay'
 
@@ -11,7 +10,6 @@ const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', co
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const griButon = { background: '#6b7280' }
 const adStil = { fontSize: '18px', fontWeight: 800, color: 'var(--metin)', margin: '0 0 4px' }
-const adRozetSatir = { display: 'inline-flex', alignItems: 'center', gap: 6 }
 const durumStil = { marginTop: '6px' }
 
 export default function UyeProfil() {
@@ -74,10 +72,10 @@ export default function UyeProfil() {
       <div className="profil-foto-alani">
         {profil.foto_url
           ? <img className="profil-foto" src={profil.foto_url} alt="" />
-          : <div className="profil-foto profil-foto-bos"><Ikon ad={cinsiyetIkonAdi(profil.cinsiyet)} boyut={56} /></div>}
+          : <div className="profil-foto profil-foto-bos"><Ikon ad="kullanici" boyut={56} /></div>}
       </div>
       <div className="kart ortala">
-        <p style={adStil}><span style={adRozetSatir}>{profil.kullanici_adi || profil.ad_soyad || 'Kullanıcı'}<CinsiyetRozet cinsiyet={profil.cinsiyet} boyut={15} /></span></p>
+        <p style={adStil}>{profil.kullanici_adi || profil.ad_soyad || 'Kullanıcı'}</p>
         {profil.ad_soyad && <div>{profil.ad_soyad}</div>}
         {profil.cinsiyet && <div className="ipucu">{profil.cinsiyet}</div>}
         <div style={durumStil}><Durum sonGorulme={profil.son_gorulme} /></div>
