@@ -11,8 +11,9 @@ self.addEventListener('push', event => {
     veri = { govde: event.data ? event.data.text() : '' }
   }
   const baslik = veri.baslik || '101 RakipBul'
+  const govde = (veri.govde && String(veri.govde).trim()) || 'Yeni bir bildirimin var. Açmak için dokun.'
   const secenekler = {
-    body: veri.govde || '',
+    body: govde,
     icon: veri.ikon || '/okey101/logo192.png',
     badge: veri.ikon || '/okey101/logo192.png',
     data: { url: veri.url || '/okey101/' },
