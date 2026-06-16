@@ -39,4 +39,4 @@ create policy "davet_okuma" on masa_oyunculari
 -- ============================================================
 -- alter table masa_oyunculari drop constraint if exists masa_oyunculari_katilim_durumu_check;
 -- alter table masa_oyunculari add constraint masa_oyunculari_katilim_durumu_check
---   check (katilim_durumu in ('Talep','Onayli','Red','Davet'));
+check (katilim_durumu in ('Talep','Onayli','Red','Davet'));
