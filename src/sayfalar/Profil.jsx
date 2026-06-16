@@ -34,13 +34,6 @@ const basAd = { fontWeight: 800, fontSize: 26, lineHeight: 1.2 }
 const basKullanici = { fontSize: 17, color: '#9fb8ab', marginTop: 6, fontWeight: 600 }
 const menuIkonStil = (renk) => ({ width: 38, height: 38, borderRadius: 10, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
-const uyariSar = { position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24, zIndex: 80, background: 'rgba(8,24,18,0.62)', backdropFilter: 'blur(3px)' }
-const uyariKart = { background: '#11402f', border: '1px solid rgba(232,185,35,0.32)', borderRadius: 20, padding: '32px 26px', textAlign: 'center', maxWidth: 330, width: '100%', boxShadow: '0 24px 70px rgba(0,0,0,0.5)', animation: 'uyariGir .25s ease-out' }
-const uyariIkonSar = { width: 68, height: 68, borderRadius: '50%', background: 'rgba(232,185,35,0.15)', color: '#e8b923', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }
-const uyariBaslik = { fontSize: 22, fontWeight: 800, margin: '0 0 8px', color: '#eaf3ee' }
-const uyariMetin = { color: '#9fb8ab', fontSize: '14.5px', lineHeight: 1.5, margin: '0 0 22px' }
-const uyariBtn = { width: '100%', padding: '13px', fontSize: 15 }
-
 const cinsiyetRenk = {
   'Kadın': '#ec4899',
   'Erkek': '#3b82f6',
@@ -98,8 +91,8 @@ export default function Profil() {
   useEffect(() => { if (loc.state && loc.state.duzenle) setDuzenleAcik(true) }, [loc.state])
   useEffect(() => {
     if (hazir && !profil) {
-      const z = setTimeout(() => navigate('/giris', { replace: true }), 2200)
-      return () => clearTimeout(z)
+      window.dispatchEvent(new CustomEvent('okey-bildir', { detail: { mesaj: 'Önce giriş yapmalısın!', tip: 'bilgi' } }))
+      navigate('/giris', { replace: true })
     }
   }, [hazir, profil])
 
@@ -166,16 +159,7 @@ export default function Profil() {
   }
 
   if (!hazir) return <p className="sayfa">Yükleniyor...</p>
-  if (!profil) return (
-    <div style={uyariSar}>
-      <div style={uyariKart}>
-        <div style={uyariIkonSar}><Ikon ad="giris" boyut={34} /></div>
-        <h3 style={uyariBaslik}>Önce Giriş Yapmalısın!</h3>
-        <p style={uyariMetin}>Profilini görmek için hesabına giriş yapman gerekiyor. Birkaç saniye içinde giriş sayfasına yönlendirileceksin.</p>
-        <button onClick={() => navigate('/giris', { replace: true })} style={uyariBtn}>Giriş Yap</button>
-      </div>
-    </div>
-  )
+  if (!profil) return null
 
   const avatarBosStil = {
     background: cinsiyetRenk[cinsiyet] || '#6b7280',
