@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 
 const SORULAR = [
@@ -20,8 +20,11 @@ function hatirlaKaydet(beniHatirla) {
 }
 
 export default function Giris() {
-  const [mod, setMod] = useState('giris')
-  const [kullaniciAdi, setKullaniciAdi] = useState('')
+  const loc = useLocation()
+  const baslangicMod = (loc.state && loc.state.mod) ? loc.state.mod : 'giris'
+  const baslangicKullanici = (loc.state && loc.state.kullaniciAdi) ? loc.state.kullaniciAdi : ''
+  const [mod, setMod] = useState(baslangicMod)
+  const [kullaniciAdi, setKullaniciAdi] = useState(baslangicKullanici)
   const [adSoyad, setAdSoyad] = useState('')
   const [cinsiyet, setCinsiyet] = useState('Belirtmek istemiyorum')
   const [sifre, setSifre] = useState('')

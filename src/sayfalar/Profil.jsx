@@ -1,10 +1,24 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
 
+const SORULAR = [
+  'İlk evcil hayvanının adı?',
+  'Doğduğun şehir?',
+  'İlkokul öğretmeninin soyadı?',
+  'En sevdiğin takım?',
+  'Annenin kızlık soyadı?',
+]
+
+const ILETISIM_MAIL = 'mailto:bombilla3434@gmail.com?subject=101%20RakipBul%20Destek%20Talebi'
+
 const cikisButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', marginTop: 8 }
 const kaydetButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
+const islemButon = { background: '#0ea5e9', marginTop: 8 }
+const islemButonGri = { background: '#6b7280', marginTop: 8 }
+const iletisimBtn = { display: 'block', textAlign: 'center', background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', padding: '12px', borderRadius: 12, textDecoration: 'none', fontWeight: 700, marginTop: 8 }
+const guvenlikBaslik = { marginTop: 18, marginBottom: 4 }
 const kameraBtn = { display: 'inline-flex', alignItems: 'center', gap: '8px' }
 
 const basKart = { display: 'flex', alignItems: 'center', gap: 18, padding: 18 }
@@ -48,7 +62,14 @@ export default function Profil() {
   const [kayitDurum, setKayitDurum] = useState('')
   const [hazir, setHazir] = useState(false)
   const [duzenleAcik, setDuzenleAcik] = useState(false)
+  const [acikIslem, setAcikIslem] = useState('')
+  const [islemDurum, setIslemDurum] = useState('')
+  const [yeniSifre, setYeniSifre] = useState('')
+  const [yeniSifre2, setYeniSifre2] = useState('')
+  const [yeniSoru, setYeniSoru] = useState(SORULAR[0])
+  const [yeniCevap, setYeniCevap] = useState('')
   const navigate = useNavigate()
+  const loc = useLocation()
 
   async function yukle() {
     const res = await supabase.auth.getUser()
@@ -66,6 +87,7 @@ export default function Profil() {
     setHazir(true)
   }
   useEffect(() => { yukle() }, [])
+  useEffect(() => { if (loc.state && loc.state.duzenle) setDuzenleAcik(true) }, [loc.state])
 
   async function fotoSec(e) {
     const dosya = e.target.files && e.target.files[0]
@@ -99,6 +121,29 @@ export default function Profil() {
     }
     setKayitDurum('Bilgiler kaydedildi ✅')
     yukle()
+  }
+
+  async function sifreDegistir() {
+    if (!yeniSifre || yeniSifre.length < 6) { setIslemDurum('Yeni şifre en az 6 karakter olmalı.'); return }
+    if (yeniSifre !== yeniSifre2) { setIslemDurum('Şifreler eşleşmiyor.'); return }
+    setIslemDurum('Şifre güncelleniyor...')
+    const { error } = await supabase.auth.updateUser({ password: yeniSifre })
+    if (error) { setIslemDurum('Hata: ' + error.message); return }
+    setIslemDurum('Şifren güncellendi ✅')
+    setYeniSifre(''); setYeniSifre2('')
+  }
+
+  async function gizliSoruKaydet() {
+    if (!yeniCevap.trim()) { setIslemDurum('Cevap boş olamaz.'); return }
+    setIslemDurum('Güvenlik sorusu kaydediliyor...')
+    const { error } = await supabase.rpc('guvenlik_kaydet', { p_soru: yeniSoru, p_cevap: yeniCevap.trim() })
+    if (error) { setIslemDurum('Hata: ' + error.message); return }
+    setIslemDurum('Güvenlik sorun güncellendi ✅')
+    setYeniCevap('')
+  }
+
+  function sifremiUnuttum() {
+    navigate('/giris', { state: { mod: 'sifirla', kullaniciAdi: (profil && profil.kullanici_adi) || '' } })
   }
 
   async function cikisYap() {
@@ -152,26 +197,62 @@ export default function Profil() {
       </div>
 
       {duzenleAcik && (
-        <div className="kart">
-          <div className="ortala">
-            <label className="btn-gibi" style={kameraBtn}>
-              <Ikon ad="kamera" boyut={18} /> Galeriden Fotoğraf Seç
-              <input type="file" accept="image/*" onChange={fotoSec} />
-            </label>
+        <>
+          <div className="kart">
+            <div className="ortala">
+              <label className="btn-gibi" style={kameraBtn}>
+                <Ikon ad="kamera" boyut={18} /> Galeriden Fotoğraf Seç
+                <input type="file" accept="image/*" onChange={fotoSec} />
+              </label>
+            </div>
+            {kayitDurum && <p className="ipucu ortala">{kayitDurum}</p>}
+            <label>Ad Soyad</label>
+            <input value={adSoyad} onChange={e => setAdSoyad(e.target.value)} placeholder="Adın Soyadın" />
+            <label>Kullanıcı Adı</label>
+            <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
+            <label>Cinsiyet</label>
+            <select value={cinsiyet} onChange={e => setCinsiyet(e.target.value)}>
+              <option>Kadın</option>
+              <option>Erkek</option>
+              <option>Belirtmek istemiyorum</option>
+            </select>
+            <button onClick={bilgiKaydet} style={kaydetButon}>Bilgileri Kaydet</button>
           </div>
-          {kayitDurum && <p className="ipucu ortala">{kayitDurum}</p>}
-          <label>Ad Soyad</label>
-          <input value={adSoyad} onChange={e => setAdSoyad(e.target.value)} placeholder="Adın Soyadın" />
-          <label>Kullanıcı Adı</label>
-          <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
-          <label>Cinsiyet</label>
-          <select value={cinsiyet} onChange={e => setCinsiyet(e.target.value)}>
-            <option>Kadın</option>
-            <option>Erkek</option>
-            <option>Belirtmek istemiyorum</option>
-          </select>
-          <button onClick={bilgiKaydet} style={kaydetButon}>Bilgileri Kaydet</button>
-        </div>
+
+          <div className="kart">
+            <h3 style={guvenlikBaslik}>Hesap ve Güvenlik</h3>
+
+            <button onClick={() => { setAcikIslem(acikIslem === 'sifre' ? '' : 'sifre'); setIslemDurum('') }} style={islemButon}>Şifremi Değiştir</button>
+            {acikIslem === 'sifre' && (
+              <div className="kart">
+                <label>Yeni Şifre</label>
+                <input type="password" value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
+                <label>Yeni Şifre (Tekrar)</label>
+                <input type="password" value={yeniSifre2} onChange={e => setYeniSifre2(e.target.value)} placeholder="Yeni şifreyi tekrar yaz" />
+                <button onClick={sifreDegistir} style={kaydetButon}>Şifreyi Güncelle</button>
+              </div>
+            )}
+
+            <button onClick={sifremiUnuttum} style={islemButonGri}>Şifremi Unuttum</button>
+
+            <button onClick={() => { setAcikIslem(acikIslem === 'gizli' ? '' : 'gizli'); setIslemDurum('') }} style={islemButon}>Gizli Sorumu Değiştir</button>
+            {acikIslem === 'gizli' && (
+              <div className="kart">
+                <label>Güvenlik Sorusu</label>
+                <select value={yeniSoru} onChange={e => setYeniSoru(e.target.value)}>
+                  {SORULAR.map(s => <option key={s}>{s}</option>)}
+                </select>
+                <label>Cevabın</label>
+                <input value={yeniCevap} onChange={e => setYeniCevap(e.target.value)} placeholder="Yeni cevabını yaz" />
+                <button onClick={gizliSoruKaydet} style={kaydetButon}>Güvenlik Sorusunu Kaydet</button>
+              </div>
+            )}
+
+            <a href={ILETISIM_MAIL} style={iletisimBtn}>Yetkili ile İletişime Geç</a>
+
+            {islemDurum && <p className="ipucu ortala">{islemDurum}</p>}
+          </div>
+        </>
       )}
 
       <button onClick={cikisYap} style={cikisButon}>Çıkış Yap</button>
