@@ -25,6 +25,26 @@ import Hakkinda from './sayfalar/Hakkinda'
 const girisBtnStil = { background: 'transparent', border: '1px solid rgba(232,185,35,0.55)', color: '#e8b923', padding: '7px 12px', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: 'none', whiteSpace: 'nowrap' }
 const uyeolBtnStil = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', border: 'none', padding: '7px 12px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }
 const girisAksiyonStil = { display: 'flex', alignItems: 'center', gap: 8 }
+const misafirGizliSayfalar = ['/sohbet', '/arkadaslar', '/profil']
+
+function useGirisDurumu() {
+  const [girisli, setGirisli] = useState(false)
+  const [hazir, setHazir] = useState(false)
+  useEffect(() => {
+    let iptal = false
+    supabase.auth.getSession().then(({ data }) => {
+      if (iptal) return
+      setGirisli(!!(data.session && data.session.user))
+      setHazir(true)
+    })
+    const abone = supabase.auth.onAuthStateChange((_olay, session) => {
+      setGirisli(!!(session && session.user))
+      setHazir(true)
+    })
+    return () => { iptal = true; abone.data.subscription.unsubscribe() }
+  }, [])
+  return { girisli, hazir }
+}
 
 function KurulumKontrol() {
   const konum = useLocation()
@@ -63,7 +83,9 @@ function YukariKaydir() {
 function GeriBar() {
   const konum = useLocation()
   const navigate = useNavigate()
+  const { girisli } = useGirisDurumu()
   if (konum.pathname === '/') return null
+  if (!girisli && misafirGizliSayfalar.includes(konum.pathname)) return null
   return (
     <div className="geri-bar">
       <button className="geri-btn" onClick={() => navigate(-1)} aria-label="Geri">
@@ -75,21 +97,7 @@ function GeriBar() {
 
 function UstBar() {
   const navigate = useNavigate()
-  const [girisli, setGirisli] = useState(false)
-  const [hazir, setHazir] = useState(false)
-  useEffect(() => {
-    let iptal = false
-    supabase.auth.getSession().then(({ data }) => {
-      if (iptal) return
-      setGirisli(!!(data.session && data.session.user))
-      setHazir(true)
-    })
-    const abone = supabase.auth.onAuthStateChange((_olay, session) => {
-      setGirisli(!!(session && session.user))
-      setHazir(true)
-    })
-    return () => { iptal = true; abone.data.subscription.unsubscribe() }
-  }, [])
+  const { girisli, hazir } = useGirisDurumu()
 
   return (
     <header className="ust-bar">
