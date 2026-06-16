@@ -31,7 +31,7 @@ export default function OzelSohbet() {
   const [arkadasMi, setArkadasMi] = useState(false)
   const [engelli, setEngelli] = useState(false)
   const [metin, setMetin] = useState('')
-  const sonRef = useRef(null)
+  const govdeRef = useRef(null)
 
   async function yukle(uid) {
     const { data } = await supabase.from('ozel_mesajlar').select('*')
@@ -77,7 +77,8 @@ export default function OzelSohbet() {
   }, [digerId])
 
   useEffect(() => {
-    sonRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const g = govdeRef.current
+    if (g) g.scrollTop = g.scrollHeight
   }, [mesajlar])
 
   async function gonder() {
@@ -108,14 +109,13 @@ export default function OzelSohbet() {
       {!engelli && !arkadasMi && (
         <div className="kart"><p className="ipucu">Mesajlaşabilmek için önce arkadaş olmanız gerekiyor.</p></div>
       )}
-      <div className="sohbet-govde">
+      <div className="sohbet-govde" ref={govdeRef}>
         {mesajlar.map(m => (
           <div key={m.id} className={'balon ' + (m.gonderen_id === benimId ? 'balon-ben' : 'balon-diger')}>
             <div className="balon-metin"><MesajIcerigi metin={m.icerik} /></div>
             <div className="balon-saat">{saat(m.created_at)}</div>
           </div>
         ))}
-        <div ref={sonRef} />
       </div>
       {yazabilir && (
         <div className="sohbet-giris">
