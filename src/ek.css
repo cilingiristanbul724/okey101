@@ -133,10 +133,14 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 
 /* === Tanitim / aciklama bolumu === */
 .tanitim { background: linear-gradient(160deg, #0e3a2a, #0a2c20); border: 1px solid #1c5a42; border-radius: 18px; padding: 20px 16px; margin-bottom: 16px; text-align: center; }
-.tanitim-bas { font-size: 23px; font-weight: 800; margin: 0 0 10px; background: linear-gradient(90deg, #ffffff, #bfe6d3); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.tanitim-alt { color: #cfe3d8; font-size: 14px; line-height: 1.55; margin: 0 auto 12px; max-width: 580px; }
+.tanitim-bas { font-size: 25px; font-weight: 800; margin: 0 0 12px; background: linear-gradient(90deg, #ffffff, #bfe6d3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tanitim-alt { color: #cfe3d8; font-size: 15.5px; line-height: 1.6; margin: 0 auto 14px; max-width: 580px; word-break: break-word; }
 .tanitim-alt b { color: #ffd84d; }
-.tanitim-uyari { display: inline-block; background: rgba(232,185,35,.12); border: 1px solid rgba(232,185,35,.5); color: #ffe08a; font-size: 12.5px; font-weight: 600; padding: 7px 14px; border-radius: 999px; margin-bottom: 16px; }
+.tanitim-uyari { display: inline-block; background: rgba(232,185,35,.12); border: 2px solid #ffffff; color: #ffe08a; font-size: 14.5px; font-weight: 600; padding: 9px 16px; border-radius: 999px; margin-bottom: 16px; word-break: break-word; max-width: 100%; animation: uyariYanip 1.3s ease-in-out infinite; }
+@keyframes uyariYanip {
+  0%, 100% { border-color: rgba(255,255,255,1); box-shadow: 0 0 10px rgba(255,255,255,.55); }
+  50% { border-color: rgba(255,255,255,.12); box-shadow: 0 0 0 rgba(255,255,255,0); }
+}
 .adimlar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .adim { background: rgba(255,255,255,.04); border: 1px solid #1c5a42; border-radius: 14px; padding: 16px 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
 .adim-no { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 900; color: #2a2200; background: linear-gradient(180deg, #f6d65b, #e8b923); margin-bottom: 3px; }
@@ -147,7 +151,9 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 .tanitim-link { margin: 4px 0 0; background: transparent; border: none; box-shadow: none; color: #4ade80; font-weight: 700; font-size: 13px; cursor: pointer; padding: 0; }
 @media (max-width: 520px) {
   .adimlar { grid-template-columns: 1fr; }
-  .tanitim-bas { font-size: 19px; }
+  .tanitim-bas { font-size: 21px; }
+  .tanitim-alt { font-size: 14.5px; }
+  .tanitim-uyari { font-size: 13.5px; }
   .adim { flex-direction: row; text-align: left; align-items: center; gap: 10px; flex-wrap: wrap; }
   .adim-no { margin-bottom: 0; flex-shrink: 0; }
   .adim b { flex: 1; }
