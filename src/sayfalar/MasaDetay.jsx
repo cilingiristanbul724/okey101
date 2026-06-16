@@ -4,6 +4,7 @@ import { supabase } from '../supabaseClient'
 import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import Durum from '../Durum'
+import CinsiyetRozet from '../CinsiyetRozet'
 import { konumAl, mesafeKm } from '../utils/konum'
 import { onay } from '../utils/onay'
 import { pushTetikle } from '../utils/push'
@@ -17,6 +18,7 @@ const atButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', white
 const onayAksiyon = { display: 'flex', gap: 8, flexShrink: 0 }
 const onayIkonBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const redIkonBtn = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
+const adRozetSatir = { display: 'flex', alignItems: 'center', gap: 6 }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -58,7 +60,7 @@ export default function MasaDetay() {
     if (masaSon) {
       setYeniBaslik(masaSon.baslik || masaSon.mekan_adi || '')
       setYeniSure(masaSon.sure_dk || 30)
-      const { data: ap } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,son_gorulme').eq('id', masaSon.acan_id).single()
+      const { data: ap } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme').eq('id', masaSon.acan_id).single()
       setAcan(ap)
       if (masaSon.enlem != null) {
         konumAl().then(k => setUzaklik(mesafeKm(k.enlem, k.boylam, masaSon.enlem, masaSon.boylam))).catch(() => {})
@@ -70,7 +72,7 @@ export default function MasaDetay() {
     const idler = oyl.map(x => x.oyuncu_id)
     const harita = {}
     if (idler.length) {
-      const { data: pr } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,son_gorulme').in('id', idler)
+      const { data: pr } = await supabase.from('profiles').select('id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme').in('id', idler)
       for (const p of pr || []) harita[p.id] = p
     }
     setOyuncular(oyl.map(x => ({ ...x, profil: harita[x.oyuncu_id] })))
@@ -224,7 +226,7 @@ export default function MasaDetay() {
         <Avatar p={acan} />
         <div className="satir-icerik">
           {acan
-            ? <Link to={'/uye/' + acan.id} className="uye-ad-link">{ad(acan, 'Masa sahibi')}</Link>
+            ? <span style={adRozetSatir}><Link to={'/uye/' + acan.id} className="uye-ad-link">{ad(acan, 'Masa sahibi')}</Link><CinsiyetRozet cinsiyet={acan.cinsiyet} boyut={13} /></span>
             : <div>Masa sahibi</div>}
           {acan && <Durum sonGorulme={acan.son_gorulme} />}
         </div>
@@ -237,7 +239,7 @@ export default function MasaDetay() {
         <div key={o.id} className="kart satir">
           <Avatar p={o.profil} />
           <div className="satir-icerik">
-            <Link to={'/uye/' + o.oyuncu_id} className="uye-ad-link">{ad(o.profil, 'Oyuncu')}</Link>
+            <span style={adRozetSatir}><Link to={'/uye/' + o.oyuncu_id} className="uye-ad-link">{ad(o.profil, 'Oyuncu')}</Link><CinsiyetRozet cinsiyet={o.profil && o.profil.cinsiyet} boyut={13} /></span>
             {o.profil && <Durum sonGorulme={o.profil.son_gorulme} />}
             <div className="ipucu">{o.katilim_durumu}</div>
           </div>
