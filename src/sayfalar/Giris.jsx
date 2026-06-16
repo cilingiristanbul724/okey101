@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
+import SifreInput from '../SifreInput'
 
 const SORULAR = [
   'İlk evcil hayvanının adı?',
@@ -137,11 +138,8 @@ export default function Giris() {
   const inputSar = { position: 'relative', margin: '12px 0' }
   const inputIkon = { position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#7fae9b', display: 'flex', pointerEvents: 'none' }
   const ikonluInput = { paddingLeft: 42, margin: 0 }
-  const sadeInput = { margin: '12px 0' }
   const anaBtn = { width: '100%', margin: '16px 0 0', padding: '14px', fontSize: 16 }
   const unutBtn = { width: '100%', margin: '10px 0 0', background: 'transparent', boxShadow: 'none', color: '#9fb8ab', textDecoration: 'underline', padding: '8px 0', fontWeight: 600, fontSize: '13px' }
-  const ayrac = { display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 4px', color: '#7fae9b', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px' }
-  const ayracCizgi = { flex: 1, height: 1, background: 'rgba(127,174,155,.3)' }
   const gecisSar = { textAlign: 'center', marginTop: 8, color: '#9fb8ab', fontSize: '14px' }
   const gecisBtn = { background: 'transparent', boxShadow: 'none', color: '#e8b923', textDecoration: 'underline', fontWeight: 700, padding: 0, margin: '0 0 0 6px', fontSize: '14px', width: 'auto', display: 'inline' }
 
@@ -176,7 +174,7 @@ export default function Giris() {
             <label>Cevabın</label>
             <input value={sifirlaCevap} onChange={e => setSifirlaCevap(e.target.value)} placeholder="Cevabını yaz" />
             <label>Yeni Şifre</label>
-            <input type="password" value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
+            <SifreInput value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
             <button onClick={sifreyiSifirla} disabled={yukleniyor}>Şifreyi Sıfırla</button>
             <button onClick={() => { setSifirlaAsama(1); setSifirlaCevap(''); setYeniSifre('') }} style={ikincilButon}>Geri</button>
           </>
@@ -195,7 +193,7 @@ export default function Giris() {
             <span style={inputIkon}><Ikon ad="kullanici" boyut={18} /></span>
             <input style={ikonluInput} value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="Kullanıcı adınızı girin" />
           </div>
-          <input style={sadeInput} type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifreniz" />
+          <SifreInput value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifreniz" />
 
           <label style={hatirlaSatir}>
             <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
@@ -222,7 +220,7 @@ export default function Giris() {
           <label>Kullanıcı Adı</label>
           <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
           <label>Şifre</label>
-          <input type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
+          <SifreInput value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
 
           <label>Güvenlik Sorusu</label>
           <select value={guvenlikSoru} onChange={e => setGuvenlikSoru(e.target.value)}>
