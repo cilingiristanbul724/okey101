@@ -56,35 +56,37 @@ function YukariKaydir() {
   return null
 }
 
-function UstBar() {
+function GeriBar() {
   const konum = useLocation()
   const navigate = useNavigate()
-  const anaSayfa = konum.pathname === '/'
+  if (konum.pathname === '/') return null
+  return (
+    <div className="geri-bar">
+      <button className="geri-btn" onClick={() => navigate(-1)} aria-label="Geri">
+        <Ikon ad="oksol" boyut={18} /> Geri
+      </button>
+    </div>
+  )
+}
+
+function UstBar() {
   return (
     <header className="ust-bar">
-      <div className="ust-sol">
-        {!anaSayfa && (
-          <button className="geri-btn" onClick={() => navigate(-1)} aria-label="Geri" title="Geri">
-            <Ikon ad="oksol" boyut={20} />
-          </button>
-        )}
-        <Link to="/" className="marka">
-          <span className="okey-taslar sol" aria-hidden="true">
-            <span className="okey-tas tas-kirmizi">7</span>
-            <span className="okey-tas tas-siyah tas-ek">3</span>
-          </span>
-          <span className="marka-101">101</span>
-          <span className="marka-ad">rakipbul</span>
-          <span className="okey-taslar sag" aria-hidden="true">
-            <span className="okey-tas tas-mavi">9</span>
-            <span className="okey-tas tas-sari tas-ek">1</span>
-          </span>
-        </Link>
-      </div>
+      <Link to="/" className="marka">
+        <span className="okey-taslar sol" aria-hidden="true">
+          <span className="okey-tas tas-kirmizi">7</span>
+          <span className="okey-tas tas-siyah tas-ek">3</span>
+        </span>
+        <span className="marka-101">101</span>
+        <span className="marka-ad">rakipbul</span>
+        <span className="okey-taslar sag" aria-hidden="true">
+          <span className="okey-tas tas-mavi">9</span>
+          <span className="okey-tas tas-sari tas-ek">1</span>
+        </span>
+      </Link>
       <div className="ust-aksiyon">
         <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
         <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
-        <Link to="/giris" title="Giriş"><Ikon ad="giris" boyut={20} /></Link>
       </div>
     </header>
   )
@@ -126,6 +128,7 @@ export default function App() {
       <UstBar />
 
       <main className="govde">
+        <GeriBar />
         <Routes>
           <Route path="/" element={<MasaListesi />} />
           <Route path="/masa-ac" element={<MasaAc />} />
