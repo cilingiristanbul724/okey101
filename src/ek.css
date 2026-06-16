@@ -139,6 +139,32 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 .kart-aksiyon { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 12px; }
 .kart-aksiyon button { margin: 0; }
 
+/* === Ana sayfa: Hizli Islemler === */
+.bolum-bas { display: flex; align-items: center; justify-content: space-between; margin: 18px 0 10px; }
+.bolum-bas h3 { margin: 0; font-size: 15px; color: var(--metin); text-transform: none; letter-spacing: 0; }
+.tumunu-gor { color: var(--altin); font-size: 13px; font-weight: 700; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; margin: 0; box-shadow: none; }
+.tumunu-gor:hover { text-decoration: underline; filter: none; }
+.hizli-liste { display: flex; flex-direction: column; gap: 10px; }
+.hizli-kart { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--kenar); background: linear-gradient(180deg, var(--panel), var(--panel-2)); box-shadow: var(--golge); text-decoration: none; color: inherit; transition: transform .12s ease, border-color .12s ease; }
+.hizli-kart:hover { transform: translateY(-1px); border-color: var(--altin); }
+.hizli-ikon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #fff; flex-shrink: 0; box-shadow: 0 2px 6px rgba(0,0,0,.3); }
+.hizli-metin { flex: 1; min-width: 0; }
+.hizli-metin b { display: block; font-size: 15.5px; color: var(--metin); font-weight: 800; }
+.hizli-metin span { font-size: 12.5px; color: var(--soluk); }
+.hizli-ok { color: var(--soluk); flex-shrink: 0; display: flex; }
+
+/* === Ana sayfa: aktif masa satirlari === */
+.masa-satir { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--kenar); background: linear-gradient(180deg, var(--panel), var(--panel-2)); box-shadow: var(--golge); margin-bottom: 10px; }
+.masa-satir-ic { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; text-decoration: none; color: inherit; }
+.masa-satir-ikon { width: 40px; height: 40px; border-radius: 12px; background: rgba(232,185,35,.14); color: var(--altin); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.masa-satir-metin { min-width: 0; }
+.masa-satir-bas { font-weight: 800; font-size: 15px; color: var(--metin); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.masa-satir-alt { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--soluk); margin-top: 3px; }
+.masa-satir-sag { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+.masa-mesafe { font-size: 12.5px; color: var(--altin); font-weight: 700; display: inline-flex; align-items: center; gap: 3px; }
+.katil-btn { margin: 0; padding: 8px 18px; font-size: 13px; }
+.masa-satir-sag .rozet { white-space: nowrap; }
+
 /* === Tanitim / aciklama bolumu === */
 .tanitim { background: linear-gradient(160deg, #0e3a2a, #0a2c20); border: 1px solid #1c5a42; border-radius: 18px; padding: 20px 16px; margin-bottom: 16px; text-align: center; }
 .tanitim-bas { font-size: 25px; font-weight: 800; margin: 0 0 12px; background: linear-gradient(90deg, #ffffff, #bfe6d3); -webkit-background-clip: text; background-clip: text; color: transparent; }

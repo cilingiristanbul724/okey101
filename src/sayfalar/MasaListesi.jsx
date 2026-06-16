@@ -8,7 +8,9 @@ import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
 import Tanitim from '../Tanitim'
 
-const inceleButon = { background: 'transparent', border: '1px solid #e8b923', color: '#e8b923', boxShadow: 'none' }
+const ikonYesil = { background: 'linear-gradient(135deg, #16a34a, #15803d)' }
+const ikonAltin = { background: 'linear-gradient(135deg, #f6d65b, #e8b923)', color: '#2a2200' }
+const ikonMavi = { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }
 
 function masaAcikMi(m) {
   if (m.durum !== 'Acik') return false
@@ -22,6 +24,7 @@ export default function MasaListesi() {
   const [konumDurum, setKonumDurum] = useState('Konum alınıyor...')
   const [benimId, setBenimId] = useState(null)
   const [katildiklarim, setKatildiklarim] = useState([])
+  const [hepsi, setHepsi] = useState(false)
 
   useEffect(() => {
     supabase.auth.getUser().then(res => setBenimId(res.data.user ? res.data.user.id : null))
@@ -49,7 +52,6 @@ export default function MasaListesi() {
     const user = res.data.user
     if (!user) return alert('Önce giriş yapmalısın!')
 
-    // Bir uye ayni anda yalnizca 1 masaya katilabilir
     const { data: katilimlarim } = await supabase.from('masa_oyunculari')
       .select('masa_id,katilim_durumu').eq('oyuncu_id', user.id)
       .in('katilim_durumu', ['Talep', 'Onayli'])
@@ -90,37 +92,68 @@ export default function MasaListesi() {
       return a.uzaklik - b.uzaklik
     })
 
+  const gosterilen = hepsi ? liste : liste.slice(0, 5)
+
   return (
     <div className="sayfa">
       <Tanitim />
-      <h2>Açık Masalar — İstanbul Anadolu Yakası</h2>
+
+      <div className="bolum-bas"><h3>Hızlı İşlemler</h3></div>
+      <div className="hizli-liste">
+        <Link to="/arkadaslar" className="hizli-kart">
+          <div className="hizli-ikon" style={ikonYesil}><Ikon ad="arkadaslar" boyut={22} /></div>
+          <div className="hizli-metin"><b>Oyuncu Ara</b><span>Yakındaki oyuncuları bul</span></div>
+          <span className="hizli-ok"><Ikon ad="oksag" boyut={18} /></span>
+        </Link>
+        <Link to="/masa-ac" className="hizli-kart">
+          <div className="hizli-ikon" style={ikonAltin}><Ikon ad="masalar" boyut={22} /></div>
+          <div className="hizli-metin"><b>Masa Kur</b><span>Yeni masa aç ve oyuncu bekle</span></div>
+          <span className="hizli-ok"><Ikon ad="oksag" boyut={18} /></span>
+        </Link>
+        <Link to="/bildirimler" className="hizli-kart">
+          <div className="hizli-ikon" style={ikonMavi}><Ikon ad="zil" boyut={22} /></div>
+          <div className="hizli-metin"><b>Masa Davetleri</b><span>Davet et, birlikte oynayın</span></div>
+          <span className="hizli-ok"><Ikon ad="oksag" boyut={18} /></span>
+        </Link>
+      </div>
+
+      <div className="bolum-bas">
+        <h3>Yakındaki Aktif Masalar</h3>
+        {liste.length > 5 && (
+          <button className="tumunu-gor" onClick={() => setHepsi(v => !v)}>{hepsi ? 'Daha az' : 'Tümünü Gör'}</button>
+        )}
+      </div>
       {konumDurum && <p className="ipucu">{konumDurum}</p>}
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
-      {liste.map(m => (
-        <div key={m.id} className="kart kart-masa">
-          <div className="kart-bas">
-            <b>{m.baslik || m.mekan_adi || 'Masa'}</b>
-            <GeriSayim bitis={m.bitis_zamani} />
+      {gosterilen.map(m => {
+        const dolu = m.mevcut_kisi || 1
+        return (
+          <div key={m.id} className="masa-satir">
+            <Link to={'/masa/' + m.id} className="masa-satir-ic">
+              <div className="masa-satir-ikon"><Ikon ad="masalar" boyut={20} /></div>
+              <div className="masa-satir-metin">
+                <div className="masa-satir-bas">{m.baslik || m.mekan_adi || '101 Okey Masası'}</div>
+                <div className="masa-satir-alt">
+                  <span>{dolu}/4 Kişi</span>
+                  <GeriSayim bitis={m.bitis_zamani} />
+                </div>
+              </div>
+            </Link>
+            <div className="masa-satir-sag">
+              {m.uzaklik != null && (
+                <span className="masa-mesafe"><Ikon ad="pin" boyut={12} /> {m.uzaklik.toFixed(1)} km</span>
+              )}
+              {m.benim ? (
+                <span className="rozet rozet-yesil">Senin masan</span>
+              ) : m.katildim ? (
+                <span className="rozet rozet-yesil">Katıldın</span>
+              ) : (
+                <button className="katil-btn" onClick={() => katil(m.id)}>Katıl</button>
+              )}
+            </div>
           </div>
-          {m.baslik && m.mekan_adi && <div className="ipucu">{m.mekan_adi}</div>}
-          <div>{m.adres}</div>
-          <div>Aranan kişi: {m.aranan_kisi}</div>
-          {m.uzaklik != null && (
-            <div className="mesafe"><Ikon ad="pin" boyut={14} /> {m.uzaklik.toFixed(1)} km uzaklıkta</div>
-          )}
-          {m.notu && <div className="kart-not">Not: {m.notu}</div>}
-          <div className="kart-aksiyon">
-            {m.benim ? (
-              <span className="rozet rozet-yesil">Senin masan</span>
-            ) : m.katildim ? (
-              <span className="rozet rozet-yesil">Katıldın</span>
-            ) : (
-              <button onClick={() => katil(m.id)}>Katıl</button>
-            )}
-            <Link to={'/masa/' + m.id}><button style={inceleButon}>İncele</button></Link>
-          </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }
