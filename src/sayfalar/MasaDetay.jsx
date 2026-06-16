@@ -162,11 +162,15 @@ export default function MasaDetay() {
           <span>Durum: {masa.durum}</span>
           {acikMi ? <GeriSayim bitis={masa.bitis_zamani} /> : <span className="rozet rozet-kirmizi">Kapalı</span>}
         </div>
-        {masa.mekan_adi && <p><b>{masa.mekan_adi}</b></p>}
+        {masa.mekan_adi && <p className="mekan-satir"><b>Mekan:</b> {masa.mekan_adi}</p>}
         <p>📍 {masa.adres}</p>
         {masa.notu && <p>Not: {masa.notu}</p>}
-        {uzaklik != null && <p className="mesafe">Sana {uzaklik.toFixed(1)} km uzaklıkta</p>}
-        {yolTarifi && <a href={yolTarifi} target="_blank" rel="noreferrer">🧭 Yol tarifi al</a>}
+        {(uzaklik != null || yolTarifi) && (
+          <div className="mesafe-kutu">
+            {uzaklik != null && <span className="mesafe">📍 Sana {uzaklik.toFixed(1)} km uzaklıkta</span>}
+            {yolTarifi && <a className="yol-tarifi" href={yolTarifi} target="_blank" rel="noreferrer">🧭 Yol tarifi al</a>}
+          </div>
+        )}
       </div>
 
       {sahibiMiyim && acikMi && !duzenleMod && (
