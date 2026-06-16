@@ -40,9 +40,19 @@ export default function MasaDetay() {
 
     const { data: m } = await supabase.from('masalar').select('*').eq('id', id).single()
     let masaSon = m
-    if (m && uid === m.acan_id && m.durum === 'Acik' && m.bitis_zamani && zamanMs(m.bitis_zamani) < Date.now()) {
-      await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
-      masaSon = { ...m, durum: 'Kapali' }
+    if (m && uid === m.acan_id && m.durum === 'Acik') {
+      const bitisMs = zamanMs(m.bitis_zamani)
+      const suresiDoldu = bitisMs > 0 && bitisMs <= Date.now()
+      // Eslesme olduysa (Onayli oyuncu varsa) sure dolsa bile otomatik kapatma;
+      // bu durumda masayi yalnizca sahibi 'Masayi Kapat' ile kapatabilir.
+      const { count: onayliSayi } = await supabase.from('masa_oyunculari')
+        .select('id', { count: 'exact', head: true })
+        .eq('masa_id', id).eq('katilim_durumu', 'Onayli')
+      const eslesmeVar = (onayliSayi || 0) > 0
+      if (suresiDoldu && !eslesmeVar) {
+        await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
+        masaSon = { ...m, durum: 'Kapali' }
+      }
     }
     setMasa(masaSon)
     if (masaSon) {

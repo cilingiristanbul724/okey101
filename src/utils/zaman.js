@@ -1,13 +1,15 @@
 // timestamptz veya tz'siz timestamp degerini guvenli sekilde UTC milisaniyeye cevirir.
 // Postgres timestamptz degeri "+00:00" / "Z" iceren bir string doner; tz'siz timestamp icermez.
 // tz bilgisi yoksa degeri UTC kabul ederiz (cunku DB'ye .toISOString() ile UTC yaziyoruz).
-// Boylece UTC+3 gibi saat dilimlerinde masanin erken kapanmasi onlenir.
+// Ayristirma basarisiz olursa ham degeri de deneriz; boylece masa hatali sekilde erken kapanmaz.
 export function zamanMs(deger) {
   if (!deger) return 0
   if (deger instanceof Date) return deger.getTime()
-  let s = String(deger).trim().replace(' ', 'T')
+  const ham = String(deger).trim()
+  let s = ham.replace(' ', 'T')
   if (!/([zZ]|[+-]\d{2}:?\d{2})$/.test(s)) s += 'Z'
-  const t = new Date(s).getTime()
+  let t = new Date(s).getTime()
+  if (isNaN(t)) t = new Date(ham).getTime()
   return isNaN(t) ? 0 : t
 }
 
