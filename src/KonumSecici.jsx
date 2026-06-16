@@ -61,9 +61,11 @@ export default function KonumSecici({ enlem, boylam, onDegis }) {
 
   return (
     <div>
-      <button type="button" onClick={buradayim} disabled={yukleniyor} style={butonStil}>
-        <Ikon ad="pin" boyut={18} /> {yukleniyor ? 'Konum alınıyor...' : 'Buradayım (konumumu bul)'}
-      </button>
+      <div className="sag-aksiyon">
+        <button type="button" onClick={buradayim} disabled={yukleniyor} style={butonStil}>
+          <Ikon ad="pin" boyut={18} /> {yukleniyor ? 'Konum alınıyor...' : 'Buradayım (konumumu bul)'}
+        </button>
+      </div>
       {durum && <p className="ipucu">{durum}</p>}
       <MapContainer center={merkez} zoom={enlem != null ? 16 : 12} style={haritaStil} scrollWheelZoom={false}>
         <TileLayer url={tileUrl} />

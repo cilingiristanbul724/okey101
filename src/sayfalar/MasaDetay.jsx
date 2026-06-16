@@ -155,7 +155,7 @@ export default function MasaDetay() {
 
   return (
     <div className="sayfa">
-      <h2>{masa.baslik || masa.mekan_adi || 'Masa Detayı'}</h2>
+      <h2 className="masa-baslik">{masa.baslik || masa.mekan_adi || 'Masa Detayı'}</h2>
 
       <div className="kart">
         <div className="kart-bas">
