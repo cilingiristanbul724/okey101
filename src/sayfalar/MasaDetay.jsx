@@ -13,6 +13,7 @@ const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const griButon = { background: '#6b7280' }
+const atButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', whiteSpace: 'nowrap', padding: '8px 14px', margin: 0, flexShrink: 0 }
 const onayAksiyon = { display: 'flex', gap: 8, flexShrink: 0 }
 const onayIkonBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
 const redIkonBtn = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
@@ -103,6 +104,14 @@ export default function MasaDetay() {
     await supabase.from('masa_oyunculari').update({ katilim_durumu: 'Red' }).eq('id', satirId)
     yukle()
   }
+  async function masadanAt(satir) {
+    const adi = (satir.profil && (satir.profil.kullanici_adi || satir.profil.ad_soyad)) || 'Bu oyuncu'
+    const ok = await onay(adi + ' adlı oyuncuyu masadan atmak istediğine emin misin?', { baslik: 'Oyuncuyu At', onayMetin: 'At', tehlike: true })
+    if (!ok) return
+    const { error } = await supabase.from('masa_oyunculari').update({ katilim_durumu: 'Red' }).eq('id', satir.id)
+    if (error) return alert('Oyuncu atılamadı: ' + error.message)
+    yukle()
+  }
   async function masadanCik() {
     if (!benimId) return
     const ok = await onay('Bu masadan ayrılmak istediğine emin misin?', { baslik: 'Masadan Ayrıl', onayMetin: 'Ayrıl', tehlike: true })
@@ -152,6 +161,7 @@ export default function MasaDetay() {
   const sahibiMiyim = benimId && benimId === masa.acan_id
   const masadaMiyim = oyuncular.some(o => o.oyuncu_id === benimId)
   const acikMi = masa.durum === 'Acik'
+  const gosterilenOyuncular = oyuncular.filter(o => o.katilim_durumu !== 'Red')
   const yolTarifi = masa.enlem != null
     ? 'https://www.google.com/maps/dir/?api=1&destination=' + masa.enlem + ',' + masa.boylam
     : null
@@ -226,8 +236,8 @@ export default function MasaDetay() {
       </div>
 
       <h3>Katılımcılar</h3>
-      {oyuncular.length === 0 && <p className="ipucu">Henüz katılımcı yok.</p>}
-      {oyuncular.map(o => (
+      {gosterilenOyuncular.length === 0 && <p className="ipucu">Henüz katılımcı yok.</p>}
+      {gosterilenOyuncular.map(o => (
         <div key={o.id} className="kart satir">
           <Avatar p={o.profil} />
           <div className="satir-icerik">
@@ -241,6 +251,9 @@ export default function MasaDetay() {
               <button onClick={() => onayla(o.id)} style={onayIkonBtn} title="Onayla" aria-label="Onayla">✓</button>
               <button onClick={() => reddet(o.id)} style={redIkonBtn} title="Reddet" aria-label="Reddet">✕</button>
             </span>
+          )}
+          {sahibiMiyim && o.katilim_durumu === 'Onayli' && (
+            <button onClick={() => masadanAt(o)} style={atButon} title="Masadan At">At</button>
           )}
         </div>
       ))}
