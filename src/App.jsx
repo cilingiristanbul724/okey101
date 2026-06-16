@@ -22,7 +22,6 @@ import UyeProfil from './sayfalar/UyeProfil'
 import Sozlesme from './sayfalar/Sozlesme'
 import Hakkinda from './sayfalar/Hakkinda'
 
-// Giris yapmis ama profilini (kullanici adi) tamamlamamis kullaniciyi profile yonlendirir
 function KurulumKontrol() {
   const konum = useLocation()
   const navigate = useNavigate()
@@ -43,6 +42,40 @@ function KurulumKontrol() {
     return () => { iptal = true }
   }, [konum.pathname])
   return null
+}
+
+function UstBar() {
+  const konum = useLocation()
+  const navigate = useNavigate()
+  const anaSayfa = konum.pathname === '/'
+  return (
+    <header className="ust-bar">
+      <div className="ust-sol">
+        {!anaSayfa && (
+          <button className="geri-btn" onClick={() => navigate(-1)} aria-label="Geri" title="Geri">
+            <Ikon ad="oksol" boyut={20} />
+          </button>
+        )}
+        <Link to="/" className="marka">
+          <span className="okey-taslar sol" aria-hidden="true">
+            <span className="okey-tas tas-kirmizi">7</span>
+            <span className="okey-tas tas-siyah tas-ek">3</span>
+          </span>
+          <span className="marka-101">101</span>
+          <span className="marka-ad">rakipbul</span>
+          <span className="okey-taslar sag" aria-hidden="true">
+            <span className="okey-tas tas-mavi">9</span>
+            <span className="okey-tas tas-sari tas-ek">1</span>
+          </span>
+        </Link>
+      </div>
+      <div className="ust-aksiyon">
+        <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
+        <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
+        <Link to="/giris" title="Giriş"><Ikon ad="giris" boyut={20} /></Link>
+      </div>
+    </header>
+  )
 }
 
 function AltMenu() {
@@ -77,25 +110,7 @@ export default function App() {
       <BildirimIzin />
       <FotoOnizleme />
       <KurulumKontrol />
-      <header className="ust-bar">
-        <Link to="/" className="marka">
-          <span className="okey-taslar sol" aria-hidden="true">
-            <span className="okey-tas tas-kirmizi">7</span>
-            <span className="okey-tas tas-siyah tas-ek">3</span>
-          </span>
-          <span className="marka-101">101</span>
-          <span className="marka-ad">rakipbul</span>
-          <span className="okey-taslar sag" aria-hidden="true">
-            <span className="okey-tas tas-mavi">9</span>
-            <span className="okey-tas tas-sari tas-ek">1</span>
-          </span>
-        </Link>
-        <div className="ust-aksiyon">
-          <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
-          <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
-          <Link to="/giris" title="Giriş"><Ikon ad="giris" boyut={20} /></Link>
-        </div>
-      </header>
+      <UstBar />
 
       <main className="govde">
         <Routes>

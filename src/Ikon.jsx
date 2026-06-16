@@ -118,6 +118,12 @@ export default function Ikon({ ad, boyut = 24 }) {
           <polyline points="9 18 15 12 9 6" />
         </svg>
       )
+    case 'oksol':
+      return (
+        <svg {...ortak}>
+          <polyline points="15 18 9 12 15 6" />
+        </svg>
+      )
     default:
       return null
   }
