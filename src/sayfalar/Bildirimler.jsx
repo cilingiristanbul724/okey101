@@ -6,7 +6,6 @@ import Ikon from '../Ikon'
 
 const OKUNDU_KEY = 'okey101-bildirim-okundu'
 
-const profilDuzenleBtn = { background: '#0ea5e9', width: '100%', marginBottom: 12 }
 const satirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', cursor: 'pointer', marginBottom: 8 }
 const davetSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', marginBottom: 8, flexWrap: 'wrap' }
 const icMetin = { flex: 1, minWidth: 0 }
@@ -181,8 +180,6 @@ export default function Bildirimler() {
   return (
     <div className="sayfa">
       <h2>Bildirimler</h2>
-
-      <button onClick={() => navigate('/profil', { state: { duzenle: true } })} style={profilDuzenleBtn}>Profil Bilgilerini Düzenle</button>
 
       {davetler.length > 0 && <h3>Masa Davetleri</h3>}
       {davetler.map(d => (
