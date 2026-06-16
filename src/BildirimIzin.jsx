@@ -24,19 +24,29 @@ export default function BildirimIzin() {
   const [goster, setGoster] = useState(false)
   const [yukleniyor, setYukleniyor] = useState(false)
   const [kullaniciId, setKullaniciId] = useState(null)
+  const [mod, setMod] = useState('izin')
 
   useEffect(() => {
     let iptal = false
     async function kontrol() {
-      if (!pushDestekleniyorMu()) return
-      if (!VAPID_PUBLIC || VAPID_PUBLIC.startsWith('BURAYA')) return
       const res = await supabase.auth.getUser()
       const uid = res.data.user ? res.data.user.id : null
       if (iptal || !uid) return
       setKullaniciId(uid)
+      const iosCihaz = /iphone|ipad|ipod/i.test(navigator.userAgent)
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true
+      if (iosCihaz && !standalone) {
+        if (sessionStorage.getItem('ios-ekle-kapat') === '1') return
+        setMod('ios')
+        setGoster(true)
+        return
+      }
+      if (!pushDestekleniyorMu()) return
+      if (!VAPID_PUBLIC || VAPID_PUBLIC.startsWith('BURAYA')) return
       if (Notification.permission === 'granted') {
         pushSessizYenile(uid)
       } else if (Notification.permission === 'default') {
+        setMod('izin')
         setGoster(true)
       }
     }
@@ -57,7 +67,24 @@ export default function BildirimIzin() {
     }
   }
 
+  function iosKapat() {
+    sessionStorage.setItem('ios-ekle-kapat', '1')
+    setGoster(false)
+  }
+
   if (!goster) return null
+
+  if (mod === 'ios') {
+    return (
+      <div style={sarmal}>
+        <span style={metinStil}>📲 iPhone'da bildirim almak için uygulamayı ana ekrana ekle: Safari'de alttaki <b>Paylaş</b> simgesine dokun → <b>Ana Ekrana Ekle</b>. Sonra uygulamayı ana ekrandan aç; bildirim izni orada çıkar.</span>
+        <div style={aksiyonStil}>
+          <button style={acStil} onClick={iosKapat}>Anladım</button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div style={sarmal}>
       <span style={metinStil}>🔔 Masana katılım talebi geldiğinde veya sohbete mesaj yazıldığında telefonundan haber almak ister misin?</span>
