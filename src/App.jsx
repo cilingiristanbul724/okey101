@@ -73,15 +73,13 @@ function UstBar() {
   return (
     <header className="ust-bar">
       <Link to="/" className="marka">
-        <span className="okey-taslar sol" aria-hidden="true">
-          <span className="okey-tas tas-kirmizi">7</span>
-          <span className="okey-tas tas-siyah tas-ek">3</span>
+        <span className="logo-tas" aria-hidden="true">
+          <span className="logo-tas-no">101</span>
+          <span className="logo-tas-isik" />
         </span>
-        <span className="marka-101">101</span>
-        <span className="marka-ad">RAKİPBUL</span>
-        <span className="okey-taslar sag" aria-hidden="true">
-          <span className="okey-tas tas-mavi">9</span>
-          <span className="okey-tas tas-sari tas-ek">1</span>
+        <span className="logo-yazi">
+          <span className="logo-ad">RAKİPBUL</span>
+          <span className="logo-alt">Okey &amp; 101 · Yüz Yüze</span>
         </span>
       </Link>
       <div className="ust-aksiyon">

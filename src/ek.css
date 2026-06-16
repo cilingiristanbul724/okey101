@@ -58,7 +58,7 @@
 
 /* === Trend yazi tipi === */
 body { font-family: 'Plus Jakarta Sans', -apple-system, system-ui, 'Segoe UI', Roboto, Arial, sans-serif; }
-.sayfa h2, .sayfa h3, .marka, .marka-101, button, input, select { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
+.sayfa h2, .sayfa h3, .marka, button, input, select { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; }
 .sayfa h2 { letter-spacing: -.4px; font-weight: 800; }
 .sayfa h3 { font-weight: 700; }
 
@@ -67,42 +67,28 @@ select { color: #eaf3ee; }
 select option { background-color: #0c3325; color: #eaf3ee; }
 select option:checked { background-color: #137a4d; color: #ffffff; }
 
-/* === Logo okey taslari (oynayan animasyon) === */
-.okey-taslar { display: inline-flex; gap: 3px; }
-.okey-tas {
-  width: 23px; height: 30px; border-radius: 6px;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 14px; font-weight: 900; line-height: 1;
-  background: linear-gradient(180deg, #ffffff 0%, #fffaf0 45%, #ece2cc 100%);
-  border: 1px solid #d6cab0;
-  box-shadow: 0 3px 6px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.95), inset 0 -3px 4px rgba(150,130,90,.28);
-  transform-origin: bottom center;
-  animation: tasOyna 2.6s ease-in-out infinite;
+/* === LOGO (saglam tasarim: parlayan altin tas + wordmark + slogan) === */
+.marka { display: flex; align-items: center; gap: 11px; text-decoration: none; transition: transform .18s ease; }
+.marka:hover { transform: scale(1.03); }
+.logo-tas {
+  position: relative; width: 46px; height: 46px; border-radius: 13px;
+  display: flex; align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
+  background: linear-gradient(145deg, #fff0b0, #f3cf52 38%, #e2a812 74%, #b97d08);
+  border: 1px solid #f6da6e;
+  box-shadow: 0 4px 12px rgba(232,185,35,.45), inset 0 2px 0 rgba(255,255,255,.78), inset 0 -3px 6px rgba(120,80,0,.32);
 }
-.tas-kirmizi { color: #d62828; }
-.tas-siyah { color: #18181b; }
-.tas-mavi { color: #1d4ed8; }
-.tas-sari { color: #c98a00; }
-.okey-taslar.sol .okey-tas:nth-child(2) { animation-delay: .5s; }
-.okey-taslar.sag .okey-tas:nth-child(1) { animation-delay: .8s; }
-.okey-taslar.sag .okey-tas:nth-child(2) { animation-delay: 1.2s; }
-@keyframes tasOyna {
-  0%, 100% { transform: translateY(0) rotate(-5deg); }
-  30% { transform: translateY(-4px) rotate(4deg); }
-  60% { transform: translateY(0) rotate(-2deg); }
-  80% { transform: translateY(-2px) rotate(3deg); }
-}
-
-/* === Logo guzellestirme === */
-.marka { transition: transform .18s ease; }
-.marka:hover { transform: scale(1.04); }
-.marka-101 { transition: transform .18s ease, box-shadow .18s ease; }
-.marka:hover .marka-101 { transform: rotate(-4deg) scale(1.05); box-shadow: 0 4px 14px rgba(232,185,35,.65), inset 0 1px 0 rgba(255,255,255,.7), inset 0 -2px 4px rgba(120,80,0,.3); }
-.marka-ad { text-transform: uppercase; letter-spacing: 1.6px; font-size: 20px; font-weight: 900; }
+.logo-tas-no { position: relative; z-index: 2; font-weight: 900; font-size: 19px; color: #3a2c00; letter-spacing: .5px; text-shadow: 0 1px 0 rgba(255,255,255,.45); }
+.logo-tas-isik { position: absolute; top: -60%; left: -50%; width: 45%; height: 220%; transform: rotate(22deg); background: linear-gradient(90deg, transparent, rgba(255,255,255,.6), transparent); animation: logoParla 4s ease-in-out infinite; }
+@keyframes logoParla { 0%, 65% { left: -50%; } 100% { left: 140%; } }
+.logo-yazi { display: flex; flex-direction: column; line-height: 1.04; }
+.logo-ad { font-size: 21px; font-weight: 900; letter-spacing: 1.6px; background: linear-gradient(90deg, #ffffff, #ffe9a8); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.logo-alt { font-size: 9.5px; font-weight: 800; letter-spacing: .9px; color: #7fae9b; text-transform: uppercase; margin-top: 3px; }
 @media (max-width: 430px) {
-  .tas-ek { display: none; }
-  .marka { font-size: 20px; gap: 6px; }
-  .marka-ad { font-size: 17px; letter-spacing: 1.2px; }
+  .logo-tas { width: 40px; height: 40px; border-radius: 11px; }
+  .logo-tas-no { font-size: 16px; }
+  .logo-ad { font-size: 18px; letter-spacing: 1.2px; }
+  .logo-alt { font-size: 9px; }
+  .marka { gap: 9px; }
 }
 
 /* === Emoji secici === */
@@ -129,7 +115,7 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 }
 .emoji-oge:hover { background: #1c5a42; filter: none; }
 
-/* === Masa kartlari: ortalanmis, dengeli dagilim === */
+/* === Masa kartlari (eski stil, kullanilmiyor olabilir) === */
 .kart-masa { text-align: center; }
 .kart-masa .kart-bas { justify-content: center; gap: 12px; margin-bottom: 8px; }
 .kart-masa .kart-bas b { font-size: 17px; color: var(--kirmizi); text-transform: uppercase; font-weight: 800; }
@@ -167,13 +153,12 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 
 /* === Tanitim / aciklama bolumu === */
 .tanitim { background: linear-gradient(160deg, #0e3a2a, #0a2c20); border: 1px solid #1c5a42; border-radius: 18px; padding: 20px 16px; margin-bottom: 16px; text-align: center; }
-.tanitim-bas { font-size: 25px; font-weight: 800; margin: 0 0 12px; background: linear-gradient(90deg, #ffffff, #bfe6d3); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.tanitim-alt { color: #cfe3d8; font-size: 15.5px; line-height: 1.6; margin: 0 auto 14px; max-width: 580px; word-break: break-word; }
-.tanitim-alt b { color: #ffd84d; }
-.tanitim-uyari { display: inline-block; background: rgba(232,185,35,.12); border: 2px solid #ffffff; color: #ffe08a; font-size: 14.5px; font-weight: 600; padding: 9px 16px; border-radius: 999px; margin-bottom: 16px; word-break: break-word; max-width: 100%; animation: uyariYanip 1.3s ease-in-out infinite; }
+.tanitim-bas { font-size: 25px; font-weight: 800; margin: 0 0 14px; background: linear-gradient(90deg, #ffffff, #bfe6d3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.tanitim-uyari { display: block; background: rgba(232,185,35,.1); border: 2px solid #ffffff; color: #eafff4; font-size: 15px; font-weight: 600; line-height: 1.6; padding: 14px 18px; border-radius: 14px; margin: 0 auto 16px; max-width: 560px; word-break: break-word; animation: uyariYanip 0.65s ease-in-out infinite; }
+.tanitim-uyari b { color: #ffd84d; }
 @keyframes uyariYanip {
-  0%, 100% { border-color: rgba(255,255,255,1); box-shadow: 0 0 10px rgba(255,255,255,.55); }
-  50% { border-color: rgba(255,255,255,.12); box-shadow: 0 0 0 rgba(255,255,255,0); }
+  0%, 100% { border-color: rgba(255,255,255,1); box-shadow: 0 0 12px rgba(255,255,255,.6); }
+  50% { border-color: rgba(255,255,255,.15); box-shadow: 0 0 0 rgba(255,255,255,0); }
 }
 .adimlar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
 .adim { background: rgba(255,255,255,.04); border: 1px solid #1c5a42; border-radius: 14px; padding: 16px 11px; display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -186,8 +171,7 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 @media (max-width: 520px) {
   .adimlar { grid-template-columns: 1fr; }
   .tanitim-bas { font-size: 21px; }
-  .tanitim-alt { font-size: 14.5px; }
-  .tanitim-uyari { font-size: 13.5px; }
+  .tanitim-uyari { font-size: 14px; }
   .adim { flex-direction: row; text-align: left; align-items: center; gap: 10px; flex-wrap: wrap; }
   .adim-no { margin-bottom: 0; flex-shrink: 0; }
   .adim b { flex: 1; }
@@ -261,7 +245,6 @@ img, video, .leaflet-container { max-width: 100%; }
 }
 @media (max-width: 380px) {
   .ust-aksiyon a { width: 34px; height: 34px; }
-  .marka-101 { min-width: 36px; height: 34px; font-size: 18px; }
 }
 @media (min-width: 768px) {
   .sayfa { max-width: 620px; }
