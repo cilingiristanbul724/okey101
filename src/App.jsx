@@ -13,6 +13,7 @@ import MasaListesi from './sayfalar/MasaListesi'
 import MasaAc from './sayfalar/MasaAc'
 import Lobi from './sayfalar/Lobi'
 import Profil from './sayfalar/Profil'
+import Bildirimler from './sayfalar/Bildirimler'
 import MasaDetay from './sayfalar/MasaDetay'
 import Arkadaslar from './sayfalar/Arkadaslar'
 import MesajKutusu from './sayfalar/MesajKutusu'
@@ -90,6 +91,7 @@ export default function App() {
           </span>
         </Link>
         <div className="ust-aksiyon">
+          <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
           <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
           <Link to="/giris" title="Giriş"><Ikon ad="giris" boyut={20} /></Link>
         </div>
@@ -103,6 +105,7 @@ export default function App() {
           <Route path="/sohbet" element={<Lobi />} />
           <Route path="/arkadaslar" element={<Arkadaslar />} />
           <Route path="/mesajlar" element={<MesajKutusu />} />
+          <Route path="/bildirimler" element={<Bildirimler />} />
           <Route path="/ozel/:digerId" element={<OzelSohbet />} />
           <Route path="/uye/:id" element={<UyeProfil />} />
           <Route path="/sozlesme" element={<Sozlesme />} />
