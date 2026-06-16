@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
 
-const cikisButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
+const cikisButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', marginTop: 8 }
 const kaydetButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const kameraBtn = { display: 'inline-flex', alignItems: 'center', gap: '8px' }
+
+const basKart = { display: 'flex', alignItems: 'center', gap: 14, padding: 16 }
+const avatarImg = { width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }
+const onlineNokta = { position: 'absolute', right: 0, bottom: 2, width: 16, height: 16, borderRadius: '50%', background: '#22c55e', border: '3px solid #0b2e23' }
+const menuSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', textDecoration: 'none', color: 'inherit', cursor: 'pointer', marginBottom: 8 }
+const menuIkonStil = (renk) => ({ width: 38, height: 38, borderRadius: 10, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
 const cinsiyetRenk = {
   'Kadın': '#ec4899',
@@ -18,6 +24,16 @@ function cinsiyetIkon(c) {
   return 'kullanici'
 }
 
+function MenuSatir({ ikon, renk, etiket, to }) {
+  return (
+    <Link to={to} className="kart" style={menuSatirStil}>
+      <div style={menuIkonStil(renk)}><Ikon ad={ikon} boyut={18} /></div>
+      <span style= flex: 1, fontWeight: 600 >{etiket}</span>
+      <span style= opacity: 0.5 ><Ikon ad="oksag" boyut={18} /></span>
+    </Link>
+  )
+}
+
 export default function Profil() {
   const [profil, setProfil] = useState(null)
   const [adSoyad, setAdSoyad] = useState('')
@@ -25,6 +41,7 @@ export default function Profil() {
   const [cinsiyet, setCinsiyet] = useState('Belirtmek istemiyorum')
   const [kayitDurum, setKayitDurum] = useState('')
   const [hazir, setHazir] = useState(false)
+  const [duzenleAcik, setDuzenleAcik] = useState(false)
   const navigate = useNavigate()
 
   async function yukle() {
@@ -38,6 +55,7 @@ export default function Profil() {
       setAdSoyad(data.ad_soyad || '')
       setKullaniciAdi(data.kullanici_adi || '')
       setCinsiyet(data.cinsiyet || 'Belirtmek istemiyorum')
+      if (!data.kullanici_adi) setDuzenleAcik(true)
     }
     setHazir(true)
   }
@@ -102,35 +120,52 @@ export default function Profil() {
     <div className="sayfa">
       <h2>Profil</h2>
 
-      <div className="profil-foto-alani">
-        {profil.foto_url
-          ? <img className="profil-foto" src={profil.foto_url} alt="Profil" />
-          : <div className="profil-foto profil-foto-bos" style={avatarBosStil}>
-              <Ikon ad={cinsiyetIkon(cinsiyet)} boyut={56} />
-            </div>}
+      <div className="kart" style={basKart}>
+        <div style= position: 'relative', flexShrink: 0 >
+          {profil.foto_url
+            ? <img src={profil.foto_url} alt="Profil" style={avatarImg} />
+            : <div style= ...avatarImg, ...avatarBosStil ><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={30} /></div>}
+          <span style={onlineNokta} />
+        </div>
+        <div style= minWidth: 0 >
+          <div style= fontWeight: 800, fontSize: 18 >{profil.ad_soyad || 'Oyuncu'}</div>
+          <div className="ipucu">@{profil.kullanici_adi || 'kullanici_adi'}</div>
+        </div>
       </div>
 
-      <div className="ortala">
-        <label className="btn-gibi" style={kameraBtn}>
-          <Ikon ad="kamera" boyut={18} /> Galeriden Fotoğraf Seç
-          <input type="file" accept="image/*" onChange={fotoSec} />
-        </label>
-      </div>
-      {kayitDurum && <p className="ipucu ortala">{kayitDurum}</p>}
+      <MenuSatir ikon="zil" renk="#dc2626" etiket="Bildirimler" to="/bildirimler" />
+      <MenuSatir ikon="arkadaslar" renk="#16a34a" etiket="Arkadaşlarım" to="/arkadaslar" />
+      <MenuSatir ikon="mesaj" renk="#2563eb" etiket="Mesajlarım" to="/mesajlar" />
+      <MenuSatir ikon="soru" renk="#6b7280" etiket="Yardım ve Destek" to="/hakkinda" />
 
-      <div className="kart">
-        <label>Ad Soyad</label>
-        <input value={adSoyad} onChange={e => setAdSoyad(e.target.value)} placeholder="Adın Soyadın" />
-        <label>Kullanıcı Adı</label>
-        <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
-        <label>Cinsiyet</label>
-        <select value={cinsiyet} onChange={e => setCinsiyet(e.target.value)}>
-          <option>Kadın</option>
-          <option>Erkek</option>
-          <option>Belirtmek istemiyorum</option>
-        </select>
-        <button onClick={bilgiKaydet} style={kaydetButon}>Bilgileri Kaydet</button>
+      <div className="kart" style={menuSatirStil} onClick={() => setDuzenleAcik(v => !v)}>
+        <div style={menuIkonStil('#0ea5e9')}><Ikon ad="profil" boyut={18} /></div>
+        <span style= flex: 1, fontWeight: 600 >Profil Bilgilerini Düzenle</span>
+        <span style= opacity: 0.5 ><Ikon ad="oksag" boyut={18} /></span>
       </div>
+
+      {duzenleAcik && (
+        <div className="kart">
+          <div className="ortala">
+            <label className="btn-gibi" style={kameraBtn}>
+              <Ikon ad="kamera" boyut={18} /> Galeriden Fotoğraf Seç
+              <input type="file" accept="image/*" onChange={fotoSec} />
+            </label>
+          </div>
+          {kayitDurum && <p className="ipucu ortala">{kayitDurum}</p>}
+          <label>Ad Soyad</label>
+          <input value={adSoyad} onChange={e => setAdSoyad(e.target.value)} placeholder="Adın Soyadın" />
+          <label>Kullanıcı Adı</label>
+          <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
+          <label>Cinsiyet</label>
+          <select value={cinsiyet} onChange={e => setCinsiyet(e.target.value)}>
+            <option>Kadın</option>
+            <option>Erkek</option>
+            <option>Belirtmek istemiyorum</option>
+          </select>
+          <button onClick={bilgiKaydet} style={kaydetButon}>Bilgileri Kaydet</button>
+        </div>
+      )}
 
       <button onClick={cikisYap} style={cikisButon}>Çıkış Yap</button>
     </div>
