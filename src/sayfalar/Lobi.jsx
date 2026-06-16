@@ -26,6 +26,8 @@ function Avatar({ p }) {
 }
 
 const govdeStil = { minHeight: '56vh', maxHeight: '70vh' }
+const basStil = { color: '#e8b923' }
+const altStil = { fontSize: '15px', fontWeight: 600, color: '#cfe3d8', lineHeight: 1.5, margin: '0 0 14px' }
 
 export default function Lobi() {
   const [mesajlar, setMesajlar] = useState([])
@@ -85,8 +87,8 @@ export default function Lobi() {
 
   return (
     <div className="sayfa">
-      <h2>Genel Sohbet</h2>
-      <p className="ipucu">Tüm üyelerin birbiriyle yazıştığı halka açık kanal.</p>
+      <h2 style={basStil}>Genel Sohbet</h2>
+      <p style={altStil}>Tüm Üyelerin Birbiriyle Yazıştığı Halka Açık Kanal.</p>
       <div className="sohbet">
         <div className="sohbet-govde" style={govdeStil} ref={govdeRef}>
           {gorunen.length === 0 && <p className="ipucu">Henüz mesaj yok. İlk yazan sen ol!</p>}
