@@ -35,7 +35,7 @@ export default function Chat({ masaId, sahibiMiyim }) {
   const [metin, setMetin] = useState('')
   const [benimId, setBenimId] = useState(null)
   const [engellenenler, setEngellenenler] = useState([])
-  const sonRef = useRef(null)
+  const govdeRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(async res => {
@@ -74,7 +74,8 @@ export default function Chat({ masaId, sahibiMiyim }) {
   }, [masaId])
 
   useEffect(() => {
-    sonRef.current?.scrollIntoView({ behavior: 'smooth' })
+    const g = govdeRef.current
+    if (g) g.scrollTop = g.scrollHeight
   }, [mesajlar])
 
   async function gonder() {
@@ -110,7 +111,7 @@ export default function Chat({ masaId, sahibiMiyim }) {
           <button type="button" onClick={temizle} className="btn-kirmizi sohbet-temizle">Sohbeti temizle</button>
         )}
       </div>
-      <div className="sohbet-govde">
+      <div className="sohbet-govde" ref={govdeRef}>
         {gorunen.map(m => {
           const benimMi = m.gonderen_id === benimId
           const p = profiller[m.gonderen_id]
@@ -128,7 +129,6 @@ export default function Chat({ masaId, sahibiMiyim }) {
             </div>
           )
         })}
-        <div ref={sonRef} />
       </div>
       <div className="sohbet-giris">
         <EmojiSec onSec={e => setMetin(m => m + e)} />
