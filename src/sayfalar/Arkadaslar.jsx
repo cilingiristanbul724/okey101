@@ -7,7 +7,7 @@ import Durum from '../Durum'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
-const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
+const davetButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', whiteSpace: 'nowrap' }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -91,14 +91,13 @@ export default function Arkadaslar() {
 
   async function davetEt(hedefId) {
     if (!aktifMasam) return alert('Önce bir masa açmalısın.')
-    const { data: varMi } = await supabase.from('masa_oyunculari')
-      .select('id').eq('masa_id', aktifMasam.id).eq('oyuncu_id', hedefId).limit(1)
-    if (varMi && varMi.length) return alert('Bu oyuncu zaten masanda.')
-    const kayit = { masa_id: aktifMasam.id, oyuncu_id: hedefId, katilim_durumu: 'Onayli' }
-    const { error } = await supabase.from('masa_oyunculari').insert(kayit)
+    const ad = aktifMasam.baslik || aktifMasam.mekan_adi || '101 Okey Masası'
+    const icerik = 'Seni "' + ad + '" masama davet ettim! Masalar sayfasından masaya katılabilirsin.'
+    const kayit = { gonderen_id: benimId, alici_id: hedefId, icerik }
+    const { error } = await supabase.from('ozel_mesajlar').insert(kayit)
     if (error) return alert('Davet gönderilemedi: ' + error.message)
-    pushTetikle('masa_oyunculari', kayit)
-    alert('Davet gönderildi! Oyuncu bildirimlerinde masanı görecek.')
+    pushTetikle('ozel_mesajlar', kayit)
+    alert('Davet gönderildi! Arkadaşına masan için davet mesajı iletildi.')
   }
 
   function diger(a) {
@@ -131,7 +130,7 @@ export default function Arkadaslar() {
       {aktifMasam && (
         <div className="masa-uyari">
           <b>Açık masan var: {aktifMasam.baslik || aktifMasam.mekan_adi || '101 Okey Masası'}</b>
-          <p>Arkadaşlarını "Masama Davet Et" ile masana çağırabilirsin.</p>
+          <p>Arkadaşlarını "Davet Et" ile masana çağırabilirsin.</p>
         </div>
       )}
 
@@ -171,7 +170,7 @@ export default function Arkadaslar() {
             <Durum sonGorulme={kisi.son_gorulme} />
           </div>
           {aktifMasam && (
-            <button onClick={() => davetEt(kisi.id)} style={yesilButon}>Masama Davet Et</button>
+            <button onClick={() => davetEt(kisi.id)} style={davetButon}>Davet Et</button>
           )}
           <Link to={'/ozel/' + kisi.id}><button>Mesaj</button></Link>
         </div>
