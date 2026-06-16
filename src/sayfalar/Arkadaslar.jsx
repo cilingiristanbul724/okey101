@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
+import { engellenenleriGetir } from '../utils/moderasyon'
 import Durum from '../Durum'
 import CinsiyetRozet from '../CinsiyetRozet'
 
@@ -24,6 +25,7 @@ export default function Arkadaslar() {
   const [arkadaslar, setArkadaslar] = useState([])
   const [istekler, setIstekler] = useState([])
   const [iliskiler, setIliskiler] = useState([])
+  const [engellenenler, setEngellenenler] = useState([])
   const [aktifMasam, setAktifMasam] = useState(null)
 
   async function yukle() {
@@ -31,6 +33,8 @@ export default function Arkadaslar() {
     const uid = res.data.user ? res.data.user.id : null
     setBenimId(uid)
     if (!uid) return
+
+    setEngellenenler(await engellenenleriGetir(uid))
 
     const { data: kabul } = await supabase.from('arkadaslar')
       .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme)')
@@ -65,11 +69,12 @@ export default function Arkadaslar() {
 
   async function ara() {
     if (!arama.trim()) return
+    const q = arama.trim()
     const { data } = await supabase.from('profiles')
       .select('id, kullanici_adi, ad_soyad, foto_url, cinsiyet')
-      .ilike('kullanici_adi', '%' + arama.trim() + '%')
-      .limit(10)
-    setSonuclar((data || []).filter(p => p.id !== benimId))
+      .or('kullanici_adi.ilike.%' + q + '%,ad_soyad.ilike.%' + q + '%')
+      .limit(15)
+    setSonuclar((data || []).filter(p => p.id !== benimId && !engellenenler.includes(p.id)))
   }
 
   async function istekGonder(istenenId) {
@@ -141,9 +146,9 @@ export default function Arkadaslar() {
         </div>
       )}
 
-      <label>Kullanıcı ara</label>
+      <label>Kullanıcı adı veya ad soyad ile ara</label>
       <input value={arama} onChange={e => setArama(e.target.value)}
-        onKeyDown={e => e.key === 'Enter' && ara()} placeholder="kullanıcı adı..." />
+        onKeyDown={e => e.key === 'Enter' && ara()} placeholder="kullanıcı adı ya da ad soyad..." />
       <button onClick={ara}>Ara</button>
 
       {sonuclar.map(p => (
