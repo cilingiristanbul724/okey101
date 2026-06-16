@@ -97,6 +97,27 @@ export default function Ikon({ ad, boyut = 24 }) {
           <path d="M5 21a7 7 0 0 1 14 0" />
         </svg>
       )
+    case 'zil':
+      return (
+        <svg {...ortak}>
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+          <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+        </svg>
+      )
+    case 'soru':
+      return (
+        <svg {...ortak}>
+          <circle cx="12" cy="12" r="10" />
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+          <line x1="12" y1="17" x2="12.01" y2="17" />
+        </svg>
+      )
+    case 'oksag':
+      return (
+        <svg {...ortak}>
+          <polyline points="9 18 15 12 9 6" />
+        </svg>
+      )
     default:
       return null
   }
