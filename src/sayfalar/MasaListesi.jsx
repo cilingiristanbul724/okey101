@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
-import { konumAl, mesafeKm, anadoluYakasindaMi } from '../utils/konum'
+import { konumAl, mesafeKm } from '../utils/konum'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
+import { engellenenleriGetir } from '../utils/moderasyon'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
 import CinsiyetRozet from '../CinsiyetRozet'
 import Tanitim from '../Tanitim'
 
+// Bu mesafe (km) icindeki masalar listelenir.
+const YAKIN_KM = 50
+
 const ikonYesil = { background: 'linear-gradient(135deg, #16a34a, #15803d)' }
 const ikonAltin = { background: 'linear-gradient(135deg, #f6d65b, #e8b923)', color: '#2a2200' }
 const ikonMavi = { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }
 const basRozet = { display: 'flex', alignItems: 'center', gap: 6 }
+const acanAd = { color: '#9fb8ab' }
 
 function masaAcikMi(m) {
   if (m.durum !== 'Acik') return false
@@ -23,20 +28,26 @@ function masaAcikMi(m) {
 export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [acanlar, setAcanlar] = useState({})
+  const [doluluk, setDoluluk] = useState({})
   const [konum, setKonum] = useState(null)
   const [konumDurum, setKonumDurum] = useState('Konum alınıyor...')
   const [benimId, setBenimId] = useState(null)
   const [katildiklarim, setKatildiklarim] = useState([])
+  const [engellenenler, setEngellenenler] = useState([])
   const [hepsi, setHepsi] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(res => setBenimId(res.data.user ? res.data.user.id : null))
+    supabase.auth.getUser().then(async res => {
+      const uid = res.data.user ? res.data.user.id : null
+      setBenimId(uid)
+      if (uid) setEngellenenler(await engellenenleriGetir(uid))
+    })
   }, [])
 
   useEffect(() => {
     konumAl()
       .then(k => { setKonum(k); setKonumDurum('') })
-      .catch(() => setKonumDurum('Konum alınamadı — mesafeler gösterilemeyebilir.'))
+      .catch(() => setKonumDurum('Konum alınamadı — tüm açık masalar gösteriliyor.'))
   }, [])
 
   useEffect(() => {
@@ -50,6 +61,14 @@ export default function MasaListesi() {
           const h = {}
           for (const p of pr || []) h[p.id] = p
           setAcanlar(h)
+        }
+        const masaIdler = ms.map(m => m.id)
+        if (masaIdler.length) {
+          const { data: oyuncular } = await supabase.from('masa_oyunculari')
+            .select('masa_id').eq('katilim_durumu', 'Onayli').in('masa_id', masaIdler)
+          const say = {}
+          for (const o of oyuncular || []) say[o.masa_id] = (say[o.masa_id] || 0) + 1
+          setDoluluk(say)
         }
       })
   }, [])
@@ -92,13 +111,14 @@ export default function MasaListesi() {
 
   const liste = masalar
     .filter(masaAcikMi)
-    .filter(m => benimleIlgili(m) || anadoluYakasindaMi(m.enlem, m.boylam))
+    .filter(m => !engellenenler.includes(m.acan_id))
     .map(m => ({
       ...m,
       uzaklik: konum ? mesafeKm(konum.enlem, konum.boylam, m.enlem, m.boylam) : null,
       benim: benimId && m.acan_id === benimId,
       katildim: katildiklarim.includes(m.id),
     }))
+    .filter(m => m.benim || m.katildim || konum == null || (m.uzaklik != null && m.uzaklik <= YAKIN_KM))
     .sort((a, b) => {
       if (a.uzaklik == null) return 1
       if (b.uzaklik == null) return -1
@@ -139,8 +159,8 @@ export default function MasaListesi() {
       {konumDurum && <p className="ipucu">{konumDurum}</p>}
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
       {gosterilen.map(m => {
-        const dolu = m.mevcut_kisi || 1
         const acanP = acanlar[m.acan_id]
+        const dolu = (doluluk[m.id] || 0) + 1
         return (
           <div key={m.id} className="masa-satir">
             <Link to={'/masa/' + m.id} className="masa-satir-ic">
@@ -151,6 +171,7 @@ export default function MasaListesi() {
                   {acanP && <CinsiyetRozet cinsiyet={acanP.cinsiyet} boyut={12} />}
                 </div>
                 <div className="masa-satir-alt">
+                  {acanP && acanP.kullanici_adi && <span style={acanAd}>@{acanP.kullanici_adi}</span>}
                   <span>{dolu}/4 Kişi</span>
                   <GeriSayim bitis={m.bitis_zamani} />
                 </div>
