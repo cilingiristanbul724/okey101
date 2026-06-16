@@ -13,12 +13,9 @@ export default function Tanitim() {
   return (
     <div className="tanitim">
       <h1 className="tanitim-bas">Sanal değil, gerçek masa!</h1>
-      <p className="tanitim-alt">
-        <b>101 RakipBul</b> bir online oyun sitesi <b>değildir</b>. Amacımız; yakınındaki
-        oyuncuları bir araya getirip <b>yüz yüze</b> okey ve 101 oynayabilmen için sizi gerçek
-        hayatta buluşturmaktır.
-      </p>
-      <div className="tanitim-uyari">⚠️ Burada çevrimiçi oyun oynanmaz — amaç aynı masada, yüz yüze buluşmaktır.</div>
+      <div className="tanitim-uyari">
+        <b>101 RakipBul</b> bir online oyun sitesi <b>değildir</b>. Amacımız; yakınındaki oyuncuları bir araya getirip <b>yüz yüze</b> okey ve 101 oynayabilmen için sizi gerçek hayatta buluşturmaktır.
+      </div>
       {acik && (
         <>
           <div className="adimlar">
