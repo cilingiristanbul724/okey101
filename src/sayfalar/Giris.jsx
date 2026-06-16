@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import Ikon from '../Ikon'
 
 const SORULAR = [
   'İlk evcil hayvanının adı?',
@@ -122,15 +123,43 @@ export default function Giris() {
   }
 
   const ikincilButon = { background: '#6b7280' }
-  const baglantiButon = { background: 'transparent', boxShadow: 'none', color: 'var(--altin)', textDecoration: 'underline', padding: '6px 0', fontWeight: 600, fontSize: '14px' }
   const hatirlaSatir = { display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0 4px', fontSize: '14px', color: 'var(--metin)', cursor: 'pointer', fontWeight: 600 }
   const sozlesmeSatir = { display: 'flex', alignItems: 'flex-start', gap: '8px', margin: '12px 0 4px', fontSize: '13px', color: 'var(--metin)', cursor: 'pointer', lineHeight: 1.4 }
   const onayKutu = { width: '18px', height: '18px', minWidth: '18px', margin: 0, padding: 0, accentColor: 'var(--altin)', background: 'transparent', border: 'none' }
   const soruStil = { fontWeight: 700, color: 'var(--altin)' }
 
+  const heroSar = { display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', margin: '6px 0 22px' }
+  const heroTas = { width: 80, height: 80, borderRadius: 20 }
+  const heroTasNo = { fontSize: 33 }
+  const heroWordmark = { fontSize: 31, fontWeight: 900, letterSpacing: '.3px', marginTop: 14, color: '#ffffff' }
+  const heroWordmarkAltin = { color: '#e8b923' }
+  const heroSlogan = { margin: '10px auto 0', color: '#cfe3d8', fontSize: '14.5px', lineHeight: 1.5, fontWeight: 600, maxWidth: 300 }
+  const inputSar = { position: 'relative', margin: '12px 0' }
+  const inputIkon = { position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: '#7fae9b', display: 'flex', pointerEvents: 'none' }
+  const ikonluInput = { paddingLeft: 42, margin: 0 }
+  const sadeInput = { margin: '12px 0' }
+  const anaBtn = { width: '100%', margin: '16px 0 0', padding: '14px', fontSize: 16 }
+  const unutBtn = { width: '100%', margin: '10px 0 0', background: 'transparent', boxShadow: 'none', color: '#9fb8ab', textDecoration: 'underline', padding: '8px 0', fontWeight: 600, fontSize: '13px' }
+  const ayrac = { display: 'flex', alignItems: 'center', gap: 12, margin: '20px 0 4px', color: '#7fae9b', fontSize: 12, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '.5px' }
+  const ayracCizgi = { flex: 1, height: 1, background: 'rgba(127,174,155,.3)' }
+  const gecisSar = { textAlign: 'center', marginTop: 8, color: '#9fb8ab', fontSize: '14px' }
+  const gecisBtn = { background: 'transparent', boxShadow: 'none', color: '#e8b923', textDecoration: 'underline', fontWeight: 700, padding: 0, margin: '0 0 0 6px', fontSize: '14px', width: 'auto', display: 'inline' }
+
+  const hero = (
+    <div style={heroSar}>
+      <div className="logo-tas" style={heroTas}>
+        <span className="logo-tas-no" style={heroTasNo}>101</span>
+        <span className="logo-tas-isik" />
+      </div>
+      <div style={heroWordmark}>101<span style={heroWordmarkAltin}>rakipbul</span></div>
+      <p style={heroSlogan}>Yakınındaki oyuncularla <b>yüz yüze</b> okey &amp; 101 — gerçek masa!</p>
+    </div>
+  )
+
   if (mod === 'sifirla') {
     return (
       <div className="sayfa">
+        {hero}
         <h2>Şifremi Unuttum</h2>
         {sifirlaAsama === 1 ? (
           <>
@@ -158,15 +187,29 @@ export default function Giris() {
 
   return (
     <div className="sayfa">
-      <div className="giris-tanitim">
-        <p>🀄 <b>101 RakipBul</b> — yakınındaki oyuncularla <b>yüz yüze</b> okey ve 101 oynamak için buluş. Çevrimiçi oyun değil, gerçek masa!</p>
-        <Link to="/hakkinda">Nasıl çalışır?</Link>
-      </div>
+      {hero}
 
-      <h2>{mod === 'giris' ? 'Giriş Yap' : 'Kayıt Ol'}</h2>
-
-      {mod === 'kayit' && (
+      {mod === 'giris' ? (
         <>
+          <div style={inputSar}>
+            <span style={inputIkon}><Ikon ad="kullanici" boyut={18} /></span>
+            <input style={ikonluInput} value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="Kullanıcı adınızı girin" />
+          </div>
+          <input style={sadeInput} type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifreniz" />
+
+          <label style={hatirlaSatir}>
+            <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
+            Beni hatırla
+          </label>
+
+          <button onClick={girisYap} disabled={yukleniyor} style={anaBtn}>Giriş Yap</button>
+          <button onClick={() => { setMod('sifirla'); setSifirlaAsama(1) }} style={unutBtn}>Şifremi unuttum</button>
+
+          <div style={gecisSar}>Hesabınız yok mu?<button onClick={() => setMod('kayit')} style={gecisBtn}>Kayıt Ol</button></div>
+        </>
+      ) : (
+        <>
+          <h2>Kayıt Ol</h2>
           <label>Ad Soyad</label>
           <input value={adSoyad} onChange={e => setAdSoyad(e.target.value)} placeholder="Adın Soyadın" />
           <label>Cinsiyet</label>
@@ -175,47 +218,31 @@ export default function Giris() {
             <option>Erkek</option>
             <option>Belirtmek istemiyorum</option>
           </select>
-        </>
-      )}
 
-      <label>Kullanıcı Adı</label>
-      <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
-      <label>Şifre</label>
-      <input type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
+          <label>Kullanıcı Adı</label>
+          <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
+          <label>Şifre</label>
+          <input type="password" value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
 
-      {mod === 'kayit' && (
-        <>
           <label>Güvenlik Sorusu</label>
           <select value={guvenlikSoru} onChange={e => setGuvenlikSoru(e.target.value)}>
             {SORULAR.map(s => <option key={s}>{s}</option>)}
           </select>
           <label>Güvenlik Cevabı</label>
           <input value={guvenlikCevap} onChange={e => setGuvenlikCevap(e.target.value)} placeholder="Şifreni unutursan bununla kurtarırsın" />
-        </>
-      )}
 
-      <label style={hatirlaSatir}>
-        <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
-        Beni hatırla
-      </label>
+          <label style={hatirlaSatir}>
+            <input type="checkbox" style={onayKutu} checked={beniHatirla} onChange={e => setBeniHatirla(e.target.checked)} />
+            Beni hatırla
+          </label>
 
-      {mod === 'kayit' && (
-        <label style={sozlesmeSatir}>
-          <input type="checkbox" style={onayKutu} checked={sozlesmeOnay} onChange={e => setSozlesmeOnay(e.target.checked)} />
-          <span>18 yaşından büyüğüm; <Link to="/sozlesme">Kullanım Şartları ve KVKK</Link> metnini okudum, kabul ediyorum.</span>
-        </label>
-      )}
+          <label style={sozlesmeSatir}>
+            <input type="checkbox" style={onayKutu} checked={sozlesmeOnay} onChange={e => setSozlesmeOnay(e.target.checked)} />
+            <span>18 yaşından büyüğüm; <Link to="/sozlesme">Kullanım Şartları ve KVKK</Link> metnini okudum, kabul ediyorum.</span>
+          </label>
 
-      {mod === 'giris' ? (
-        <>
-          <button onClick={girisYap} disabled={yukleniyor}>Giriş Yap</button>
-          <button onClick={() => setMod('kayit')} style={ikincilButon}>Hesabın yok mu? Kayıt Ol</button>
-          <div><button onClick={() => { setMod('sifirla'); setSifirlaAsama(1) }} style={baglantiButon}>Şifremi unuttum</button></div>
-        </>
-      ) : (
-        <>
-          <button onClick={kayitOl} disabled={yukleniyor}>Kayıt Ol</button>
-          <button onClick={() => setMod('giris')} style={ikincilButon}>Zaten üye misin? Giriş Yap</button>
+          <button onClick={kayitOl} disabled={yukleniyor} style={anaBtn}>Kayıt Ol</button>
+          <div style={gecisSar}>Zaten üye misin?<button onClick={() => setMod('giris')} style={gecisBtn}>Giriş Yap</button></div>
         </>
       )}
     </div>
