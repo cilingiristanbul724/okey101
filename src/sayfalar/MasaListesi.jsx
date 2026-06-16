@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
-import { engellenenleriGetir } from '../utils/moderasyon'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
 import Tanitim from '../Tanitim'
@@ -22,17 +21,13 @@ function masaAcikMi(m) {
 export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
   const [acanlar, setAcanlar] = useState({})
-  const [doluluk, setDoluluk] = useState({})
   const [benimId, setBenimId] = useState(null)
   const [katildiklarim, setKatildiklarim] = useState([])
-  const [engellenenler, setEngellenenler] = useState([])
   const [hepsi, setHepsi] = useState(false)
 
   useEffect(() => {
-    supabase.auth.getUser().then(async res => {
-      const uid = res.data.user ? res.data.user.id : null
-      setBenimId(uid)
-      if (uid) setEngellenenler(await engellenenleriGetir(uid))
+    supabase.auth.getUser().then(res => {
+      setBenimId(res.data.user ? res.data.user.id : null)
     })
   }, [])
 
@@ -43,18 +38,10 @@ export default function MasaListesi() {
         setMasalar(ms)
         const idler = [...new Set(ms.map(m => m.acan_id).filter(Boolean))]
         if (idler.length) {
-          const { data: pr } = await supabase.from('profiles').select('id,cinsiyet,kullanici_adi').in('id', idler)
+          const { data: pr } = await supabase.from('profiles').select('id,kullanici_adi').in('id', idler)
           const h = {}
           for (const p of pr || []) h[p.id] = p
           setAcanlar(h)
-        }
-        const masaIdler = ms.map(m => m.id)
-        if (masaIdler.length) {
-          const { data: oyuncular } = await supabase.from('masa_oyunculari')
-            .select('masa_id').eq('katilim_durumu', 'Onayli').in('masa_id', masaIdler)
-          const say = {}
-          for (const o of oyuncular || []) say[o.masa_id] = (say[o.masa_id] || 0) + 1
-          setDoluluk(say)
         }
       })
   }, [])
@@ -91,7 +78,6 @@ export default function MasaListesi() {
 
   const liste = masalar
     .filter(masaAcikMi)
-    .filter(m => !engellenenler.includes(m.acan_id))
     .map(m => ({
       ...m,
       benim: benimId && m.acan_id === benimId,
@@ -132,7 +118,7 @@ export default function MasaListesi() {
       {liste.length === 0 && <p>Şu an açık masa yok. İlk masayı sen aç!</p>}
       {gosterilen.map(m => {
         const acanP = acanlar[m.acan_id]
-        const dolu = (doluluk[m.id] || 0) + 1
+        const dolu = m.mevcut_kisi || 1
         return (
           <div key={m.id} className="masa-satir">
             <Link to={'/masa/' + m.id} className="masa-satir-ic">
