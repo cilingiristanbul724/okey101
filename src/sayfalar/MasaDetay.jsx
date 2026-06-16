@@ -5,7 +5,6 @@ import Chat from './Chat'
 import GeriSayim from '../utils/GeriSayim'
 import Durum from '../Durum'
 import { konumAl, mesafeKm } from '../utils/konum'
-import { zamanMs } from '../utils/zaman'
 import { onay } from '../utils/onay'
 import { pushTetikle } from '../utils/push'
 
@@ -43,21 +42,10 @@ export default function MasaDetay() {
     setBenimId(uid)
 
     const { data: m } = await supabase.from('masalar').select('*').eq('id', id).single()
-    let masaSon = m
-    if (m && uid === m.acan_id && m.durum === 'Acik') {
-      const bitisMs = zamanMs(m.bitis_zamani)
-      const suresiDoldu = bitisMs > 0 && bitisMs <= Date.now()
-      // Eslesme olduysa (Onayli oyuncu varsa) sure dolsa bile otomatik kapatma;
-      // bu durumda masayi yalnizca sahibi 'Masayi Kapat' ile kapatabilir.
-      const { count: onayliSayi } = await supabase.from('masa_oyunculari')
-        .select('id', { count: 'exact', head: true })
-        .eq('masa_id', id).eq('katilim_durumu', 'Onayli')
-      const eslesmeVar = (onayliSayi || 0) > 0
-      if (suresiDoldu && !eslesmeVar) {
-        await supabase.from('masalar').update({ durum: 'Kapali' }).eq('id', id)
-        masaSon = { ...m, durum: 'Kapali' }
-      }
-    }
+    // Masa ARTIK otomatik kapanmaz. Sure dolmasi yalnizca geri sayimda gosterilir;
+    // masayi sadece sahibi 'Masayi Kapat' ile kapatabilir. Boylece masa, sahibi
+    // kapatmadikca (sure dolsa bile) beklenmedik sekilde kapanmaz.
+    const masaSon = m
     setMasa(masaSon)
     if (masaSon) {
       setYeniBaslik(masaSon.baslik || masaSon.mekan_adi || '')
