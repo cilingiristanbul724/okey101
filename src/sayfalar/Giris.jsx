@@ -46,6 +46,8 @@ export default function Giris() {
   async function kayitOl() {
     if (!kullaniciAdi.trim() || !sifre || !adSoyad.trim())
       return alert('Ad soyad, kullanıcı adı ve şifre zorunlu.')
+    if (sifre.length < 6)
+      return alert('Şifre en az 6 karakter olmalı.')
     if (!guvenlikCevap.trim())
       return alert('Güvenlik sorusu cevabı zorunlu (şifreni unutursan kurtarman için).')
     if (!sozlesmeOnay)
@@ -226,7 +228,7 @@ export default function Giris() {
           <label>Kullanıcı Adı</label>
           <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
           <label>Şifre</label>
-          <SifreInput value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifre" />
+          <SifreInput value={sifre} onChange={e => setSifre(e.target.value)} placeholder="En az 6 karakter" />
 
           <label>Güvenlik Sorusu</label>
           <select value={guvenlikSoru} onChange={e => setGuvenlikSoru(e.target.value)}>
