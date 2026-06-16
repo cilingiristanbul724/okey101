@@ -186,13 +186,13 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 @media (min-width: 768px) { .geri-bar { max-width: 620px; } }
 @media (max-width: 600px) { .geri-bar { padding-left: 14px; padding-right: 14px; } }
 
-/* === Masa basligi: buyuk harf, kirmizi, kalin === */
-.masa-baslik { text-transform: uppercase; color: var(--kirmizi); font-weight: 800; letter-spacing: .3px; }
+/* === Masa basligi: buyuk harf, kirmizi, kalin (yuksek specificity ile) === */
+.sayfa h2.masa-baslik { text-transform: uppercase; color: var(--kirmizi); font-weight: 800; letter-spacing: .3px; }
 
 /* === Aksiyon butonlarini saga hizala (sag el kullanimi) === */
 .sayfa > button { display: block; margin-left: auto; margin-right: 0; }
-.sag-aksiyon { display: flex; justify-content: flex-end; }
-.sag-aksiyon > button { margin-left: auto; margin-right: 0; }
+.sag-aksiyon { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.sag-aksiyon > button { margin: 10px 0 0 0; }
 
 /* === Tam responsive + iOS/Android guvenli alanlar === */
 html, body { overflow-x: hidden; max-width: 100%; }

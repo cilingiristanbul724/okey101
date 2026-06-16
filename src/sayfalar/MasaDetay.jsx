@@ -170,7 +170,7 @@ export default function MasaDetay() {
       </div>
 
       {sahibiMiyim && acikMi && !duzenleMod && (
-        <div>
+        <div className="sag-aksiyon">
           <button onClick={() => setDuzenleMod(true)} style={altinButon}>Masayı Düzenle</button>
           <button onClick={masayiKapat} style={tehlikeButon}>Masayı Kapat</button>
         </div>
