@@ -7,7 +7,7 @@ const cikisButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', ma
 const kaydetButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const kameraBtn = { display: 'inline-flex', alignItems: 'center', gap: '8px' }
 
-const basKart = { display: 'flex', alignItems: 'center', gap: 16, padding: 16 }
+const basKart = { display: 'flex', alignItems: 'center', gap: 18, padding: 18 }
 const avatarImg = { width: 128, height: 128, borderRadius: '50%', objectFit: 'cover' }
 const onlineNokta = { position: 'absolute', right: 4, bottom: 6, width: 22, height: 22, borderRadius: '50%', background: '#22c55e', border: '3px solid #0b2e23' }
 const menuSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', textDecoration: 'none', color: 'inherit', cursor: 'pointer', marginBottom: 8 }
@@ -15,7 +15,8 @@ const menuEtiketStil = { flex: 1, fontWeight: 600 }
 const okStil = { opacity: 0.5 }
 const avatarSarmal = { position: 'relative', flexShrink: 0 }
 const basBilgi = { minWidth: 0 }
-const basAd = { fontWeight: 800, fontSize: 18 }
+const basAd = { fontWeight: 800, fontSize: 26, lineHeight: 1.2 }
+const basKullanici = { fontSize: 17, color: '#9fb8ab', marginTop: 6, fontWeight: 600 }
 const menuIkonStil = (renk) => ({ width: 38, height: 38, borderRadius: 10, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
 const cinsiyetRenk = {
@@ -124,7 +125,7 @@ export default function Profil() {
 
   return (
     <div className="sayfa">
-      <h2>Profil</h2>
+      <h2 className="profil-bas">PROFİLİM</h2>
 
       <div className="kart" style={basKart}>
         <div style={avatarSarmal}>
@@ -135,7 +136,7 @@ export default function Profil() {
         </div>
         <div style={basBilgi}>
           <div style={basAd}>{profil.ad_soyad || 'Oyuncu'}</div>
-          <div className="ipucu">@{profil.kullanici_adi || 'kullanici_adi'}</div>
+          <div style={basKullanici}>@{profil.kullanici_adi || 'kullanici_adi'}</div>
         </div>
       </div>
 
