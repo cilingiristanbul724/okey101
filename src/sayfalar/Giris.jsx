@@ -124,6 +124,8 @@ export default function Giris() {
   }
 
   const ikincilButon = { background: '#6b7280' }
+  const butonSatir = { display: 'flex', gap: 10, marginTop: 10 }
+  const satirBtn = { flex: 1, margin: 0 }
   const hatirlaSatir = { display: 'flex', alignItems: 'center', gap: '8px', margin: '16px 0 4px', fontSize: '14px', color: 'var(--metin)', cursor: 'pointer', fontWeight: 600 }
   const sozlesmeSatir = { display: 'flex', alignItems: 'flex-start', gap: '8px', margin: '12px 0 4px', fontSize: '13px', color: 'var(--metin)', cursor: 'pointer', lineHeight: 1.4 }
   const onayKutu = { width: '18px', height: '18px', minWidth: '18px', margin: 0, padding: 0, accentColor: 'var(--altin)', background: 'transparent', border: 'none' }
@@ -150,7 +152,7 @@ export default function Giris() {
         <span className="logo-tas-isik" />
       </div>
       <div style={heroWordmark}>101<span style={heroWordmarkAltin}>rakipbul</span></div>
-      <p style={heroSlogan}>Yakınındaki oyuncularla <b>yüz yüze</b> okey &amp; 101 — gerçek masa!</p>
+      <p style={heroSlogan}>Yakınındaki oyuncularla gerçek bir masada yüz yüze okey ve 101 oyna!</p>
     </div>
   )
 
@@ -164,8 +166,10 @@ export default function Giris() {
             <p className="ipucu">Kullanıcı adını yaz, güvenlik sorunu getirelim.</p>
             <label>Kullanıcı Adı</label>
             <input value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="kullanici_adi" />
-            <button onClick={soruyuGetir} disabled={yukleniyor}>Soruyu Getir</button>
-            <button onClick={() => setMod('giris')} style={ikincilButon}>Vazgeç</button>
+            <div style={butonSatir}>
+              <button onClick={soruyuGetir} disabled={yukleniyor} style={satirBtn}>Gizli Sorumu Getir</button>
+              <button onClick={() => setMod('giris')} style={Object.assign({}, satirBtn, ikincilButon)}>Vazgeç</button>
+            </div>
           </>
         ) : (
           <>
@@ -175,8 +179,10 @@ export default function Giris() {
             <input value={sifirlaCevap} onChange={e => setSifirlaCevap(e.target.value)} placeholder="Cevabını yaz" />
             <label>Yeni Şifre</label>
             <SifreInput value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
-            <button onClick={sifreyiSifirla} disabled={yukleniyor}>Şifreyi Sıfırla</button>
-            <button onClick={() => { setSifirlaAsama(1); setSifirlaCevap(''); setYeniSifre('') }} style={ikincilButon}>Geri</button>
+            <div style={butonSatir}>
+              <button onClick={sifreyiSifirla} disabled={yukleniyor} style={satirBtn}>Şifreyi Sıfırla</button>
+              <button onClick={() => { setSifirlaAsama(1); setSifirlaCevap(''); setYeniSifre('') }} style={Object.assign({}, satirBtn, ikincilButon)}>Geri</button>
+            </div>
           </>
         )}
       </div>
@@ -191,7 +197,7 @@ export default function Giris() {
         <>
           <div style={inputSar}>
             <span style={inputIkon}><Ikon ad="kullanici" boyut={18} /></span>
-            <input style={ikonluInput} value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="Kullanıcı adınızı girin" />
+            <input style={ikonluInput} value={kullaniciAdi} onChange={e => setKullaniciAdi(e.target.value)} placeholder="Kullanıcı Adı" />
           </div>
           <SifreInput value={sifre} onChange={e => setSifre(e.target.value)} placeholder="Şifreniz" />
 
