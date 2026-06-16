@@ -6,11 +6,13 @@ import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
 import GeriSayim from '../utils/GeriSayim'
 import Ikon from '../Ikon'
+import CinsiyetRozet from '../CinsiyetRozet'
 import Tanitim from '../Tanitim'
 
 const ikonYesil = { background: 'linear-gradient(135deg, #16a34a, #15803d)' }
 const ikonAltin = { background: 'linear-gradient(135deg, #f6d65b, #e8b923)', color: '#2a2200' }
 const ikonMavi = { background: 'linear-gradient(135deg, #3b82f6, #2563eb)' }
+const basRozet = { display: 'flex', alignItems: 'center', gap: 6 }
 
 function masaAcikMi(m) {
   if (m.durum !== 'Acik') return false
@@ -20,6 +22,7 @@ function masaAcikMi(m) {
 
 export default function MasaListesi() {
   const [masalar, setMasalar] = useState([])
+  const [acanlar, setAcanlar] = useState({})
   const [konum, setKonum] = useState(null)
   const [konumDurum, setKonumDurum] = useState('Konum alınıyor...')
   const [benimId, setBenimId] = useState(null)
@@ -38,7 +41,17 @@ export default function MasaListesi() {
 
   useEffect(() => {
     supabase.from('masalar').select('*').eq('durum', 'Acik')
-      .then(({ data }) => setMasalar(data || []))
+      .then(async ({ data }) => {
+        const ms = data || []
+        setMasalar(ms)
+        const idler = [...new Set(ms.map(m => m.acan_id).filter(Boolean))]
+        if (idler.length) {
+          const { data: pr } = await supabase.from('profiles').select('id,cinsiyet,kullanici_adi').in('id', idler)
+          const h = {}
+          for (const p of pr || []) h[p.id] = p
+          setAcanlar(h)
+        }
+      })
   }, [])
 
   useEffect(() => {
@@ -127,12 +140,16 @@ export default function MasaListesi() {
       {liste.length === 0 && <p>Şu an yakınında açık masa yok. İlk masayı sen aç!</p>}
       {gosterilen.map(m => {
         const dolu = m.mevcut_kisi || 1
+        const acanP = acanlar[m.acan_id]
         return (
           <div key={m.id} className="masa-satir">
             <Link to={'/masa/' + m.id} className="masa-satir-ic">
               <div className="masa-satir-ikon"><Ikon ad="masalar" boyut={20} /></div>
               <div className="masa-satir-metin">
-                <div className="masa-satir-bas">{m.baslik || m.mekan_adi || '101 Okey Masası'}</div>
+                <div className="masa-satir-bas" style={basRozet}>
+                  <span>{m.baslik || m.mekan_adi || '101 Okey Masası'}</span>
+                  {acanP && <CinsiyetRozet cinsiyet={acanP.cinsiyet} boyut={12} />}
+                </div>
                 <div className="masa-satir-alt">
                   <span>{dolu}/4 Kişi</span>
                   <GeriSayim bitis={m.bitis_zamani} />
