@@ -116,7 +116,7 @@ function AltMenu() {
 export default function App() {
   useKalpAtisi()
   return (
-    <BrowserRouter basename="/okey101">
+    <BrowserRouter basename="/">
       <Bildirim />
       <Onay />
       <BildirimIzin />
