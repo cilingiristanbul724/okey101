@@ -78,7 +78,7 @@ function UstBar() {
           <span className="okey-tas tas-siyah tas-ek">3</span>
         </span>
         <span className="marka-101">101</span>
-        <span className="marka-ad">rakipbul</span>
+        <span className="marka-ad">RAKİPBUL</span>
         <span className="okey-taslar sag" aria-hidden="true">
           <span className="okey-tas tas-mavi">9</span>
           <span className="okey-tas tas-sari tas-ek">1</span>
