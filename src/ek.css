@@ -178,3 +178,30 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 .hakkinda-blok h3 { margin-bottom: 6px; }
 .hakkinda-blok p { color: #cfe3d8; line-height: 1.6; font-size: 14px; margin: 0; }
 .hakkinda-blok ul { color: #cfe3d8; line-height: 1.6; font-size: 14px; padding-left: 20px; margin: 4px 0 0; }
+
+/* === Geri butonu (ust bar) === */
+.ust-sol { display: flex; align-items: center; min-width: 0; }
+.geri-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; margin: 0 10px 0 0; padding: 0; flex-shrink: 0; background: var(--panel); border: 1px solid var(--kenar); border-radius: 10px; color: var(--altin); cursor: pointer; box-shadow: none; }
+.geri-btn:hover { filter: brightness(1.12); }
+
+/* === Tam responsive + iOS/Android guvenli alanlar === */
+html, body { overflow-x: hidden; max-width: 100%; }
+.ust-bar { padding-top: calc(12px + env(safe-area-inset-top)); padding-left: calc(16px + env(safe-area-inset-left)); padding-right: calc(16px + env(safe-area-inset-right)); }
+.alt-menu { padding-bottom: calc(6px + env(safe-area-inset-bottom)); }
+.sayfa { padding-bottom: calc(108px + env(safe-area-inset-bottom)); }
+.alt-bilgi { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+img, video, .leaflet-container { max-width: 100%; }
+@media (max-width: 600px) {
+  input, select, textarea { font-size: 16px; }
+  .sayfa { padding-left: 14px; padding-right: 14px; }
+  .balon { max-width: 86%; }
+  .sohbet-govde { height: 60vh; height: 60dvh; }
+}
+@media (max-width: 380px) {
+  .ust-aksiyon a { width: 34px; height: 34px; }
+  .geri-btn { width: 34px; height: 34px; margin-right: 6px; }
+  .marka-101 { min-width: 36px; height: 34px; font-size: 18px; }
+}
+@media (min-width: 768px) {
+  .sayfa { max-width: 620px; }
+}

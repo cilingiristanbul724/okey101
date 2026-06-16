@@ -129,7 +129,7 @@ export default function Profil() {
       <div className="kart" style={basKart}>
         <div style={avatarSarmal}>
           {profil.foto_url
-            ? <img src={profil.foto_url} alt="Profil" style={avatarImg} />
+            ? <img src={profil.foto_url} alt="Profil" style={avatarImg} className="buyutulebilir" />
             : <div style={avatarBosFull}><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={30} /></div>}
           <span style={onlineNokta} />
         </div>
