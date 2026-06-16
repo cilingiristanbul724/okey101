@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
@@ -42,6 +42,15 @@ export default function Giris() {
   const [yeniSifre, setYeniSifre] = useState('')
 
   const navigate = useNavigate()
+
+  // Zaten /giris sayfasindayken ust bardan Giris/Uye Ol'a basilinca
+  // React ayni rotayi yeniden monte etmez; bu yuzden gelen modu burada yakalayip uygula.
+  useEffect(() => {
+    if (loc.state && loc.state.mod) {
+      setMod(loc.state.mod)
+      setSifirlaAsama(1)
+    }
+  }, [loc.key])
 
   async function kayitOl() {
     if (!kullaniciAdi.trim() || !sifre || !adSoyad.trim())
