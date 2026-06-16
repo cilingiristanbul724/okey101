@@ -7,9 +7,12 @@ import Ikon from '../Ikon'
 const OKUNDU_KEY = 'okey101-bildirim-okundu'
 
 const satirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', cursor: 'pointer', marginBottom: 8 }
-const ikonKutuStil = (renk) => ({ width: 42, height: 42, borderRadius: 12, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
+const icMetin = { flex: 1, minWidth: 0 }
+const baslikStil = { fontWeight: 700 }
+const zamanStil = { whiteSpace: 'nowrap', fontSize: 12 }
 const noktaStil = { display: 'inline-block', width: 8, height: 8, borderRadius: '50%', background: '#e8b923', marginLeft: 6, verticalAlign: 'middle' }
 const okunduBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', marginTop: 8 }
+const ikonKutuStil = (renk) => ({ width: 42, height: 42, borderRadius: 12, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
 export default function Bildirimler() {
   const [benimId, setBenimId] = useState(null)
@@ -29,7 +32,6 @@ export default function Bildirimler() {
 
     const bildirimler = []
 
-    // 1) Yeni mesaj (ozel_mesajlar -> bana gelenler)
     const { data: mesajlar } = await supabase.from('ozel_mesajlar')
       .select('id,icerik,created_at,gonderen_id,gonderen:profiles!ozel_mesajlar_gonderen_id_fkey(id,kullanici_adi,ad_soyad)')
       .eq('alici_id', uid)
@@ -49,15 +51,12 @@ export default function Bildirimler() {
       })
     }
 
-    // Uye olarak Onayli oldugum masalar (eslesme + hatirlatma)
     const { data: katilimlarim } = await supabase.from('masa_oyunculari')
       .select('*').eq('oyuncu_id', uid).eq('katilim_durumu', 'Onayli')
 
-    // Benim actigim masalar (yeni oyuncu eklendi)
     const { data: masalarim } = await supabase.from('masalar').select('*').eq('acan_id', uid)
     const masamIdler = (masalarim || []).map(m => m.id)
 
-    // Eslesilen masalarin bilgilerini topla
     const masaHarita = {}
     for (const m of masalarim || []) masaHarita[m.id] = m
     const eksikIdler = (katilimlarim || []).map(k => k.masa_id).filter(id => !masaHarita[id])
@@ -66,7 +65,6 @@ export default function Bildirimler() {
       for (const m of ekMasalar || []) masaHarita[m.id] = m
     }
 
-    // 2) Masa eslesmesi + 3) Masa hatirlatmasi
     for (const k of katilimlarim || []) {
       const masa = masaHarita[k.masa_id]
       if (!masa) continue
@@ -96,7 +94,6 @@ export default function Bildirimler() {
       })
     }
 
-    // 4) Yeni oyuncu eklendi (benim masalarima katilanlar)
     if (masamIdler.length) {
       const { data: katilanlar } = await supabase.from('masa_oyunculari')
         .select('*').in('masa_id', masamIdler).limit(50)
@@ -145,11 +142,11 @@ export default function Bildirimler() {
         return (
           <div key={b.id} className="kart" style={satirStil} onClick={() => navigate(b.link)}>
             <div style={ikonKutuStil(b.renk)}><Ikon ad={b.ikon} boyut={20} /></div>
-            <div style= flex: 1, minWidth: 0 >
-              <div style= fontWeight: 700 >{b.baslik}{yeni && <span style={noktaStil} />}</div>
+            <div style={icMetin}>
+              <div style={baslikStil}>{b.baslik}{yeni && <span style={noktaStil} />}</div>
               <div className="ipucu">{b.alt}</div>
             </div>
-            <div className="ipucu" style= whiteSpace: 'nowrap', fontSize: 12 >{gecenSure(b.ts)}</div>
+            <div className="ipucu" style={zamanStil}>{gecenSure(b.ts)}</div>
           </div>
         )
       })}

@@ -11,6 +11,11 @@ const basKart = { display: 'flex', alignItems: 'center', gap: 14, padding: 16 }
 const avatarImg = { width: 64, height: 64, borderRadius: '50%', objectFit: 'cover' }
 const onlineNokta = { position: 'absolute', right: 0, bottom: 2, width: 16, height: 16, borderRadius: '50%', background: '#22c55e', border: '3px solid #0b2e23' }
 const menuSatirStil = { display: 'flex', alignItems: 'center', gap: 12, padding: '12px 14px', textDecoration: 'none', color: 'inherit', cursor: 'pointer', marginBottom: 8 }
+const menuEtiketStil = { flex: 1, fontWeight: 600 }
+const okStil = { opacity: 0.5 }
+const avatarSarmal = { position: 'relative', flexShrink: 0 }
+const basBilgi = { minWidth: 0 }
+const basAd = { fontWeight: 800, fontSize: 18 }
 const menuIkonStil = (renk) => ({ width: 38, height: 38, borderRadius: 10, background: renk, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 })
 
 const cinsiyetRenk = {
@@ -28,8 +33,8 @@ function MenuSatir({ ikon, renk, etiket, to }) {
   return (
     <Link to={to} className="kart" style={menuSatirStil}>
       <div style={menuIkonStil(renk)}><Ikon ad={ikon} boyut={18} /></div>
-      <span style= flex: 1, fontWeight: 600 >{etiket}</span>
-      <span style= opacity: 0.5 ><Ikon ad="oksag" boyut={18} /></span>
+      <span style={menuEtiketStil}>{etiket}</span>
+      <span style={okStil}><Ikon ad="oksag" boyut={18} /></span>
     </Link>
   )
 }
@@ -115,20 +120,21 @@ export default function Profil() {
     alignItems: 'center',
     justifyContent: 'center',
   }
+  const avatarBosFull = Object.assign({}, avatarImg, avatarBosStil)
 
   return (
     <div className="sayfa">
       <h2>Profil</h2>
 
       <div className="kart" style={basKart}>
-        <div style= position: 'relative', flexShrink: 0 >
+        <div style={avatarSarmal}>
           {profil.foto_url
             ? <img src={profil.foto_url} alt="Profil" style={avatarImg} />
-            : <div style= ...avatarImg, ...avatarBosStil ><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={30} /></div>}
+            : <div style={avatarBosFull}><Ikon ad={cinsiyetIkon(cinsiyet)} boyut={30} /></div>}
           <span style={onlineNokta} />
         </div>
-        <div style= minWidth: 0 >
-          <div style= fontWeight: 800, fontSize: 18 >{profil.ad_soyad || 'Oyuncu'}</div>
+        <div style={basBilgi}>
+          <div style={basAd}>{profil.ad_soyad || 'Oyuncu'}</div>
           <div className="ipucu">@{profil.kullanici_adi || 'kullanici_adi'}</div>
         </div>
       </div>
@@ -140,8 +146,8 @@ export default function Profil() {
 
       <div className="kart" style={menuSatirStil} onClick={() => setDuzenleAcik(v => !v)}>
         <div style={menuIkonStil('#0ea5e9')}><Ikon ad="profil" boyut={18} /></div>
-        <span style= flex: 1, fontWeight: 600 >Profil Bilgilerini Düzenle</span>
-        <span style= opacity: 0.5 ><Ikon ad="oksag" boyut={18} /></span>
+        <span style={menuEtiketStil}>Profil Bilgilerini Düzenle</span>
+        <span style={okStil}><Ikon ad="oksag" boyut={18} /></span>
       </div>
 
       {duzenleAcik && (
