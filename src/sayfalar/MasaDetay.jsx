@@ -14,6 +14,7 @@ const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 const tehlikeButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const griButon = { background: '#6b7280' }
+const whatsappButon = { background: 'linear-gradient(180deg, #25d366, #128c7e)' }
 const atButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)', whiteSpace: 'nowrap', padding: '8px 14px', margin: 0, flexShrink: 0 }
 const onayAksiyon = { display: 'flex', gap: 8, flexShrink: 0 }
 const onayIkonBtn = { background: 'linear-gradient(180deg, #16a34a, #15803d)', width: 42, height: 42, minWidth: 42, borderRadius: '50%', padding: 0, fontSize: 20, lineHeight: 1, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }
@@ -138,6 +139,16 @@ export default function MasaDetay() {
       alert('Konum alınamadı: ' + e.message)
     }
   }
+  function masayiPaylas() {
+    const link = window.location.href
+    const baslikMetni = masa.baslik || masa.mekan_adi || 'Masa'
+    const metin = '101 RakipBul - "' + baslikMetni + '" masama katıl! ' + link
+    if (navigator.share) {
+      navigator.share({ title: '101 RakipBul', text: baslikMetni + ' masama katıl!', url: link }).catch(() => {})
+      return
+    }
+    window.open('https://wa.me/?text=' + encodeURIComponent(metin), '_blank')
+  }
   async function masayiKapat() {
     const ok = await onay('Masayı kapatmak istediğine emin misin?', { baslik: 'Masayı Kapat', onayMetin: 'Kapat', tehlike: true })
     if (!ok) return
@@ -217,6 +228,7 @@ export default function MasaDetay() {
       )}
 
       <button onClick={bulusmaPaylas} style={yesilButon}>📍 Buluşma / Canlı Konum Paylaş</button>
+      <button onClick={masayiPaylas} style={whatsappButon}>📲 Masayı Paylaş (WhatsApp)</button>
       {masadaMiyim && !sahibiMiyim && (
         <button onClick={masadanCik} style={tehlikeButon}>Masadan Ayrıl</button>
       )}
