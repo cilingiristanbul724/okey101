@@ -2,8 +2,8 @@
   "name": "101 RakipBul",
   "short_name": "RakipBul",
   "description": "Yakinindaki oyuncularla yuz yuze okey ve 101 oynamak icin bulusma platformu.",
-  "start_url": "/okey101/",
-  "scope": "/okey101/",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a2c20",
@@ -11,7 +11,7 @@
   "lang": "tr",
   "icons": [
     {
-      "src": "/okey101/favicon.svg",
+      "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"

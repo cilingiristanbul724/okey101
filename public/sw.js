@@ -3,6 +3,14 @@
 self.addEventListener('install', () => self.skipWaiting())
 self.addEventListener('activate', event => event.waitUntil(self.clients.claim()))
 
+function yoluNormalle(u) {
+  if (!u) return '/'
+  // Eski (github.io) yuk: /okey101 onekini temizle
+  if (u.indexOf('/okey101/') === 0) return u.slice('/okey101'.length)
+  if (u === '/okey101') return '/'
+  return u
+}
+
 self.addEventListener('push', event => {
   let veri = {}
   try {
@@ -14,9 +22,9 @@ self.addEventListener('push', event => {
   const govde = (veri.govde && String(veri.govde).trim()) || 'Yeni bir bildirimin var. Açmak için dokun.'
   const secenekler = {
     body: govde,
-    icon: veri.ikon || '/okey101/logo192.png',
-    badge: veri.ikon || '/okey101/logo192.png',
-    data: { url: veri.url || '/okey101/' },
+    icon: veri.ikon || '/logo192.png',
+    badge: veri.ikon || '/logo192.png',
+    data: { url: yoluNormalle(veri.url || '/') },
     tag: veri.tag || undefined,
     renotify: !!veri.tag,
     vibrate: [120, 60, 120],
@@ -26,7 +34,7 @@ self.addEventListener('push', event => {
 
 self.addEventListener('notificationclick', event => {
   event.notification.close()
-  const hedef = (event.notification.data && event.notification.data.url) || '/okey101/'
+  const hedef = yoluNormalle((event.notification.data && event.notification.data.url) || '/')
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(liste => {
       for (const c of liste) {
