@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
+import { zamanMs } from '../utils/zaman'
+import { pushTetikle } from '../utils/push'
 import Durum from '../Durum'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
+const yesilButon = { background: 'linear-gradient(180deg, #16a34a, #15803d)' }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -19,6 +22,7 @@ export default function Arkadaslar() {
   const [arkadaslar, setArkadaslar] = useState([])
   const [istekler, setIstekler] = useState([])
   const [iliskiler, setIliskiler] = useState([])
+  const [aktifMasam, setAktifMasam] = useState(null)
 
   async function yukle() {
     const res = await supabase.auth.getUser()
@@ -40,6 +44,13 @@ export default function Arkadaslar() {
     const { data: rel } = await supabase.from('arkadaslar').select('isteyen_id,istenen_id,durum')
       .or('isteyen_id.eq.' + uid + ',istenen_id.eq.' + uid)
     setIliskiler(rel || [])
+
+    const { data: masalarim } = await supabase.from('masalar')
+      .select('id, baslik, mekan_adi, bitis_zamani, durum, created_at')
+      .eq('acan_id', uid).eq('durum', 'Acik')
+      .order('created_at', { ascending: false })
+    const aktif = (masalarim || []).find(m => !m.bitis_zamani || zamanMs(m.bitis_zamani) > Date.now())
+    setAktifMasam(aktif || null)
   }
   useEffect(() => { yukle() }, [])
 
@@ -77,6 +88,19 @@ export default function Arkadaslar() {
     await supabase.from('arkadaslar').update({ durum: 'Red' }).eq('id', satirId)
     yukle()
   }
+
+  async function davetEt(hedefId) {
+    if (!aktifMasam) return alert('Önce bir masa açmalısın.')
+    const { data: varMi } = await supabase.from('masa_oyunculari')
+      .select('id').eq('masa_id', aktifMasam.id).eq('oyuncu_id', hedefId).limit(1)
+    if (varMi && varMi.length) return alert('Bu oyuncu zaten masanda.')
+    const kayit = { masa_id: aktifMasam.id, oyuncu_id: hedefId, katilim_durumu: 'Onayli' }
+    const { error } = await supabase.from('masa_oyunculari').insert(kayit)
+    if (error) return alert('Davet gönderilemedi: ' + error.message)
+    pushTetikle('masa_oyunculari', kayit)
+    alert('Davet gönderildi! Oyuncu bildirimlerinde masanı görecek.')
+  }
+
   function diger(a) {
     if (a.isteyen && a.isteyen.id !== benimId) return a.isteyen
     return a.istenen
@@ -103,6 +127,13 @@ export default function Arkadaslar() {
   return (
     <div className="sayfa">
       <h2>Arkadaşlar</h2>
+
+      {aktifMasam && (
+        <div className="masa-uyari">
+          <b>Açık masan var: {aktifMasam.baslik || aktifMasam.mekan_adi || '101 Okey Masası'}</b>
+          <p>Arkadaşlarını "Masama Davet Et" ile masana çağırabilirsin.</p>
+        </div>
+      )}
 
       <label>Kullanıcı ara</label>
       <input value={arama} onChange={e => setArama(e.target.value)}
@@ -139,6 +170,9 @@ export default function Arkadaslar() {
             <div>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}</div>
             <Durum sonGorulme={kisi.son_gorulme} />
           </div>
+          {aktifMasam && (
+            <button onClick={() => davetEt(kisi.id)} style={yesilButon}>Masama Davet Et</button>
+          )}
           <Link to={'/ozel/' + kisi.id}><button>Mesaj</button></Link>
         </div>
       ))}

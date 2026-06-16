@@ -5,6 +5,9 @@ import { kufurTemizle } from '../utils/kufur'
 import { engellenenleriGetir } from '../utils/moderasyon'
 import EmojiSec from '../EmojiSec'
 
+// Genel sohbet mesajlari, gonderim saatinden 12 saat sonra silinir/gizlenir.
+const SILME_MS = 12 * 60 * 60 * 1000
+
 function MesajIcerigi({ metin }) {
   const temiz = kufurTemizle(metin)
   const parcalar = (temiz || '').split(/(https?:\/\/[^\s]+)/g)
@@ -12,7 +15,7 @@ function MesajIcerigi({ metin }) {
     if (/^https?:\/\//.test(p)) {
       const haritaLinki = p.includes('/maps/dir') || p.includes('/maps?') || p.includes('maps.google')
       return (
-        <a key={i} href={p} target="_blank" rel="noreferrer">{haritaLinki ? '🧭 Yol tarifi al' : p}</a>
+        <a key={i} href={p} target="_blank" rel="noreferrer">{haritaLinki ? '\ud83e\udded Yol tarifi al' : p}</a>
       )
     }
     return <span key={i}>{p}</span>
@@ -57,7 +60,11 @@ export default function Lobi() {
 
   useEffect(() => {
     let iptal = false
-    supabase.from('genel_mesajlar').select('*').order('created_at', { ascending: false }).limit(100)
+    const esikIso = new Date(Date.now() - SILME_MS).toISOString()
+    // 12 saatten eski mesajlari sessizce sil (geri sayim gosterilmez)
+    supabase.from('genel_mesajlar').delete().lt('created_at', esikIso).then(() => {})
+    supabase.from('genel_mesajlar').select('*').gte('created_at', esikIso)
+      .order('created_at', { ascending: false }).limit(100)
       .then(({ data }) => {
         if (iptal) return
         const sirali = (data || []).slice().reverse()
@@ -83,7 +90,10 @@ export default function Lobi() {
 
   function saat(t) { return t ? new Date(t).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '' }
 
-  const gorunen = mesajlar.filter(m => !engellenenler.includes(m.gonderen_id))
+  const simdi = Date.now()
+  const gorunen = mesajlar.filter(m =>
+    !engellenenler.includes(m.gonderen_id) &&
+    (!m.created_at || (simdi - new Date(m.created_at).getTime()) < SILME_MS))
 
   return (
     <div className="sayfa">
