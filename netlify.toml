@@ -1,0 +1,9 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# React Router (SPA) icin tum yollari index.html'e yonlendir
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
