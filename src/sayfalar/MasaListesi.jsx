@@ -118,7 +118,7 @@ export default function MasaListesi() {
       benim: benimId && m.acan_id === benimId,
       katildim: katildiklarim.includes(m.id),
     }))
-    .filter(m => m.benim || m.katildim || konum == null || (m.uzaklik != null && m.uzaklik <= YAKIN_KM))
+    .filter(m => m.benim || m.katildim || konum == null || m.uzaklik == null || m.uzaklik <= YAKIN_KM)
     .sort((a, b) => {
       if (a.uzaklik == null) return 1
       if (b.uzaklik == null) return -1
