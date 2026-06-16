@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import Ikon from './Ikon'
 import FotoOnizleme from './FotoOnizleme'
 import Bildirim from './Bildirim'
@@ -21,6 +21,10 @@ import OzelSohbet from './sayfalar/OzelSohbet'
 import UyeProfil from './sayfalar/UyeProfil'
 import Sozlesme from './sayfalar/Sozlesme'
 import Hakkinda from './sayfalar/Hakkinda'
+
+const girisBtnStil = { background: 'transparent', border: '1px solid rgba(232,185,35,0.55)', color: '#e8b923', padding: '7px 12px', borderRadius: 10, fontWeight: 700, fontSize: 13, cursor: 'pointer', boxShadow: 'none', whiteSpace: 'nowrap' }
+const uyeolBtnStil = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', border: 'none', padding: '7px 12px', borderRadius: 10, fontWeight: 800, fontSize: 13, cursor: 'pointer', whiteSpace: 'nowrap' }
+const girisAksiyonStil = { display: 'flex', alignItems: 'center', gap: 8 }
 
 function KurulumKontrol() {
   const konum = useLocation()
@@ -70,6 +74,23 @@ function GeriBar() {
 }
 
 function UstBar() {
+  const navigate = useNavigate()
+  const [girisli, setGirisli] = useState(false)
+  const [hazir, setHazir] = useState(false)
+  useEffect(() => {
+    let iptal = false
+    supabase.auth.getSession().then(({ data }) => {
+      if (iptal) return
+      setGirisli(!!(data.session && data.session.user))
+      setHazir(true)
+    })
+    const abone = supabase.auth.onAuthStateChange((_olay, session) => {
+      setGirisli(!!(session && session.user))
+      setHazir(true)
+    })
+    return () => { iptal = true; abone.data.subscription.unsubscribe() }
+  }, [])
+
   return (
     <header className="ust-bar">
       <Link to="/" className="marka">
@@ -83,8 +104,17 @@ function UstBar() {
         </span>
       </Link>
       <div className="ust-aksiyon">
-        <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
-        <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
+        {hazir && !girisli ? (
+          <span style={girisAksiyonStil}>
+            <button style={girisBtnStil} onClick={() => navigate('/giris', { state: { mod: 'giris' } })}>Giriş</button>
+            <button style={uyeolBtnStil} onClick={() => navigate('/giris', { state: { mod: 'kayit' } })}>Üye Ol</button>
+          </span>
+        ) : (
+          <>
+            <Link to="/bildirimler" title="Bildirimler"><Ikon ad="zil" boyut={20} /></Link>
+            <Link to="/mesajlar" title="Mesaj Kutusu"><Ikon ad="mesaj" boyut={20} /></Link>
+          </>
+        )}
       </div>
     </header>
   )
