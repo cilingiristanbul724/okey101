@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import Ikon from '../Ikon'
+import SifreInput from '../SifreInput'
 
 const SORULAR = [
   'İlk evcil hayvanının adı?',
@@ -222,9 +223,9 @@ export default function Profil() {
             {acikIslem === 'sifre' && (
               <div className="kart">
                 <label>Yeni Şifre</label>
-                <input type="password" value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
+                <SifreInput value={yeniSifre} onChange={e => setYeniSifre(e.target.value)} placeholder="En az 6 karakter" />
                 <label>Yeni Şifre (Tekrar)</label>
-                <input type="password" value={yeniSifre2} onChange={e => setYeniSifre2(e.target.value)} placeholder="Yeni şifreyi tekrar yaz" />
+                <SifreInput value={yeniSifre2} onChange={e => setYeniSifre2(e.target.value)} placeholder="Yeni şifreyi tekrar yaz" />
                 <button onClick={sifreDegistir} style={kaydetButon}>Şifreyi Güncelle</button>
               </div>
             )}
