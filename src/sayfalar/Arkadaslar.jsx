@@ -4,10 +4,12 @@ import { supabase } from '../supabaseClient'
 import { zamanMs } from '../utils/zaman'
 import { pushTetikle } from '../utils/push'
 import Durum from '../Durum'
+import CinsiyetRozet from '../CinsiyetRozet'
 
 const altinButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200' }
 const kirmiziButon = { background: 'linear-gradient(180deg, #dc2626, #b91c1c)' }
 const davetButon = { background: 'linear-gradient(180deg, #e8b923, #c99a12)', color: '#2a2200', whiteSpace: 'nowrap' }
+const adRozetSatir = { display: 'flex', alignItems: 'center', gap: 6 }
 
 function Avatar({ p }) {
   if (p && p.foto_url) return <img className="avatar" src={p.foto_url} alt="" />
@@ -31,13 +33,13 @@ export default function Arkadaslar() {
     if (!uid) return
 
     const { data: kabul } = await supabase.from('arkadaslar')
-      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,son_gorulme)')
+      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme), istenen:profiles!arkadaslar_istenen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet,son_gorulme)')
       .eq('durum', 'Kabul')
       .or('isteyen_id.eq.' + uid + ',istenen_id.eq.' + uid)
     setArkadaslar(kabul || [])
 
     const { data: bekleyen } = await supabase.from('arkadaslar')
-      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url)')
+      .select('*, isteyen:profiles!arkadaslar_isteyen_id_fkey(id,kullanici_adi,ad_soyad,foto_url,cinsiyet)')
       .eq('durum', 'Beklemede').eq('istenen_id', uid)
     setIstekler(bekleyen || [])
 
@@ -64,7 +66,7 @@ export default function Arkadaslar() {
   async function ara() {
     if (!arama.trim()) return
     const { data } = await supabase.from('profiles')
-      .select('id, kullanici_adi, ad_soyad, foto_url')
+      .select('id, kullanici_adi, ad_soyad, foto_url, cinsiyet')
       .ilike('kullanici_adi', '%' + arama.trim() + '%')
       .limit(10)
     setSonuclar((data || []).filter(p => p.id !== benimId))
@@ -147,7 +149,7 @@ export default function Arkadaslar() {
       {sonuclar.map(p => (
         <div key={p.id} className="kart satir">
           <Avatar p={p} />
-          <div className="satir-icerik"><div>{p.kullanici_adi || p.ad_soyad}</div></div>
+          <div className="satir-icerik"><div style={adRozetSatir}>{p.kullanici_adi || p.ad_soyad}<CinsiyetRozet cinsiyet={p.cinsiyet} boyut={13} /></div></div>
           <EkleButon p={p} />
         </div>
       ))}
@@ -157,7 +159,7 @@ export default function Arkadaslar() {
         <div key={a.id} className="kart satir">
           <Avatar p={a.isteyen} />
           <div className="satir-icerik">
-            <div>{(a.isteyen && a.isteyen.kullanici_adi) || 'Kullanıcı'}</div>
+            <div style={adRozetSatir}>{(a.isteyen && a.isteyen.kullanici_adi) || 'Kullanıcı'}<CinsiyetRozet cinsiyet={a.isteyen && a.isteyen.cinsiyet} boyut={13} /></div>
             <div className="ipucu">sana istek gönderdi</div>
           </div>
           <button onClick={() => kabulEt(a.id)}>Kabul</button>
@@ -171,7 +173,7 @@ export default function Arkadaslar() {
         <div key={rel.id} className="kart satir">
           <Avatar p={kisi} />
           <div className="satir-icerik">
-            <div>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}</div>
+            <div style={adRozetSatir}>{(kisi && (kisi.kullanici_adi || kisi.ad_soyad)) || 'Arkadaş'}<CinsiyetRozet cinsiyet={kisi.cinsiyet} boyut={13} /></div>
             <Durum sonGorulme={kisi.son_gorulme} />
           </div>
           {aktifMasam && (
