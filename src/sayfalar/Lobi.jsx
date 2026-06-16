@@ -33,7 +33,7 @@ export default function Lobi() {
   const [metin, setMetin] = useState('')
   const [benimId, setBenimId] = useState(null)
   const [engellenenler, setEngellenenler] = useState([])
-  const sonRef = useRef(null)
+  const govdeRef = useRef(null)
 
   async function profilGetir(idler) {
     const eksik = [...new Set(idler)].filter(Boolean)
@@ -69,7 +69,7 @@ export default function Lobi() {
     return () => { iptal = true; supabase.removeChannel(kanal) }
   }, [])
 
-  useEffect(() => { sonRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [mesajlar])
+  useEffect(() => { const g = govdeRef.current; if (g) g.scrollTop = g.scrollHeight }, [mesajlar])
 
   async function gonder() {
     if (!benimId || !metin.trim()) return
@@ -88,7 +88,7 @@ export default function Lobi() {
       <h2>Genel Sohbet</h2>
       <p className="ipucu">Tüm üyelerin birbiriyle yazıştığı halka açık kanal.</p>
       <div className="sohbet">
-        <div className="sohbet-govde" style={govdeStil}>
+        <div className="sohbet-govde" style={govdeStil} ref={govdeRef}>
           {gorunen.length === 0 && <p className="ipucu">Henüz mesaj yok. İlk yazan sen ol!</p>}
           {gorunen.map(m => {
             const benimMi = m.gonderen_id === benimId
@@ -107,7 +107,6 @@ export default function Lobi() {
               </div>
             )
           })}
-          <div ref={sonRef} />
         </div>
         {benimId ? (
           <div className="sohbet-giris">

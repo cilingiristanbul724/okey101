@@ -44,6 +44,18 @@ function KurulumKontrol() {
   return null
 }
 
+function YukariKaydir() {
+  const konum = useLocation()
+  useEffect(() => {
+    window.scrollTo(0, 0)
+    if (document.documentElement) document.documentElement.scrollTop = 0
+    if (document.body) document.body.scrollTop = 0
+    const g = document.querySelector('.govde')
+    if (g) g.scrollTop = 0
+  }, [konum.pathname])
+  return null
+}
+
 function UstBar() {
   const konum = useLocation()
   const navigate = useNavigate()
@@ -110,6 +122,7 @@ export default function App() {
       <BildirimIzin />
       <FotoOnizleme />
       <KurulumKontrol />
+      <YukariKaydir />
       <UstBar />
 
       <main className="govde">
