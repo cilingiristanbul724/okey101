@@ -124,7 +124,7 @@ select option:checked { background-color: #137a4d; color: #ffffff; }
 /* === Masa kartlari: ortalanmis, dengeli dagilim === */
 .kart-masa { text-align: center; }
 .kart-masa .kart-bas { justify-content: center; gap: 12px; margin-bottom: 8px; }
-.kart-masa .kart-bas b { font-size: 17px; }
+.kart-masa .kart-bas b { font-size: 17px; color: var(--kirmizi); text-transform: uppercase; font-weight: 800; }
 .kart-masa .mesafe { justify-content: center; }
 .kart-masa > div { margin: 2px 0; }
 .kart-not { color: #9fb8ab; font-size: 13px; }
