@@ -27,8 +27,8 @@ self.addEventListener('push', event => {
   const govde = (veri.govde && String(veri.govde).trim()) || 'Yeni bir bildirimin var. Açmak için dokun.'
   const secenekler = {
     body: govde,
-    icon: veri.ikon || '/favicon.svg',
-    badge: veri.ikon || '/favicon.svg',
+    icon: veri.ikon || '/k%C3%BC%C3%A7%C3%BCk%20olan.png',
+    badge: veri.ikon || '/k%C3%BC%C3%A7%C3%BCk%20olan.png',
     data: { url: yoluNormalle(veri.url || '/') },
     tag: veri.tag || undefined,
     renotify: !!veri.tag,
